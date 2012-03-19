@@ -205,7 +205,7 @@ describe Watirmark::WebPage::Controller do
     lambda {VerifyController.new(:validate4 => 'something').verify_data}.should raise_error
   end
 
-  it 'should only throw the first validation exception when there are 3 three problems' do
+  it 'should throw one validation exception when there are more than one validation mismatches' do
     lambda {
     VerifyController.new(:validate1 => 'z',:validate2 => 'y',:validate3 => 'x').verify_data
     }.should raise_error(Watirmark::VerificationException,/Multiple problems/)
