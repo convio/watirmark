@@ -1,5 +1,5 @@
-source "http://qalin.corp.convio.com:8808"
 source "http://gemcutter.org"
+source "http://gemserver.qa.convioanalyticstest.net:8808"
 
 gem 'watir',  :platforms => :mingw
 gem 'watir-webdriver'
