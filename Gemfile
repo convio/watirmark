@@ -5,6 +5,7 @@ gem 'watir',  :platforms => :mingw
 gem 'watir-webdriver'
 gem 'american_date'
 gem 'logger'
+gem 'watirmark-log'
 
 group :development do
   gem 'rdoc'
