@@ -29,16 +29,12 @@ module CukeHelper
   def format_value(value)
     if String === value && value[0, 1].eql?("=") #straight eval
       eval(value[1..value.length])
-    elsif value =~ /\[([^>]+)\]\.(\S+)/ #get value from model
-      model_name = $1
-      method     = $2
-      DataModels.instance[model_name].send method.to_sym
     elsif value == "true"
       return true
     elsif value == "false"
       return false
     else
-      value
+      model_gsub(value)
     end
   end
 
