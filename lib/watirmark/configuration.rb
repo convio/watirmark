@@ -21,6 +21,9 @@ module Watirmark
         :profile            => Hash.new {|h,k| h[k] = Hash.new},
         :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
+        :uuid               => nil,
+
+        :sandbox            => false,
       }.merge @runtime_defaults
     end
 
