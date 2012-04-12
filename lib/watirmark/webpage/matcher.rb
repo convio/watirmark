@@ -59,18 +59,19 @@ module Watirmark
     end
 
     def normalize_value(x)
-      if x.strip != '' # clean up spaces and line endings unless it's just spaces
-        x.gsub!("\r\n","\n")
-        x.strip!
+      result = x.dup # in case it was frozen
+      if result.strip != '' # clean up spaces and line endings unless it's just spaces
+        result.gsub!("\r\n","\n")
+        result.strip!
       end
-      if x =~ /^[0-9]{1,2}[-\/][0-9]{1,2}[-\/][0-9]{2,4}$/ || x =~ /^[0-9]{2,4}[-\/][0-9]{1,2}[-\/][0-9]{1,2}$/ # translate dates to a Date object
-        x = Date.parse(x)
+      if result =~ /^[0-9]{1,2}[-\/][0-9]{1,2}[-\/][0-9]{2,4}$/ || result =~ /^[0-9]{2,4}[-\/][0-9]{1,2}[-\/][0-9]{1,2}$/ # translate dates to a Date object
+        result = Date.parse(result)
       end
       # strip sign from dollar amounts
-      if x =~ /^\$([\d\.]+)/
-        x = $1
+      if result =~ /^\$([\d\.]+)/
+        result = $1
       end
-      x
+      result
     end
     
     def should_match_regexp
