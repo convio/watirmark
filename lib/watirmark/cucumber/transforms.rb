@@ -14,7 +14,7 @@ end
 # Return the model from the collection of existing models
 MODEL = Transform /^\[(\S+)\]$/ do |model_name|
   DataModels.instance ||= {}
-  raise "#{$1} is not a defined model!" unless DataModels.instance[model_name]
+  raise "#{model_name} is not a defined model!" unless DataModels.instance[model_name]
   DataModels.instance[model_name]
 end
 
