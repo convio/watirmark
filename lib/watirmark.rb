@@ -1,12 +1,21 @@
 if ENV['WEBDRIVER']
   require 'watir-webdriver'
+  require 'watirmark/extensions/webdriver_extensions'
   require 'logger'
 else
   require 'watir/ie'
   require 'watirmark/extensions/ruby_extensions'
   require 'watirmark/extensions/rautomation'
 end
+require 'watirmark'
 require 'watirmark/session'
 require 'watirmark/exceptions'
 require 'watirmark-log'
 require 'watirmark/configuration'
+require 'watirmark/webpage/page'
+require 'watirmark/webpage/dialogs'
+require 'watirmark/webpage/assertions'
+require 'watirmark/webpage/extensions'
+require 'watirmark/webpage/controller_actions'
+require 'watirmark/webpage/controller'
+require 'american_date'

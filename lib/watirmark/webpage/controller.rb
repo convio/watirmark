@@ -1,4 +1,39 @@
 require 'watirmark/webpage/assertions'
+require 'watirmark/webpage/controller_actions'
+
+# This would be better to be a struct because it would match the models we're
+# using for inputs to the controllers. The problem is that with legacy code,
+# we have a lot of input hashes that don't necessarily always have a page
+# object keyword for every member of the hash. As such I've chosen to use
+# OpenStruct. Fixing this would be a little hit/miss until all input data uses
+# models
+
+require 'ostruct'
+
+class ModelStruct < OpenStruct
+  def [](x)
+    self.send x
+  end
+
+  def []=(x, y)
+    self.send "#{x}=", y
+  end
+
+  def update(x)
+    x.each_pair {|key, value| self.send "#{key}=", value}
+    self
+  end
+
+  def keys
+    self.marshal_dump.keys
+  end
+  alias :members :keys
+
+  def has_key?(x)
+    members.include? x
+  end
+  alias :key? :has_key?
+end
 
 module Watirmark
   module WebPage
@@ -43,7 +78,7 @@ class MyController < Watirmark::WebPage::Controller
   # def #{keyword}_value; # do something; end
 
   def currency_value
-    "$#{@rasta[:currency]}" 
+    "$#{@rasta.currency}"
   end
 
   # Override verification for a given element.
@@ -55,9 +90,9 @@ class MyController < Watirmark::WebPage::Controller
 
   def verify_image
     if @view.uploadimage.exists?
-      assert @rasta[:image] == 'nil'
+      assert @rasta.image == 'nil'
     elsif @view.uploaddifferentimage.exists?
-      assert @rasta[:image] != 'nil'
+      assert @rasta.image != 'nil'
     end
   end
 
@@ -70,7 +105,7 @@ class MyController < Watirmark::WebPage::Controller
   # def populate_#{keyword}; # do something; end
 
   def populate_teamdivisions
-    @rasta[:teamdivisions].each do |team|
+    @rasta.teamdivisions.each do |team|
       @view.teamdivision.set team
       close_dialog_if_exists { @view.adddivbutton.click_no_wait }
       Watir::Waiter.wait_until do
@@ -134,8 +169,10 @@ end
 =end rdoc
 
     class Controller
-      attr_reader :rasta
+      attr_reader :rasta, :model
       include Watirmark::Assertions
+      include Watirmark::Dialogs
+      include Watirmark::ControllerActions
       
       class << self
         attr_accessor :view, :process_page, :specified_keywords
@@ -187,25 +224,35 @@ end
       end
       
       def initialize(rasta = {}) #:nodoc:
-        @view = self.class.view 
+        @records ||= []
+        @view = self.class.view
         @process_page = self.class.process_page
         @specified_keywords = self.class.specified_keywords
-        if Hash === rasta
-          @rasta = rasta
-          @model = nil
+        if Hash === rasta # convert to a model
+          @model = hash_to_model rasta
         else # assume it's a model
-          @rasta = rasta.to_h
           @model = rasta
         end
+        @rasta = @model
+        # Create a session if one does not exist
+        @session = Watirmark::IESession.instance
+        @browser = @session.openbrowser
       end
-      
-      # tree list and combo list items should just be defined in the view and
-      # NOT in the controller. Also make tree list and combo list different lists of
-      # items in the page and we can go through them like we do the keywords and
-      # handle with the appropriate class in this file
-      
-      
-      # Refactor this using comments below
+
+      def hash_to_model(hash)
+        model = ModelStruct.new
+        hash.each_pair { |key, value| model.send "#{key}=", value }
+        model
+      end
+
+      def rasta=(x)
+        if Hash === x
+          @rasta = hash_to_model(x)
+        else
+          @rasta = x
+        end
+      end
+
       def each_keyword #:nodoc:
         # user has overridden keywords so don't automatically get anything else
         if @specified_keywords 
@@ -330,11 +377,16 @@ end
       end
 
       # if a method exists that changes how the value of the keyword
-      # is determined then call it, othwerwise, just use the rasta value 
+      # is determined then call it, otherwise, just use the rasta value
       def value_for(keyword)
-        self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @rasta[keyword]
+        self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @rasta.send(keyword)
       end
       
     end
+
+    def log
+      Watirmark::Configuration.instance.logger
+    end
+
   end
 end
