@@ -1,5 +1,5 @@
 module Watirmark
   module Version
-    STRING = '1.4.11'
+    STRING = '2.1'
   end
 end

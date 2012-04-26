@@ -1,5 +1,9 @@
 require 'spec_helper'
-require 'watir/ie'
+if RUBY_PLATFORM =~ /linux/
+  require 'watir-webdriver'
+else
+  require 'watir/ie'
+end
 require 'watirmark/webpage/page'
 require 'watirmark/webpage/controller'
 
@@ -16,7 +20,7 @@ describe Watirmark::WebPage::Controller do
     @view = TestView
     def initialize
       super
-      @rasta = { :text_field => 'foobar' }
+      @rasta.text_field = 'foobar'
     end
   end
 
@@ -64,15 +68,14 @@ describe Watirmark::WebPage::Controller do
 
   def setup_browser
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    @browser = Setup.browser
-    @browser.goto @html
+    Page.browser.goto "file://#{@html}"
     Page.browser = @browser
   end
 
   before :all do
-    setup_browser
     @controller = TestController.new
     @keyword = @controller.class.specified_keywords[0]
+    setup_browser
   end
 
   it 'should supportradio maps in controllers' do
@@ -112,7 +115,7 @@ describe Watirmark::WebPage::Controller do
   it 'should support override method for verification' do
     def @controller.verify_text_field; 'verify';  end
     @controller.expects(:verify_text_field).returns('verify').once
-    @controller.verify
+    @controller.verify_data
   end
 
   it 'should support keyword before and after methods' do
@@ -197,27 +200,10 @@ describe Watirmark::WebPage::Controller do
     VerifyController.new(:validate1 => '1',:validate2 => 'a',:validate3 => 1.1).verify_data
   end
 
-  it 'should throw an exception when the view code hits an exception other than a verification exception' do
-    lambda {
-      VerifyController.new(:validate4 => 'something').verify_data
-    }.should_not raise_error(Watirmark::VerificationException)
-
-    lambda {VerifyController.new(:validate4 => 'something').verify_data}.should raise_error
-  end
-
   it 'should only throw the first validation exception when there are 3 three problems' do
     lambda {
     VerifyController.new(:validate1 => 'z',:validate2 => 'y',:validate3 => 'x').verify_data
     }.should raise_error(Watirmark::VerificationException,/Multiple problems/)
   end
 
-  it 'should only throw the first non-validation error if it is mixed with validation errors' do
-    lambda {
-    VerifyController.new(:validate1 => 'z',:validate2 => 'y',:validate4 => 'x').verify_data
-    }.should_not raise_error(Watirmark::VerificationException)
-
-    lambda {
-      VerifyController.new(:validate1 => 'z',:validate2 => 'y',:validate4 => 'x').verify_data
-    }.should raise_error
-  end
 end

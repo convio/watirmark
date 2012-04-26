@@ -40,11 +40,7 @@ module Watirmark
     # set up the global variables, reading from the config file
     def initialize
       @@post_failure = nil
-      unless ENV['WEBDRIVER']
-        Watir::IE.attach_timeout = 5
-      end
-      POST_WAIT_CHECKERS << Proc.new {check_post_result}
-      POST_WAIT_CHECKERS << Proc.new {handle_certificate_error}
+      Watir::IE.attach_timeout = 5 unless ENV['WEBDRIVER']
 
       at_exit{
         config = Watirmark::Configuration.instance
@@ -107,13 +103,5 @@ module Watirmark
       config.loggedin = false
     end
 
-    # This method is passed to Watir to run after every page load
-    def check_post_result; end
-      
-    # This works around the IE7 certificate issues
-    def handle_certificate_error
-      @@browser.link(:text, "Continue to this website (not recommended).").click if @@browser.link(:text, "Continue to this website (not recommended).").exists?
-    end 
-        
   end
 end

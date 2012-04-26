@@ -1,3 +1,5 @@
+# note that this will not work for WEBDRIVER
+
 # Requiring this file from IRB will:
 #   * Attach to the browser whose title matches the "window_title" enviroment 
 #     variable. This can be a partial match.

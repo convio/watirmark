@@ -1,10 +1,14 @@
 lib_dir = File.join(File.dirname(__FILE__), '..', 'lib')
-$LOAD_PATH.unshift File.expand_path(lib_dir)
+$: << File.expand_path(lib_dir)
+
+ENV['WEBDRIVER'] = 'firefox'
 
 require 'rspec/autorun'
+require 'watirmark'
 
 RSpec.configure do |config|
   config.mock_with :mocha
+  alias :context :describe
 end
 
 module Setup
@@ -16,10 +20,13 @@ module Setup
   private
   # Start invisible browser. Make sure browser is closed when tests complete.
   def self.start_browser
-    watir_options = Watir::IE.options
-    #Watir::IE.set_options(:visible => false)
-    browser = Watir::IE.new
-    Watir::IE.set_options(watir_options)
+    if ENV['WEBDRIVER']
+      browser = Watir::Browser.new ENV['WEBDRIVER'].to_sym
+    else
+      watir_options = Watir::IE.options
+      browser = Watir::IE.new
+      Watir::IE.set_options(watir_options)
+    end
     at_exit{browser.close}
     browser
   end

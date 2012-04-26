@@ -45,7 +45,12 @@ if ENV['WEBDRIVER']
 
       def row(*args)
         if has_cell?(args)
-          trs(*transform_has_cell_args(args)).last
+          located_rows = trs(*transform_has_cell_args(args))
+          if located_rows.size > 0
+            located_rows.last
+          else
+            tr(*transform_has_cell_args(args))
+          end
         else
           tr(*args)
         end
@@ -55,7 +60,12 @@ if ENV['WEBDRIVER']
 
       def table(*args)
         if has_cell?(args)
-          tables(*transform_has_cell_args(args)).last
+          located_tables = tables(*transform_has_cell_args(args))
+          if located_tables.size > 0
+            located_tables.last
+          else
+            table(*transform_has_cell_args(args))
+          end
         else
           old_table(*args.flatten)
         end
@@ -80,10 +90,18 @@ if ENV['WEBDRIVER']
           when Hash
             val = args[:has_cell]
             args.delete(:has_cell)
-            args[:text] = /^\s*#{Regexp.escape(val)}\s*$/ if val.kind_of? String
+            case val
+              when String
+                args[:text] = /^\s*#{Regexp.escape(val)}\s*$/
+              when Regexp
+                args[:text] = val
+            end
           when Array
             args[0] = :text
-            args[1] = /^\s*#{Regexp.escape(args[1])}\s*$/ if args[1].kind_of? String
+            case args[1]
+              when String
+                args[1] = /^\s*#{Regexp.escape(args[1])}\s*$/
+            end
         end
         args
       end
