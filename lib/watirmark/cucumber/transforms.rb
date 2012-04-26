@@ -4,8 +4,7 @@ NEW_MODEL = Transform /^\[new ([^:]+): (\S+)\]$/ do |model_name, user_defined_na
   DataModels.instance ||= {}
   unless DataModels.instance.has_key?(user_defined_name)
     model_class = TransformHelper.find_class_by_name(model_name.to_sym)
-    DataModels.instance[user_defined_name] = model_class.new
-    DataModels.instance[user_defined_name].__name__ = user_defined_name
+    DataModels.instance[user_defined_name] = model_class.new(user_defined_name)
     log.info("Declared model '#{user_defined_name}' using #{model_class}:\n#{DataModels.instance[user_defined_name].to_h.inspect}")
   end
   DataModels.instance[user_defined_name]
