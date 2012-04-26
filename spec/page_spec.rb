@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'watirmark/webpage/page'
+require 'watirmark'
 
 describe 'Page' do
   
@@ -26,7 +26,6 @@ describe 'Page' do
   end
   
   it 'should be able to get and set the browser' do
-    Page1.browser.should be_nil
     Page.browser = 'browser'
     Page1.browser.should == 'browser'
     Page2.browser.should == 'browser'
@@ -42,8 +41,8 @@ describe 'Page' do
       keyword_alias :aliased_keyword, :a
     end
      Page1.a.should == 'a'
-     Page1.methods.include?("aliased_keyword").should be_true
-     Page1.methods.include?("aliased_keyword=").should be_true
+     Page1.methods.include?(:aliased_keyword).should be_true
+     Page1.methods.include?(:aliased_keyword=).should be_true
      Page1.aliased_keyword.should == 'a'
   end
 

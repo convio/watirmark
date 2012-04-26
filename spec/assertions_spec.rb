@@ -9,55 +9,6 @@ describe Watirmark::Assertions do
     assert_equal element, 'giant vampire squid'
   end
   
-  it "can compare an isolated Watir element that doesn't 'exist'" do
-    container = mock('container')
-    container.expects(:page_container).returns(container)
-    container.expects(:locate_input_element).returns(nil).at_least_once
-    element = Watir::TextField.new(container, {:name => 'income'}, nil)
-    assert_equal element, '!exist'
-  end
-  
-  it "can compare an isolated Watir element that does 'exist'" do
-    container = mock('container')
-    container.expects(:page_container).returns(container)
-    container.expects(:locate_input_element).returns('ole_element').at_least_once
-    element = Watir::TextField.new(container, {:name => 'income'}, nil)
-    element.expects(:value).returns('300')
-    assert_equal element, '300'
-  end
-  
-  it "can compare a RadioList with first choice selected" do
-    container = mock('container')
-    male_element = mock('male') # assumed to be first listed
-    female_element = mock('female')
-    container.expects(:page_container).returns(container)
-    container.expects(:locate_input_element).with({:name => 'sex'}, nil, ['radio'], nil, Watir::Radio).returns(male_element).at_least_once
-    container.expects(:locate_input_element).with({:name => 'sex'}, nil, ['radio'], 'M', Watir::Radio).returns(male_element).at_least_once
-    male_element.expects(:checked).returns(true)
-    male_element.expects(:invoke).returns ''
-    male_element.expects(:getAttribute).with('name').returns 'sex'
-    element = Watir::Radio.new(container, {:name => 'sex'}, nil, nil)
-    assert_equal element, 'M'
-    container.expects(:locate_input_element).with({:name => 'sex'}, nil, ['radio'], 'F', Watir::Radio).returns(female_element).at_least_once
-    female_element.expects(:checked).returns(false)
-    error = nil
-    lambda{assert_equal element, 'F'}.should raise_error(Watirmark::VerificationException) {|e| error = e} # note: rspec bug: can't put "should" in this block
-    error.expected.should == 'F'
-    error.actual.should == '' # NOT CORRECT, but here to make sure we don't break it worse
-  end
-  
-  it "can compare a RadioList with second choice selected" do
-    container = mock('container')
-    male_element = mock('male')
-    female_element = mock('female') # assumed to be first listed
-    container.expects(:page_container).returns(container)
-    container.expects(:locate_input_element).with({:name => 'sex'}, nil, ['radio'], nil, Watir::Radio).returns(female_element).at_least_once
-    container.expects(:locate_input_element).with({:name => 'sex'}, nil, ['radio'], 'M', Watir::Radio).returns(male_element).at_least_once
-    male_element.expects(:checked).returns(true)
-    element = Watir::Radio.new(container, {:name => 'sex'}, nil, nil)
-    assert_equal element, 'M'
-  end
-
   it 'compare integer' do
     element = stub(:exists? => true, :value => '100')
     assert_equal element, 100
