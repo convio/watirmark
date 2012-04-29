@@ -1,9 +1,3 @@
-require 'watirmark/webpage/matcher'
-require 'watir/ie'  unless ENV['WEBDRIVER']
-require 'watirmark/exceptions'
-require 'watirmark/webpage/page'
-
-
 module Watirmark
   module Assertions
     

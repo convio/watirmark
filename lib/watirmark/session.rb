@@ -1,4 +1,4 @@
-require 'watirmark/webpage/page'
+require 'watirmark/page/page'
 if ENV['WEBDRIVER']
   require 'watir-webdriver'
 else

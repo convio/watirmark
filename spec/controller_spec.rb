@@ -4,8 +4,7 @@ if RUBY_PLATFORM =~ /linux/
 else
   require 'watir/ie'
 end
-require 'watirmark/webpage/page'
-require 'watirmark/webpage/controller'
+require 'watirmark'
 
 describe Watirmark::WebPage::Controller do
 

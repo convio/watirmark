@@ -1,5 +1,5 @@
 module Watirmark
-  module ControllerActions
+  module Actions
 
     attr_accessor :records
 

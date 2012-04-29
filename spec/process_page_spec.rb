@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'watirmark/webpage/page'
+require 'watirmark'
 
 describe 'ProcessPage' do
   

@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'watirmark/webpage/assertions'
+require 'watirmark'
 
 describe Watirmark::Assertions do
   include Watirmark::Assertions

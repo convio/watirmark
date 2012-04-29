@@ -1,5 +1,7 @@
-require 'watirmark/webpage/assertions'
-require 'watirmark/webpage/controller_actions'
+require 'watirmark/controller/actions'
+require 'watirmark/controller/dialogs'
+require 'watirmark/controller/matcher'
+require 'watirmark/controller/assertions'
 
 # This would be better to be a struct because it would match the models we're
 # using for inputs to the controllers. The problem is that with legacy code,
@@ -172,7 +174,7 @@ end
       attr_reader :rasta, :model
       include Watirmark::Assertions
       include Watirmark::Dialogs
-      include Watirmark::ControllerActions
+      include Watirmark::Actions
       
       class << self
         attr_accessor :view, :process_page, :specified_keywords

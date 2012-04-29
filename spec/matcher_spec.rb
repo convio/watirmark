@@ -1,5 +1,5 @@
 require 'spec_helper'
-require 'watirmark/webpage/matcher'
+require 'watirmark'
 
 context Watirmark::Matcher do
   before :all do
