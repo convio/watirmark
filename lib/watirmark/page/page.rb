@@ -233,3 +233,6 @@ module Watirmark
     end
   end
 end
+
+# Make this class a little easier to get to
+Page = Watirmark::Page
