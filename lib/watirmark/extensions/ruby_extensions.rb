@@ -110,3 +110,43 @@ class Object
   end
 end
 
+
+# This would be better to be a struct because it would match the models we're
+# using for inputs to the controllers. The problem is that with legacy code,
+# we have a lot of input hashes that don't necessarily always have a page
+# object keyword for every member of the hash. As such I've chosen to use
+# OpenStruct. Fixing this would be a little hit/miss until all input data uses
+# models
+
+require 'ostruct'
+
+class ModelStruct < OpenStruct
+  def [](x)
+    self.send x
+  end
+
+  def []=(x, y)
+    self.send "#{x}=", y
+  end
+
+  def update(x)
+    x.each_pair {|key, value| self.send "#{key}=", value}
+    self
+  end
+
+  def keys
+    self.marshal_dump.keys
+  end
+  alias :members :keys
+
+  def has_key?(x)
+    members.include? x
+  end
+  alias :key? :has_key?
+
+  def to_h
+    h = {}
+    members.each { |name| h[name.to_sym] = self.send name}
+    h
+  end
+end
