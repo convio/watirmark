@@ -1,12 +1,5 @@
 module CukeHelper
 
-# ---------------------------------------
-# HELPER METHODS FOR CUCUMBER ENVIRONMENT
-# ---------------------------------------
-
-  include Mother::Helpers
-  # eval all keywords that start with '='.  For example, =Time.now.day or =true
-
   def log
     Watirmark::Configuration.instance.logger
   end
