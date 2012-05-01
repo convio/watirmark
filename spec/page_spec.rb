@@ -48,16 +48,6 @@ describe 'Page' do
 
 end
 
-describe 'With' do
-  it 'should instance eval anything in the closure' do
-    klass = mock('klass')
-    klass.expects(:dosomething)
-    with klass do 
-      dosomething
-    end
-  end
-end
-
 describe 'With window' do
   it 'should instance eval anything in the closure in the context of the window' do
     default_browser = mock('default-browser')
@@ -65,7 +55,7 @@ describe 'With window' do
     Page.browser = default_browser
     other_browser = mock('other-browser')
     other_browser.expects(:called)
-    with_window other_browser do 
+    Watirmark::with_window other_browser do
       Page.browser.called
     end
     Page.browser.should == default_browser

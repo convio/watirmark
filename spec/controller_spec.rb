@@ -15,11 +15,11 @@ describe Watirmark::WebPage::Controller do
 
   class TestController < Watirmark::WebPage::Controller
     keyword :text_field
-    attr_accessor :rasta
+    attr_accessor :model
     @view = TestView
     def initialize
       super
-      @rasta.text_field = 'foobar'
+      @model.text_field = 'foobar'
     end
   end
 
@@ -61,7 +61,7 @@ describe Watirmark::WebPage::Controller do
   end
 
   class TestProcessPageController < Watirmark::WebPage::Controller
-    attr_accessor :rasta
+    attr_accessor :model
     @view = ProcessPageControllerView
   end
 

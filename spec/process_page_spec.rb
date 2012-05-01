@@ -4,11 +4,11 @@ require 'watirmark'
 describe 'ProcessPage' do
   
   it 'should implement a process page interface' do
-    lambda{ProcessPage.new('pp')}.should_not raise_error
+    lambda{Watirmark::ProcessPage.new('pp')}.should_not raise_error
   end
   
   it 'should support an activate method' do
-    p = ProcessPage.new('pp')
+    p = Watirmark::ProcessPage.new('pp')
     lambda{p.activate}.should_not raise_error(NoMethodError)
   end
   
@@ -16,7 +16,7 @@ end
 
 describe 'Process Page Views' do
   
-  class ProcessPageTest < Page
+  class ProcessPageTest < Watirmark::Page
     keyword(:a) {'a'}
     process_page('ProcessPage 1') do 
       keyword(:b) {'b'}
@@ -43,7 +43,7 @@ describe 'Process Page Views' do
   end
   
   
-  class NestedProcessPageTest < Page
+  class NestedProcessPageTest < Watirmark::Page
     keyword(:a) {'a'}
     process_page('ProcessPage 1') do 
       keyword(:b) {'b'}
@@ -73,12 +73,12 @@ describe 'Process Page Views' do
     NestedProcessPageTest['ProcessPage 1 > ProcessPage 1.1 > ProcessPage 1.1.1'].keywords.should == [:b3]
   end
   
-  class DefaultView < Page
+  class DefaultView < Watirmark::Page
     keyword(:a) {'a'}
     keyword(:b) {'b'}
   end
   
-  class ProcessPageView < Page
+  class ProcessPageView < Watirmark::Page
     process_page 'page 1' do
       keyword(:a) {'a'}
     end
@@ -87,7 +87,7 @@ describe 'Process Page Views' do
     end
   end
   
-  class ProcessPageAliasView < Page
+  class ProcessPageAliasView < Watirmark::Page
     process_page 'page 1' do
       process_page_alias 'page a'
       process_page_alias 'page b'
@@ -106,7 +106,7 @@ describe 'Process Page Views' do
 
   it 'should support defining the process page navigate method' do
     custom_method_called = false
-    ProcessPage.navigate_method_default = Proc.new { custom_method_called = true }
+    Watirmark::ProcessPage.navigate_method_default = Proc.new { custom_method_called = true }
     ProcessPageTest.a.should == 'a'
     custom_method_called.should be_false
     ProcessPageTest.b.should == 'b'
