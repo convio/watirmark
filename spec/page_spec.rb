@@ -8,11 +8,11 @@ describe 'Page' do
   end
   
   class Page1 < Page
-    keyword (:a) {"a"}
-    keyword (:b) {"b"}
+    keyword(:a) {"a"}
+    keyword(:b) {"b"}
   end
   class Page2 < Page
-    keyword (:c) {"c"}
+    keyword(:c) {"c"}
   end
 
   it "should list its keywords" do
