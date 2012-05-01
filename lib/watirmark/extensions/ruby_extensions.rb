@@ -121,14 +121,6 @@ end
 require 'ostruct'
 
 class ModelStruct < OpenStruct
-  def [](x)
-    self.send x
-  end
-
-  def []=(x, y)
-    self.send "#{x}=", y
-  end
-
   def update(x)
     x.each_pair {|key, value| self.send "#{key}=", value}
     self
