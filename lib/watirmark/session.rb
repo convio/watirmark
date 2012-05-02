@@ -1,10 +1,9 @@
 require 'watirmark/page/page'
-if ENV['WEBDRIVER']
+if Watirmark::Configuration.instance.webdriver
   require 'watir-webdriver'
 else
   require 'watir'
 end
-require 'singleton'
 
 module Watirmark
   
@@ -40,11 +39,10 @@ module Watirmark
     # set up the global variables, reading from the config file
     def initialize
       @@post_failure = nil
-      Watir::IE.attach_timeout = 5 unless ENV['WEBDRIVER']
+      Watir::IE.attach_timeout = 5 unless config.webdriver
 
       at_exit{
-        config = Watirmark::Configuration.instance
-        closebrowser if config.closebrowseronexit 
+        closebrowser if config.closebrowseronexit
        }
     end
     
@@ -62,14 +60,14 @@ module Watirmark
 
     # Set up @@browser
     def initialize_browser
-      if ENV['WEBDRIVER']
-        case ENV['WEBDRIVER'].to_sym
+      if config.webdriver
+        case config.webdriver.to_sym
         when :firefox
           profile = Selenium::WebDriver::Firefox::Profile.new
           profile.native_events = false
-          @@browser ||= Watir::Browser.new ENV['WEBDRIVER'].to_sym, :profile => profile
+          @@browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => profile
         else
-          @@browser ||= Watir::Browser.new ENV['WEBDRIVER'].to_sym
+          @@browser ||= Watir::Browser.new config.webdriver.to_sym
         end
       else
         Watir::IE.visible = !!config.visible

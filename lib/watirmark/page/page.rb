@@ -192,7 +192,7 @@ module Watirmark
         if @map
           val = @map.lookup(val)
         end
-        if ENV['WEBDRIVER']
+        if Watirmark::Configuration.instance.webdriver
           case val
             when 'nil'
               element.clear # workaround to empty element values

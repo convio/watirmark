@@ -20,8 +20,8 @@ module Setup
   private
   # Start invisible browser. Make sure browser is closed when tests complete.
   def self.start_browser
-    if ENV['WEBDRIVER']
-      browser = Watir::Browser.new ENV['WEBDRIVER'].to_sym
+    if Watirmark::Configuration.instance.webdriver
+      browser = Watir::Browser.new Watirmark::Configuration.instance.webdriver.to_sym
     else
       watir_options = Watir::IE.options
       browser = Watir::IE.new

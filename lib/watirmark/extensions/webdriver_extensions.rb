@@ -1,4 +1,4 @@
-if ENV['WEBDRIVER']
+if Watirmark::Configuration.instance.webdriver
   require 'watir-webdriver'
   require 'watir-webdriver/extensions/select_text'
 

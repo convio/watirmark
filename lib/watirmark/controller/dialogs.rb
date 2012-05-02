@@ -1,7 +1,7 @@
 module Watirmark
   module Dialogs
     def modal_exists?(window=Page.browser)
-      if ENV['WEBDRIVER']
+      if Watirmark::Configuration.instance.webdriver
         !!(Page.browser.windows.size > 1)
       else
         Page.browser.modal_dialog.exists?
@@ -10,7 +10,7 @@ module Watirmark
 
     def with_modal_dialog(window=Page.browser, &block)
       wait_for_modal_dialog(window)
-      if ENV['WEBDRIVER']
+      if Watirmark::Configuration.instance.webdriver
         begin
           $in_modal_dialog = true
           Page.browser.windows.last.use
@@ -31,7 +31,7 @@ module Watirmark
 
     def wait_for_modal_dialog(window=Page.browser)
       begin
-        if ENV['WEBDRIVER']
+        if Watirmark::Configuration.instance.webdriver
           Timeout::timeout(30) {
             until modal_exists?
               sleep 0.002
@@ -79,7 +79,7 @@ module Watirmark
 
     def wait_until_frames_loaded(window)
       begin
-        if ENV['WEBDRIVER']
+        if Watirmark::Configuration.instance.webdriver
           Timeout::timeout(30) {
             return if window.document.frames.length == 0
             window.frames.each do |frame|

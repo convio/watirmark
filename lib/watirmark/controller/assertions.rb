@@ -18,7 +18,7 @@ module Watirmark
 
     # Returns the user visible value of the element.
     def actual_value element, expected=nil
-      if ENV['WEBDRIVER']
+      if Watirmark::Configuration.instance.webdriver
         case element
           when Watir::Select
             element.selected_options.first.text

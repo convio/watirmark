@@ -1,4 +1,4 @@
-unless ENV['WEBDRIVER']
+unless Watirmark::Configuration.instance.webdriver
   # Work around Jenkins issue where dialogs not clicked
   module RAutomation
     module Adapter

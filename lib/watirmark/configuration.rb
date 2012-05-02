@@ -1,3 +1,6 @@
+require 'singleton'
+require 'logger'
+require 'watirmark-log'
 module Watirmark
   class Configuration
     include Singleton
@@ -22,7 +25,7 @@ module Watirmark
         :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
         :uuid               => nil,
-
+        :webdriver          => nil,
         :sandbox            => false,
       }.merge @runtime_defaults
     end
