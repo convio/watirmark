@@ -18,5 +18,7 @@ Gem::Specification.new do |s|
   s.add_dependency("american_date")
   s.add_dependency("logger")
   s.add_dependency("watirmark-log")
+  s.add_dependency("uuid")
+  s.add_dependency("nokogiri")
 end
 
