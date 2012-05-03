@@ -6,6 +6,8 @@ gem 'watir-webdriver', '0.5.3.1'
 gem 'american_date'
 gem 'logger'
 gem 'watirmark-log'
+gem 'nokogiri'
+gem 'uuid'
 
 group :development do
   gem 'rdoc'
