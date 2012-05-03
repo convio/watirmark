@@ -120,7 +120,7 @@ end
 
 require 'ostruct'
 
-class ModelStruct < OpenStruct
+class ModelOpenStruct < OpenStruct
   def update(x)
     x.each_pair {|key, value| self.send "#{key}=", value}
     self

@@ -207,7 +207,7 @@ end
       end
 
       def hash_to_model(hash)
-        model = ModelStruct.new
+        model = ModelOpenStruct.new
         hash.each_pair { |key, value| model.send "#{key}=", value }
         model
       end
