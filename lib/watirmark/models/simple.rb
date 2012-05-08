@@ -22,7 +22,12 @@ module Watirmark
       end
 
       def uuid
-        "#{__name__}_#{@uuid}"[0..40]
+        # this name hack will all go away in the next refactor
+        if __name__
+          "#{__name__}_#{@uuid}"[0..40]
+        else
+          "#{@uuid}"[0..40]
+        end
       end
 
       # adds a hash of values to the object
