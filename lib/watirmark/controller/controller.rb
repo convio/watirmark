@@ -318,13 +318,26 @@ end
       
       # Set a single keyword to it's corresponding value
       def set(keyword, value)
-        if self.respond_to?(method = "before_#{keyword}"); self.send(method); end
-        if self.respond_to?(method = "populate_#{keyword}")
-          self.send(method)
+        #before hooks
+        if self.respond_to?("before_#{keyword}")
+          self.send("before_#{keyword}")
+        elsif self.respond_to?("before_each_keyword")
+          self.send("before_each_keyword",@view.send(keyword))
+        end
+
+        #populate
+        if self.respond_to?("populate_#{keyword}")
+          self.send("populate_#{keyword}")
         else
           @view.send "#{keyword}=", value
         end
-        if self.respond_to?(method = "after_#{keyword}"); self.send(method); end
+
+        #after hooks
+        if self.respond_to?("after_#{keyword}")
+          self.send("after_#{keyword}")
+        elsif self.respond_to?("after_each_keyword");
+          self.send("after_each_keyword",@view.send(keyword))
+        end
       end
       
       # Verify the value from a keyword matches the given value
