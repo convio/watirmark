@@ -1,4 +1,5 @@
-class SmokeTestTask < Rake::Task
+class SmokeTestTask
+  include ::Rake::DSL if defined?(::Rake::DSL)
   def initialize(task_name=:smoke, tests)
     raise "tests must be Hash" unless Hash === tests
 
