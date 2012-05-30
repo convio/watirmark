@@ -26,6 +26,13 @@ module Watirmark
         :loglevel           => Logger::INFO,
         :uuid               => nil,
         :webdriver          => nil,
+
+        :dbhostname         => nil,
+        :dbusername         => nil,
+        :dbpassword         => nil,
+        :dbsid              => nil,
+        :dbport             => nil,
+
         :sandbox            => false,
       }.merge @runtime_defaults
     end
@@ -130,12 +137,8 @@ module Watirmark
     # Use a common db connection
     def db
       @db = nil if @db && @db.dbh.handle == nil
-      @db ||= WatirmarkDB::DB.new(self.hostname)
+      @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
       @db
     end
   end
 end
-
-
-
-
