@@ -1,6 +1,7 @@
 require 'watirmark/configuration'
 Watirmark::Configuration.instance.reload
 
+require 'watirmark/at_exit'
 if Watirmark::Configuration.instance.webdriver
   require 'watir-webdriver'
   require 'watirmark/extensions/webdriver_extensions'

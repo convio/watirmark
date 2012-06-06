@@ -40,10 +40,9 @@ module Watirmark
     def initialize
       @@post_failure = nil
       Watir::IE.attach_timeout = 5 unless config.webdriver
-
-      at_exit{
+      Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
-       }
+      }
     end
     
     def newsession
