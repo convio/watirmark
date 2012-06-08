@@ -2,6 +2,18 @@ require 'rubygems'
 require 'bundler'
 Bundler::GemHelper.install_tasks
 
+# override install to ignore dependencies on the local machine
+module Bundler
+  class GemHelper
+    def install_gem
+      built_gem_path = build_gem
+      out, _ = sh_with_code("gem install '#{built_gem_path}' --ignore-dependencies")
+      raise "Couldn't install gem, run `gem install #{built_gem_path}' for more detailed output" unless out[/Successfully installed/]
+      Bundler.ui.confirm "#{name} (#{version}) installed"
+    end
+  end
+end
+
 require 'rake/clean'
 CLEAN << FileList["pkg", "coverage"]
 
