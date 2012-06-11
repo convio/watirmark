@@ -1,0 +1,18 @@
+module <%= name.camelize %>
+  class AdoptView < Watirmark::Page
+    keyword(:view_details) {|name| browser.h3(:text, name).parent.parent.button(:index,0)}
+
+    class << self
+      def home
+        browser.goto 'http://puppies.herokuapp.com/'
+      end
+
+      def create(model)
+        home
+        browser.link(:text, 'Adopt a Puppy').click
+        view_details(model.name).click
+        browser.button(:value, 'Adopt Me!').click
+      end
+    end
+  end
+end

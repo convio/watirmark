@@ -10,8 +10,9 @@ Gem::Specification.new do |s|
   s.description = %q{Watirmark is Convio's test framework}
   s.homepage = %q{http://github.com/convio/watirmark}
   s.summary = %Q{watirmark #{version}}
-  s.files = Dir['lib/**/*.rb']
+  s.files = Dir['lib/**/*.rb', 'generators/**/*']
   s.test_files =  Dir['spec/**/*.rb']
+  s.executables = "watirmark"
   s.require_paths = ["lib"]
   s.add_dependency("watir") if RUBY_PLATFORM == "i386-mingw32"
   s.add_dependency("watir-webdriver")

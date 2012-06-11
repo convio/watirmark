@@ -8,6 +8,8 @@ gem 'logger'
 gem 'watirmark-log'
 gem 'nokogiri'
 gem 'uuid'
+gem 'rubigen'
+gem 'i18n'
 
 group :development do
   gem 'rdoc'
