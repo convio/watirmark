@@ -16,7 +16,7 @@ module Watirmark
       end
 
       def __email_address__
-        "#{__email_prefix__}+#{uuid}@#{__email_suffix__}"
+        "#{__email_prefix__}+#{@uuid}@#{__email_suffix__}"
       end
 
       def __email_prefix__
