@@ -5,18 +5,18 @@ require 'watirmark/controller/assertions'
 
 module Watirmark
   module WebPage
-    
+
 =begin rdoc
 class MyController < Watirmark::WebPage::Controller
   include ECRMPage               # include any default methods (this will include model and WebPage methods)
   @view = MyView                 # This is required and should point to a view. Navigation also should be in the view
-  
-  # In the simplest case, that's ALL you need. Most of the 
-  # real info should be contained in your View. Below are some 
+
+  # In the simplest case, that's ALL you need. Most of the
+  # real info should be contained in your View. Below are some
   # tools you can use to override default behavior
 
-  # Override getting the keywords from the view and just use these keywords. 
-  # This is useful if there's a quickcreate or some path where the edit and 
+  # Override getting the keywords from the view and just use these keywords.
+  # This is useful if there's a quickcreate or some path where the edit and
   # create screens are different
   keyword :keyword1, :keyword2, ...
 
@@ -24,14 +24,14 @@ class MyController < Watirmark::WebPage::Controller
   # keywords. Note that buttons and links won't get called
   # so you don't need to add them here, as they will just get ignored
 
-  reject :keyword1, :keyword2, ...    
+  reject :keyword1, :keyword2, ...
 
   # Override how the controller populates.
   def populate_data
     super # to call the default populate
     # do something
   end
-  
+
   # Override how the controller verifies.
   def verify_data
     super # to call the default verify
@@ -39,7 +39,7 @@ class MyController < Watirmark::WebPage::Controller
   end
 
   # Change the model value for a keyword. Note that this
-  # will both set the value using this and will verify 
+  # will both set the value using this and will verify
   # as if this is the model value so you shouldn't have to
   # override the verification unless they differ
   #
@@ -51,8 +51,8 @@ class MyController < Watirmark::WebPage::Controller
 
   # Override verification for a given element.
   # In this example the file_field that sets the value is blank
-  # when we verify so we just check that an image was uploaded 
-  # by looking at what buttons appear 
+  # when we verify so we just check that an image was uploaded
+  # by looking at what buttons appear
   #
   # def verify_#{keyword}; # do something; end
 
@@ -68,7 +68,7 @@ class MyController < Watirmark::WebPage::Controller
   # Override data population for a given element.
   # In this case we have a model value that maps
   # to a keyword that has no proc and we override
-  # things here 
+  # things here
   #
   # def populate_#{keyword}; # do something; end
 
@@ -97,9 +97,9 @@ class MyController < Watirmark::WebPage::Controller
   def after_image
     @view.upload_button.click
   end
-  
-  # Override the default submit behavior which is 
-  # to click a Save/Next/Finish button. 
+
+  # Override the default submit behavior which is
+  # to click a Save/Next/Finish button.
   def submit
     @view.completebutton.click
   end
@@ -122,10 +122,10 @@ class MyController < Watirmark::WebPage::Controller
   def check_create_defaults; end   # navigates to the create page and runs verify_data
 
   ANY other methods should be created in the controller and delegated to the View:
- 
-  def delete; @view.delete; end 
+
+  def delete; @view.delete; end
   def archive; @view.archive; end
-  ...etc... 
+  ...etc...
 
   # These methods will be called if defined.
   def before_all; end              # runs before any record is read.
@@ -141,16 +141,16 @@ end
       include Watirmark::Assertions
       include Watirmark::Dialogs
       include Watirmark::Actions
-      
+
       class << self
         attr_accessor :view, :process_page, :specified_keywords
 
         def inherited(klass) #:nodoc:
-          klass.view ||= @view if @view 
+          klass.view ||= @view if @view
         end
-        
+
         # For custom Keyword classes we want to filter out
-        # any keywords that are automatically generated so 
+        # any keywords that are automatically generated so
         # we don't get or set them twice. This builds a list
         # of keywords to remove from the auto-generated lists.
 
@@ -159,38 +159,41 @@ end
         end
 
         def reject(*items)
+          Kernel.warn("Warning: Deprecated use of reject. Use navigation_keyword instead")
           items.each { |item| stub "populate_#{item}"; stub "verify_#{item}";}
         end
-        
+
         def verify_only(*items)
+          Kernel.warn("Warning: Deprecated use of verify_only. Use verify_keyword instead")
           items.each { |item| stub "populate_#{item}"}
         end
 
         def populate_only(*items)
+          Kernel.warn("Warning: Deprecated use of populate_only. Use populate_keyword instead")
           items.each { |item| stub "verify_#{item}"}
         end
 
         def keyword(x)
-         (@specified_keywords ||= []) << x 
+         (@specified_keywords ||= []) << x
         end
-        
+
         def keywords(items)
           items.each { |item| self.keyword(item) }
         end
-        
+
         # Populate with model values
-        def populate(x) 
+        def populate(x)
           new(x).populate
           return
         end
-        
+
         # Verify the UI values and compare with the model values
-        def verify(x) 
+        def verify(x)
           new(x)._verify_
           return
         end
       end
-      
+
       def initialize(data = {}) #:nodoc:
         @records ||= []
         @view = self.class.view
@@ -222,9 +225,9 @@ end
 
       def each_keyword #:nodoc:
         # user has overridden keywords so don't automatically get anything else
-        if @specified_keywords 
+        if @specified_keywords
           @specified_keywords.each {|x| yield x, nil}
-    # This should probably go away if we can work out how to 
+    # This should probably go away if we can work out how to
     # handle TR process pages in what is required and not
         elsif @process_page
           process_page_keywords(@view[@process_page]) {|x| yield x, @process_page}
@@ -234,13 +237,13 @@ end
           raise Watirmark::TestError, 'View or Process Page not defined in controller!'
         end
       end
-      
+
       # Returns all of the keywords associated with a process page
       def process_page_keywords(process_page)
         raise RuntimeError, "Process Page '#{page_name}' not found in #{@view}" unless process_page
         process_page.keywords.each {|x| yield x}
       end
-      
+
       # Returns all the keywords in the view
       def view_keywords
         @view.keywords.each {|x| yield x}
@@ -252,7 +255,7 @@ end
 
       # This action will populate all of the items
       # in the view with values in @model
-      def populate 
+      def populate
         seen_value = false
         @last_process_page = nil
         each_keyword do |keyword, process_page|
@@ -271,7 +274,7 @@ end
         _submit_ if seen_value
       end
       alias :populate_data :populate
-      
+
       # This action will verify all values in the
       # view against @model without page submission
       def _verify_ #:nodoc:
@@ -295,7 +298,7 @@ end
         end
       end
       alias :verify_data :_verify_
-      
+
       # Check before submitting to see if the process page
       # submit override is being used, then submit and allow the controller
       # to override the submit method if necessary
@@ -315,7 +318,7 @@ end
       def submit
         @view[@last_process_page || @view.to_s].submit
       end
-      
+
       # Set a single keyword to it's corresponding value
       def set(keyword, value)
         #before hooks
@@ -339,7 +342,7 @@ end
           self.send("after_each_keyword",@view.send(keyword))
         end
       end
-      
+
       # Verify the value from a keyword matches the given value
       def check(keyword, value)
         if self.respond_to?(method = "verify_#{keyword}")
@@ -361,7 +364,7 @@ end
       def value_for(keyword)
         self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @model.send(keyword)
       end
-      
+
     end
 
     def log
