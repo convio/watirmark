@@ -75,15 +75,37 @@ module Watirmark
       end
 
       def navigation_keyword(method_sym, map=nil, &block)
+        raise "Unimplemented"
       end
 
       def populate_keyword(method_sym, map=nil, &block)
+        raise "Unimplemented"
       end
 
       def private_keyword(method_sym, map=nil, &block)
+        raise "Unimplemented"
       end
 
       def verify_keyword(method_sym, map=nil, &block)
+        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
+        @kwds[self] << method_sym unless @kwds.include?(method_sym)
+        if map.is_a? Hash
+          map = Watirmark::RadioMap.new map
+        end
+        keyed_element = Page::KeyedElement.new(
+            :key => method_sym,
+            :page => self,
+            :map => map,
+            :process_page => @current_process_page,
+            :block => block
+        )
+        meta_def method_sym do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{method_sym}=" do |*args|
+          #do nothing
+        end
+        @current_process_page << method_sym
       end
 
       # Create an alias to an existing keyword
