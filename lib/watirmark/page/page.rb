@@ -74,6 +74,18 @@ module Watirmark
         @current_process_page << method_sym
       end
 
+      def navigation_keyword(method_sym, map=nil, &block)
+      end
+
+      def populate_keyword(method_sym, map=nil, &block)
+      end
+
+      def private_keyword(method_sym, map=nil, &block)
+      end
+
+      def verify_keyword(method_sym, map=nil, &block)
+      end
+
       # Create an alias to an existing keyword
       # @deprecated Use of keyword_alias is deprecated
       def keyword_alias(keyword_alias_name, keyword_name)
