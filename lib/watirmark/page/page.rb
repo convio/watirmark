@@ -53,18 +53,9 @@ module Watirmark
       # object in the application. Keywords are then used in the
       # rest of the app to refer to that
       def keyword(method_sym, map=nil, &block)
-        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
-        @kwds[self] << method_sym unless @kwds.include?(method_sym)
-        if map.is_a? Hash
-          map = Watirmark::RadioMap.new map
-        end
-        keyed_element = Page::KeyedElement.new(
-            :key => method_sym,
-            :page => self,
-            :map => map,
-            :process_page => @current_process_page,
-            :block => block
-        )
+        add_to_keywords(method_sym)
+        keyed_element = get_keyed_element(method_sym, map, &block)
+
         meta_def method_sym do |*args|
           keyed_element.get *args
         end
@@ -87,18 +78,9 @@ module Watirmark
       end
 
       def verify_keyword(method_sym, map=nil, &block)
-        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
-        @kwds[self] << method_sym unless @kwds.include?(method_sym)
-        if map.is_a? Hash
-          map = Watirmark::RadioMap.new map
-        end
-        keyed_element = Page::KeyedElement.new(
-            :key => method_sym,
-            :page => self,
-            :map => map,
-            :process_page => @current_process_page,
-            :block => block
-        )
+        add_to_keywords(method_sym)
+        keyed_element = get_keyed_element(method_sym, map, &block)
+
         meta_def method_sym do |*args|
           keyed_element.get *args
         end
@@ -107,6 +89,26 @@ module Watirmark
         end
         @current_process_page << method_sym
       end
+
+      def add_to_keywords(method_sym)
+        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
+        @kwds[self] << method_sym unless @kwds.include?(method_sym)
+      end
+      private :add_to_keywords
+
+      def get_keyed_element(method_sym, map=nil, &block)
+        if map.is_a? Hash
+          map = Watirmark::RadioMap.new map
+        end
+        Page::KeyedElement.new(
+            :key => method_sym,
+            :page => self,
+            :map => map,
+            :process_page => @current_process_page,
+            :block => block
+        )
+      end
+      private :get_keyed_element
 
       # Create an alias to an existing keyword
       # @deprecated Use of keyword_alias is deprecated
