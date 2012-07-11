@@ -159,17 +159,17 @@ end
         end
 
         def reject(*items)
-          Kernel.warn("Warning: Deprecated use of reject. Use navigation_keyword instead")
+          Kernel.warn("Warning: Deprecated use of reject in #{self}. Use navigation_keyword instead")
           items.each { |item| stub "populate_#{item}"; stub "verify_#{item}";}
         end
 
         def verify_only(*items)
-          Kernel.warn("Warning: Deprecated use of verify_only. Use verify_keyword instead")
+          Kernel.warn("Warning: Deprecated use of verify_only in #{self}. Use verify_keyword instead")
           items.each { |item| stub "populate_#{item}"}
         end
 
         def populate_only(*items)
-          Kernel.warn("Warning: Deprecated use of populate_only. Use populate_keyword instead")
+          Kernel.warn("Warning: Deprecated use of populate_only in #{self}. Use populate_keyword instead")
           items.each { |item| stub "verify_#{item}"}
         end
 
