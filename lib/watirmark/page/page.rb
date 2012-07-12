@@ -91,7 +91,15 @@ module Watirmark
       end
 
       def private_keyword(method_sym, map=nil, &block)
-        raise "Unimplemented"
+        keyed_element = get_keyed_element(method_sym, map, &block)
+
+        meta_def method_sym do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{method_sym}=" do |*args|
+          keyed_element.set *args
+        end
+        @current_process_page << method_sym
       end
 
       def verify_keyword(method_sym, map=nil, &block)
