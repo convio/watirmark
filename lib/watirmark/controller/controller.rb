@@ -267,6 +267,9 @@ end
             @last_process_page = process_page
             if self.respond_to?(method = "before_process_page_#{last_process_page_name}"); self.send(method); end
           end
+          unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:populate]
+            next
+          end
           value = value_for(keyword)
           value.nil? ? next : seen_value = true
           set(keyword, value)
@@ -280,6 +283,9 @@ end
       def _verify_ #:nodoc:
         verification_errors = []
         each_keyword do |keyword, process_page_name|
+          unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:verify]
+            next
+          end
           value = value_for(keyword)
           next if value.nil?
           begin
