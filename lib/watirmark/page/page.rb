@@ -66,7 +66,15 @@ module Watirmark
       end
 
       def navigation_keyword(method_sym, map=nil, &block)
-        raise "Unimplemented"
+        add_to_keywords(method_sym)
+
+        meta_def method_sym do |*args|
+          # do nothing
+        end
+        meta_def "#{method_sym}=" do |*args|
+          # do nothing
+        end
+        @current_process_page << method_sym
       end
 
       def populate_keyword(method_sym, map=nil, &block)
