@@ -121,7 +121,7 @@ module Watirmark
 
       def permissions
         @perms ||= Hash.new { |h, k| h[k] = Hash.new }
-        @perms.values.first
+        @perms.values.inject(:merge)
       end
 
       def add_permission(kwd, hash)
