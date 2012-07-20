@@ -34,7 +34,14 @@ module Watirmark
         :dbport             => nil,
 
         :sandbox            => false,
+        :firefox_profile    => default_firefox_profile,
       }.merge @runtime_defaults
+    end
+
+    def default_firefox_profile
+      profile = Selenium::WebDriver::Firefox::Profile.new
+      profile.native_events = false
+      profile
     end
 
     def defaults=(x)

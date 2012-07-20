@@ -62,9 +62,7 @@ module Watirmark
       if config.webdriver
         case config.webdriver.to_sym
         when :firefox
-          profile = Selenium::WebDriver::Firefox::Profile.new
-          profile.native_events = false
-          @@browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => profile
+          @@browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
         else
           @@browser ||= Watir::Browser.new config.webdriver.to_sym
         end
