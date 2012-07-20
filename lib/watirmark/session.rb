@@ -43,8 +43,15 @@ module Watirmark
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
       }
+      config.firefox_profile = default_firefox_profile
     end
-    
+
+    def default_firefox_profile
+      profile = Selenium::WebDriver::Firefox::Profile.new
+      profile.native_events = false
+      profile
+    end
+
     def newsession
       closebrowser
       openbrowser
