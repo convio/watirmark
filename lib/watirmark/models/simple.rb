@@ -5,6 +5,8 @@ module Watirmark
       attr_accessor :defaults, :name, :uuid, :model_name
 
       class << self
+        attr_accessor :uuid
+
         def models
           @models ||= []
         end
