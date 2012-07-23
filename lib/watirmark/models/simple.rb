@@ -28,6 +28,12 @@ module Watirmark
         def add_model(name)
           models << name
         end
+
+        def generate_uuid model_name=nil
+          @uuid = Watirmark::Configuration.instance.uuid ?
+                  model_name.to_s + Watirmark::Configuration.instance.uuid :
+                  model_name.to_s + UUID.new.generate(:compact)
+        end
       end
 
       def initialize(params={})
@@ -35,6 +41,7 @@ module Watirmark
         @composed_fields = self.class.composed_fields
         @models = self.class.models
         @params = params
+        @uuid = self.class.generate_uuid
         reload_settings
       end
 
@@ -44,6 +51,7 @@ module Watirmark
       # a string that we used to identify the models in the gherkin
       def model_name=(x)
         @model_name = x
+        @uuid = self.class.generate_uuid @model_name
         reload_settings
       end
 
@@ -89,7 +97,6 @@ module Watirmark
       def reload_settings
         set_defaults
         define_composed_fields
-        generate_uuid
         update @params
         add_models
       end
@@ -103,18 +110,6 @@ module Watirmark
           else
             send "#{name}=", val
           end
-        end
-      end
-
-
-      # Generate a UUID for the instantiation of the models
-      # This id should be used in cases where the data needs to be
-      # unique for each test execution
-      def generate_uuid
-        if Watirmark::Configuration.instance.uuid
-          @uuid = @model_name.to_s + Watirmark::Configuration.instance.uuid
-        else
-          @uuid = @model_name.to_s + UUID.new.generate(:compact)
         end
       end
 
