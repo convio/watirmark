@@ -3,14 +3,16 @@ module Watirmark
     class Person < Simple
 
       def self.inherited(subclass)
-        subclass.default.first_name {"first_#{uuid}"}
-        subclass.default.last_name  {"last_#{uuid}"}
-        subclass.default.user_name  {"user_#{uuid}"}
-        subclass.default.password   {"password"}
+        subclass.default.first_name     {"first_#{uuid}"}
+        subclass.default.last_name      {"last_#{uuid}"}
+        subclass.default.user_name      {"user_#{uuid}"}
 
-        subclass.default.email_address {"#{email_prefix}+#{uuid}@#{email_suffix}"}
-        subclass.default.email_prefix Watirmark::Configuration.instance.email || "devnull"
-        subclass.default.email_suffix "qasendmail.corp.convio.com"
+        subclass.default.password       {"password"}
+        subclass.default.reminder_hint  {"hint"}
+
+        subclass.default.email_prefix   Watirmark::Configuration.instance.email || "devnull"
+        subclass.default.email_suffix   "qasendmail.corp.convio.com"
+        subclass.default.email_address  {"#{default.email_prefix}+#{uuid}@#{default.email_suffix}"}
 
         subclass.default.address = {
             :street1 => '3405 Mulberry Creek Dr',
@@ -19,7 +21,6 @@ module Watirmark
             :zip => '78732',
             :country => 'United States',
         }
-
         subclass.default.credit_card = {
             :creditcard => "Visa",
             :cardnumber => "4111 1111 1111 1111",
