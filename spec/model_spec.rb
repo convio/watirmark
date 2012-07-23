@@ -100,25 +100,31 @@ describe "composed fields" do
 end
 
 
-describe "should inherit defaults" do
-  specify "test" do
-    User = Watirmark::Model::Person.new(:user_name, :password)
+describe "Inherited Models" do
+  specify "should inherit defaults" do
+    User = Watirmark::Model::Person.new(:username, :password)
     @login = User.new
-    @login.user_name.should =~ /user_/
+    @login.username.should =~ /user_/
     @login.password.should == 'password'
+  end
+
+  specify "should inherit unnamed methods" do
+    User = Watirmark::Model::Person.new(:username, :password, :firstname)
+    @login = User.new
+    @login.firstname.should =~ /first_/
   end
 
 end
 
 describe "instance values" do
   before :all do
-    Login = Watirmark::Model::Simple.new(:user_name, :password)
+    Login = Watirmark::Model::Simple.new(:username, :password)
   end
 
 
   specify "set a value on instantiation" do
-    @login = Login.new(:user_name => 'user_name', :password => 'password' )
-    @login.user_name.should == 'user_name'
+    @login = Login.new(:username => 'username', :password => 'password' )
+    @login.username.should == 'username'
     @login.password.should == 'password'
   end
 
@@ -126,8 +132,8 @@ end
 
 describe "models containing models" do
   before :all do
-    Login = Watirmark::Model::Simple.new(:user_name, :password) do
-      default.user_name  'user_name'
+    Login = Watirmark::Model::Simple.new(:username, :password) do
+      default.username  'username'
       default.password  'password'
     end
 
@@ -147,13 +153,13 @@ describe "models containing models" do
   specify "should be able to see the models" do
     @model = User.new
     @model.login.should be_kind_of Struct
-    @model.login.user_name.should == 'user_name'
+    @model.login.username.should == 'username'
   end
 
   specify "should be able to see the models multiple steps down" do
     @model = Donor.new
     @model.user.login.should be_kind_of Struct
-    @model.user.login.user_name.should == 'user_name'
+    @model.user.login.username.should == 'username'
   end
 
 end
