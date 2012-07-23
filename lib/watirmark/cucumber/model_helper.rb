@@ -8,7 +8,7 @@ module ModelHelper
     unless model.includes?(hash_record(table))
       update_model(model, table)
       block.call
-      log.info "Updated models '#{model.__name__}':\n#{hash_record(table).inspect}"
+      log.info "Updated models '#{model.model_name}':\n#{hash_record(table).inspect}"
     end
   end
 
@@ -22,7 +22,7 @@ module ModelHelper
       log.info  "Reverting Model: #{Watirmark::IESession.instance.post_failure}"
       model.update(orig_model.to_h) # revert models on failure
     elsif model.to_h != orig_model.to_h
-      log.info "Updated models '#{model.__name__}':\n#{hash_record(table).inspect}"
+      log.info "Updated models '#{model.model_name}':\n#{hash_record(table).inspect}"
     end
   end
 end
