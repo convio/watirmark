@@ -1,40 +1,32 @@
 module Watirmark
   module Model
 
-    module ClassMethods
-      def models
-        @models ||= []
+    class Simple < Class.new(Struct)
+      attr_accessor :defaults, :name, :uuid, :model_name
+
+      class << self
+        def models
+          @models ||= []
+        end
+
+        def composed_fields
+          @composed_fields ||= {}
+        end
+
+        def default
+          @defaults ||= Watirmark::Model::Defaults.new
+        end
+
+        # create a read-only field that is a composition of multiple fields.
+        # for example, full_name might be a composition of first and last names.
+        def compose(name, &block)
+          composed_fields[name] = block
+        end
+
+        def add_model(name)
+          models << name
+        end
       end
-
-      def composed_fields
-        @composed_fields ||= {}
-      end
-
-      def default
-        @defaults ||= Watirmark::Model::Defaults.new
-      end
-
-
-      # create a read-only field that is a composition of multiple fields.
-      # for example, full_name might be a composition of first and last names.
-      def compose(name, &block)
-        composed_fields[name] = block
-      end
-
-      def add_model(name)
-        models << name
-      end
-    end
-
-    module Simple
-      attr_reader :defaults, :name, :uuid, :model_name
-
-      extend ClassMethods
-
-      def self.included(klass)
-        klass.extend ClassMethods
-      end
-
 
       def initialize(params={})
         @defaults = self.class.default
@@ -44,10 +36,10 @@ module Watirmark
         reload_settings
       end
 
-      # this is a unique name that can be defined after the model is instantiated.
+      # this is a unique name that can be defined after the models is instantiated.
       # if the value changes, all initial settings are reloaded. This allows us
-      # to set it during model creation in cucumber and make the fields take on
-      # a string that we used to identify the model in the gherkin
+      # to set it during models creation in cucumber and make the fields take on
+      # a string that we used to identify the models in the gherkin
       def model_name=(x)
         @model_name = x
         reload_settings
@@ -55,11 +47,11 @@ module Watirmark
 
       def models
         model_list = [self]
-        @models.each{|x| model_list += x.models}
+        @models.each { |x| model_list += x.models }
         model_list.flatten.uniq
       end
 
-      # This method is used to test the model to see if the updates to the model
+      # This method is used to test the models to see if the updates to the models
       # have already been applied. This allows the user to skip a step
       # if something has already been applied. Useful for rerunning scripts, eg.
       def includes? hash
@@ -68,14 +60,14 @@ module Watirmark
       end
 
 
-      # Update the model with the provided hash
+      # Update the models with the provided hash
       def update hash
         hash.each_pair { |key, value| send "#{key}=", value }
         self
       end
 
 
-      # Update the model with the hash, only for members that exist in this model.
+      # Update the models with the hash, only for members that exist in this models.
       # TODO: this may be unncessary after we add composition of models
       def update_existing_members hash
         hash.each_pair { |key, value| send "#{key}=", value if respond_to? "#{key}=".to_sym }
@@ -113,7 +105,7 @@ module Watirmark
       end
 
 
-      # Generate a UUID for the instantiation of the model
+      # Generate a UUID for the instantiation of the models
       # This id should be used in cases where the data needs to be
       # unique for each test execution
       def generate_uuid
@@ -144,4 +136,3 @@ module Watirmark
     end
   end
 end
-

@@ -1,5 +1,5 @@
-require 'watirmark/model/features/defaults'
-require 'watirmark/model/features/simple'
-require 'watirmark/model/person'
-require 'watirmark/model/upload_csv'
+require 'watirmark/models/defaults'
+require 'watirmark/models/simple'
+require 'watirmark/models/person'
+require 'watirmark/models/upload_csv'
 

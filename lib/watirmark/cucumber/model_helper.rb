@@ -8,21 +8,21 @@ module ModelHelper
     unless model.includes?(hash_record(table))
       update_model(model, table)
       block.call
-      log.info "Updated model '#{model.__name__}':\n#{hash_record(table).inspect}"
+      log.info "Updated models '#{model.__name__}':\n#{hash_record(table).inspect}"
     end
   end
 
-# Perform an action using a model and update
-# the model if that action is successful
+# Perform an action using a models and update
+# the models if that action is successful
   def with_model(model, table, &block)
     orig_model = model.clone
     update_model(model, table)
     block.call
     if Watirmark::IESession.instance.post_failure
       log.info  "Reverting Model: #{Watirmark::IESession.instance.post_failure}"
-      model.update(orig_model.to_h) # revert model on failure
+      model.update(orig_model.to_h) # revert models on failure
     elsif model.to_h != orig_model.to_h
-      log.info "Updated model '#{model.__name__}':\n#{hash_record(table).inspect}"
+      log.info "Updated models '#{model.__name__}':\n#{hash_record(table).inspect}"
     end
   end
 end

@@ -8,7 +8,7 @@ module Watirmark
     
 =begin rdoc
 class MyController < Watirmark::WebPage::Controller
-  include ECRMPage               # include any default methods (this will include model and WebPage methods)
+  include ECRMPage               # include any default methods (this will include models and WebPage methods)
   @view = MyView                 # This is required and should point to a view. Navigation also should be in the view
   
   # In the simplest case, that's ALL you need. Most of the 
@@ -38,15 +38,15 @@ class MyController < Watirmark::WebPage::Controller
     # do something
   end
 
-  # Change the model value for a keyword. Note that this
+  # Change the models value for a keyword. Note that this
   # will both set the value using this and will verify 
-  # as if this is the model value so you shouldn't have to
+  # as if this is the models value so you shouldn't have to
   # override the verification unless they differ
   #
   # def #{keyword}_value; # do something; end
 
   def currency_value
-    "$#{@model.currency}"
+    "$#{@models.currency}"
   end
 
   # Override verification for a given element.
@@ -58,22 +58,22 @@ class MyController < Watirmark::WebPage::Controller
 
   def verify_image
     if @view.uploadimage.exists?
-      assert @model.image == 'nil'
+      assert @models.image == 'nil'
     elsif @view.uploaddifferentimage.exists?
-      assert @model.image != 'nil'
+      assert @models.image != 'nil'
     end
   end
 
 
   # Override data population for a given element.
-  # In this case we have a model value that maps
+  # In this case we have a models value that maps
   # to a keyword that has no proc and we override
   # things here 
   #
   # def populate_#{keyword}; # do something; end
 
   def populate_teamdivisions
-    @model.teamdivisions.each do |team|
+    @models.teamdivisions.each do |team|
       @view.teamdivision.set team
       close_dialog_if_exists { @view.adddivbutton.click_no_wait }
       Watir::Waiter.wait_until do
@@ -178,13 +178,13 @@ end
           items.each { |item| self.keyword(item) }
         end
         
-        # Populate with model values
+        # Populate with models values
         def populate(x) 
           new(x).populate
           return
         end
         
-        # Verify the UI values and compare with the model values
+        # Verify the UI values and compare with the models values
         def verify(x) 
           new(x)._verify_
           return
@@ -196,7 +196,7 @@ end
         @view = self.class.view
         @process_page = self.class.process_page
         @specified_keywords = self.class.specified_keywords
-        if Hash === data # convert to a model
+        if Hash === data # convert to a models
           @model = hash_to_model data
         else
           @model = data
@@ -251,7 +251,7 @@ end
       end
 
       # This action will populate all of the items
-      # in the view with values in @model
+      # in the view with values in @models
       def populate 
         seen_value = false
         @last_process_page = nil
@@ -273,7 +273,7 @@ end
       alias :populate_data :populate
       
       # This action will verify all values in the
-      # view against @model without page submission
+      # view against @models without page submission
       def _verify_ #:nodoc:
         verification_errors = []
         each_keyword do |keyword, process_page_name|
@@ -357,7 +357,7 @@ end
       end
 
       # if a method exists that changes how the value of the keyword
-      # is determined then call it, otherwise, just use the model value
+      # is determined then call it, otherwise, just use the models value
       def value_for(keyword)
         self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @model.send(keyword)
       end

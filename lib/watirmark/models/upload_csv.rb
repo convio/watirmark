@@ -1,6 +1,6 @@
 module Watirmark
   module Model
-    module UploadCSV
+    class UploadCSV < Simple
       require 'csv'
       require 'tempfile'
 

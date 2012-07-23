@@ -22,7 +22,7 @@ module Watirmark
     end
 
     # Navigate to the View's edit page and for every value in
-    # the model hash, verify that the html element has
+    # the models hash, verify that the html element has
     # the proper value for each keyword
     def verify
       call_view_method(:edit, @model)
@@ -30,21 +30,21 @@ module Watirmark
     end
 
     # Navigate to the View's edit page and
-    # verify all values in the model hash
+    # verify all values in the models hash
     def edit
       call_view_method(:edit, @model)
       populate_data
     end
 
     # Navigate to the View's create page and
-    # populate with values from the model hash
+    # populate with values from the models hash
     def create
       call_view_method(:create, @model)
       populate_data
     end
 
     # Navigate to the View's create page and
-    # populate with values from the model hash
+    # populate with values from the models hash
     def get
       unless call_view_method(:exists?, @model)
         call_view_method(:create, @model)
@@ -87,7 +87,7 @@ module Watirmark
     end
 
     # Navigate to the View's create page and verify
-    # against the model hash. This is useful for making
+    # against the models hash. This is useful for making
     # sure that the create page has the proper default
     # values and contains the proper elements
     def check_defaults
