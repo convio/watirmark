@@ -4,11 +4,33 @@ module Watirmark
       attr_reader :defaults, :name, :uuid, :model_name
 
       def self.included(klass)
-        klass.extend Watirmark::Model::ClassMethods
+        klass.meta_def :models do
+          @models ||= []
+        end
+
+        klass.meta_def :composed_fields do
+          @composed_fields ||= {}
+        end
+
+        klass.meta_def :default do
+          @defaults ||= Watirmark::Model::Defaults.new
+        end
+
+
+        # create a read-only field that is a composition of multiple fields.
+        # for example, full_name might be a composition of first and last names.
+        klass.meta_def :compose do |name, &block|
+          composed_fields[name] = block
+        end
+
+        klass.meta_def :add_model do |name|
+          models << name
+        end
       end
 
+
       def initialize(params={})
-        @defaults = self.class.defaults
+        @defaults = self.class.default
         @composed_fields = self.class.composed_fields
         @models = self.class.models
         @params = params
@@ -115,3 +137,4 @@ module Watirmark
     end
   end
 end
+
