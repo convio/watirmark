@@ -70,14 +70,13 @@ describe "default values" do
     m.first_name.should == 'fred'
   end
 end
-                   # add test her
 
 describe "composed fields" do
   before :all do
     @model = Watirmark::Model::Simple.new(:first_name, :last_name, :middle_name, :nickname) do
       default.first_name  'my_first_name'
       default.last_name   'my_last_name'
-      default.middle_name  {"#{model_name} middle_name".strip}
+      default.middle_name  {"#{model_name}middle_name".strip}
 
       compose :full_name do
         "#{first_name} #{last_name}"
@@ -86,12 +85,17 @@ describe "composed fields" do
     end
   end
 
-
   specify "set a value that gets used in the composed string" do
     m = @model.new
     m.full_name.should == "my_first_name my_last_name"
     m.first_name = 'coolio'
     m.full_name.should == "coolio my_last_name"
+  end
+
+  specify "get a string composed in the default declaration" do
+    m = @model.new
+    m.model_name = 'foo_'
+    m.middle_name.should == "foo_middle_name"
   end
 end
 
