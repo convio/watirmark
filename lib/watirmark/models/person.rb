@@ -3,16 +3,16 @@ module Watirmark
     class Person < Simple
 
       def self.inherited(subclass)
-        subclass.default.firstname     {"first_#{uuid}"}
-        subclass.default.lastname      {"last_#{uuid}"}
-        subclass.default.username      {"user_#{uuid}"}
+        subclass.default.firstname     {"first_#{subclass.uuid}"}
+        subclass.default.lastname      {"last_#{subclass.uuid}"}
+        subclass.default.username      {"user_#{subclass.uuid}"}
 
         subclass.default.password       {"password"}
         subclass.default.reminder_hint  {"hint"}
 
         subclass.default.email_prefix   Watirmark::Configuration.instance.email || "devnull"
         subclass.default.email_suffix   "qasendmail.corp.convio.com"
-        subclass.default.email          {"#{default.email_prefix}+#{uuid}@#{default.email_suffix}"}
+        subclass.default.email          {"#{subclass.default.email_prefix}+#{subclass.uuid}@#{subclass.default.email_suffix}"}
 
         subclass.default.address = {
             :street1 => '3405 Mulberry Creek Dr',
