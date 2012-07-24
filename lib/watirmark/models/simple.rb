@@ -33,6 +33,7 @@ module Watirmark
           @uuid = Watirmark::Configuration.instance.uuid ?
                   model_name.to_s + Watirmark::Configuration.instance.uuid :
                   model_name.to_s + UUID.new.generate(:compact)
+          @uuid[0..10]
         end
       end
 
