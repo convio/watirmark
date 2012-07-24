@@ -30,10 +30,9 @@ module Watirmark
         end
 
         def generate_uuid model_name=nil
-          @uuid = Watirmark::Configuration.instance.uuid ?
+          @uuid = (Watirmark::Configuration.instance.uuid ?
                   model_name.to_s + Watirmark::Configuration.instance.uuid :
-                  model_name.to_s + UUID.new.generate(:compact)
-          @uuid[0..10]
+                  model_name.to_s + UUID.new.generate(:compact)[0..9])
         end
       end
 
