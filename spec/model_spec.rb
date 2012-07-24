@@ -102,10 +102,11 @@ end
 
 describe "Inherited Models" do
   specify "should inherit defaults" do
-    User = Watirmark::Model::Person.new(:username, :password)
+    User = Watirmark::Model::Person.new(:username, :password, :street1)
     @login = User.new
     @login.username.should =~ /user_/
     @login.password.should == 'password'
+    @login.street1.should == '3405 Mulberry Creek Dr'
   end
 
   specify "should inherit unnamed methods" do
