@@ -43,10 +43,11 @@ end
 
 describe "default values" do
   before :all do
-    @model = Watirmark::Model::Simple.new(:first_name, :last_name, :middle_name, :nickname) do
+    @model = Watirmark::Model::Simple.new(:first_name, :last_name, :middle_name, :nickname, :id) do
       default.first_name  'my_first_name'
       default.last_name   'my_last_name'
       default.middle_name  {"#{model_name} middle_name".strip}
+      default.id  "#{uuid}"
     end
   end
 
@@ -63,6 +64,10 @@ describe "default values" do
     m.middle_name.should == 'foo middle_name'
   end
 
+  specify "should set a uuid" do
+    m = @model.new
+    m.id.should_not be_nil
+  end
 
   specify "update a default setting" do
     m = @model.new

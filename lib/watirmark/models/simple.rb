@@ -5,8 +5,6 @@ module Watirmark
       attr_accessor :defaults, :name, :uuid, :model_name
 
       class << self
-        attr_accessor :uuid
-
         def models
           @models ||= []
         end
@@ -29,6 +27,10 @@ module Watirmark
           models << name
         end
 
+        def uuid
+          @uuid ||= generate_uuid
+        end
+
         def generate_uuid model_name=nil
           @uuid = (Watirmark::Configuration.instance.uuid ?
                   model_name.to_s + Watirmark::Configuration.instance.uuid :
@@ -41,7 +43,7 @@ module Watirmark
         @composed_fields = self.class.composed_fields
         @models = self.class.models
         @params = params
-        @uuid = self.class.generate_uuid
+        @uuid = self.class.uuid
         reload_settings
       end
 
