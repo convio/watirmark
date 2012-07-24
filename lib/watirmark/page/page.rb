@@ -20,7 +20,7 @@ module Watirmark
 
     class << self
       @@browser = nil
-      attr_accessor :keywords, :process_pages, :kwds
+      attr_accessor :keywords, :process_pages, :kwds, :perms
 
       def log
         Watirmark::Configuration.instance.logger
@@ -37,6 +37,7 @@ module Watirmark
       # and not have to see if it's using process pages or not.
       def inherited(klass)
         add_superclass_keywords(klass)
+        add_superclass_permissions(klass)
         add_superclass_process_pages(klass)
         create_default_process_page(klass)
       end
@@ -53,18 +54,10 @@ module Watirmark
       # object in the application. Keywords are then used in the
       # rest of the app to refer to that
       def keyword(method_sym, map=nil, &block)
-        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
-        @kwds[self] << method_sym unless @kwds.include?(method_sym)
-        if map.is_a? Hash
-          map = Watirmark::RadioMap.new map
-        end
-        keyed_element = Page::KeyedElement.new(
-            :key => method_sym,
-            :page => self,
-            :map => map,
-            :process_page => @current_process_page,
-            :block => block
-        )
+        add_to_keywords(method_sym)
+        keyed_element = get_keyed_element(method_sym, map, &block)
+        add_permission(method_sym, {:populate => true, :verify => true})
+
         meta_def method_sym do |*args|
           keyed_element.get *args
         end
@@ -73,6 +66,90 @@ module Watirmark
         end
         @current_process_page << method_sym
       end
+
+      def navigation_keyword(method_sym, map=nil, &block)
+        add_to_keywords(method_sym)
+
+        meta_def method_sym do |*args|
+          # do nothing
+        end
+        meta_def "#{method_sym}=" do |*args|
+          # do nothing
+        end
+        @current_process_page << method_sym
+      end
+
+      def populate_keyword(method_sym, map=nil, &block)
+        add_to_keywords(method_sym)
+        keyed_element = get_keyed_element(method_sym, map, &block)
+        add_permission(method_sym, {:populate => true})
+
+        meta_def method_sym do |*args|
+          # do nothing
+        end
+        meta_def "#{method_sym}=" do |*args|
+          keyed_element.set *args
+        end
+        @current_process_page << method_sym
+      end
+
+      def private_keyword(method_sym, map=nil, &block)
+        keyed_element = get_keyed_element(method_sym, map, &block)
+
+        meta_def method_sym do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{method_sym}=" do |*args|
+          keyed_element.set *args
+        end
+        @current_process_page << method_sym
+      end
+
+      def verify_keyword(method_sym, map=nil, &block)
+        add_to_keywords(method_sym)
+        keyed_element = get_keyed_element(method_sym, map, &block)
+        add_permission(method_sym, {:verify => true})
+
+        meta_def method_sym do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{method_sym}=" do |*args|
+          #do nothing
+        end
+        @current_process_page << method_sym
+      end
+
+      def permissions
+        @perms ||= Hash.new { |h, k| h[k] = Hash.new }
+        @perms.values.inject(:merge)
+      end
+
+      def add_permission(kwd, hash)
+        @perms ||= Hash.new { |h, k| h[k] = Hash.new }
+        @perms[self][kwd] = hash
+      end
+
+      private :add_permission
+
+      def add_to_keywords(method_sym)
+        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
+        @kwds[self] << method_sym unless @kwds.include?(method_sym)
+      end
+      private :add_to_keywords
+
+      def get_keyed_element(method_sym, map=nil, &block)
+        if map.is_a? Hash
+          map = Watirmark::RadioMap.new map
+        end
+        Page::KeyedElement.new(
+            :key => method_sym,
+            :page => self,
+            :map => map,
+            :process_page => @current_process_page,
+            :block => block
+        )
+      end
+      private :get_keyed_element
 
       # Create an alias to an existing keyword
       # @deprecated Use of keyword_alias is deprecated
@@ -127,6 +204,15 @@ module Watirmark
       end
 
       private :add_superclass_process_pages
+
+      def add_superclass_permissions(klass)
+        if @perms
+          klass.perms ||= Hash.new { |h, k| h[k] = Hash.new }
+          klass.perms[self] = @perms[self].dup
+        end
+      end
+
+      private :add_superclass_permissions
 
       def create_default_process_page(klass)
         klass.instance_variable_set :@current_process_page, ProcessPage.new(klass.inspect)
