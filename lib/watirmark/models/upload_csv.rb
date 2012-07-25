@@ -4,17 +4,17 @@ module Watirmark
       require 'csv'
       require 'tempfile'
 
-      def __create_csv__(table)
-        log.info("Creating temporary CSV: #{__csv_file__}")
+      def create_csv(table)
+        log.info("Creating temporary CSV: #{csv_file}")
         log.info(table.inspect)
-        CSV.open(__csv_file__, 'wb') do |csv|
+        CSV.open(csv_file, 'wb') do |csv|
           table.each do |line|
             csv << line
           end
         end
       end
 
-      def __csv_file__
+      def csv_file
         @file ||= Tempfile.new(['csv_data', '.csv'])
         @file.path
       end
