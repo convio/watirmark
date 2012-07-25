@@ -3,7 +3,7 @@ require 'watirmark'
 
 describe "models name" do
   before :all do
-    @model = Watirmark::Model::Simple.new(:middle_name) do
+    @model = Watirmark::Model::Base.new(:middle_name) do
       default.middle_name  {"#{model_name} middle_name".strip}
       compose :full_name do
         "#{model_name}foo"
@@ -43,7 +43,7 @@ end
 
 describe "default values" do
   before :all do
-    @model = Watirmark::Model::Simple.new(:first_name, :last_name, :middle_name, :nickname, :id) do
+    @model = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
       default.first_name  'my_first_name'
       default.last_name   'my_last_name'
       default.middle_name  {"#{model_name} middle_name".strip}
@@ -78,7 +78,7 @@ end
 
 describe "composed fields" do
   before :all do
-    @model = Watirmark::Model::Simple.new(:first_name, :last_name, :middle_name, :nickname) do
+    @model = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname) do
       default.first_name  'my_first_name'
       default.last_name   'my_last_name'
       default.middle_name  {"#{model_name}middle_name".strip}
@@ -124,7 +124,7 @@ end
 
 describe "instance values" do
   before :all do
-    Login = Watirmark::Model::Simple.new(:username, :password)
+    Login = Watirmark::Model::Base.new(:username, :password)
   end
 
 
@@ -139,19 +139,19 @@ end
 
 describe "models containing models" do
   before :all do
-    Login = Watirmark::Model::Simple.new(:username, :password) do
+    Login = Watirmark::Model::Base.new(:username, :password) do
       default.username  'username'
       default.password  'password'
     end
 
-    User = Watirmark::Model::Simple.new(:first_name, :last_name) do
+    User = Watirmark::Model::Base.new(:first_name, :last_name) do
       default.first_name  'my_first_name'
       default.last_name   'my_last_name'
 
       add_model Login.new
     end
 
-    Donor = Watirmark::Model::Simple.new(:credit_card) do
+    Donor = Watirmark::Model::Base.new(:credit_card) do
       add_model User.new
     end
   end
@@ -174,9 +174,9 @@ end
 
 describe "models containing collections of models" do
   before :all do
-    SDP = Watirmark::Model::Simple.new(:name, :value)
+    SDP = Watirmark::Model::Base.new(:name, :value)
 
-    Collection = Watirmark::Model::Simple.new(:name) do
+    Config = Watirmark::Model::Base.new(:name) do
       add_model SDP.new(:name=>'a', :value=>1)
       add_model SDP.new(:name=>'b', :value=>2)
     end
@@ -184,21 +184,35 @@ describe "models containing collections of models" do
 
 
   specify "call to singular method will return the first model added" do
-    @model = Collection.new
+    @model = Config.new
     @model.sdp.should be_kind_of Struct
     @model.sdp.name.should == 'a'
   end
 
   specify "call to collection should be an enumerable" do
-    @model = Collection.new
+    @model = Config.new
     @model.sdps.size.should == 2
     @model.sdps.first.name.should == 'a'
     @model.sdps.last.name.should == 'b'
   end
 
+  specify "should be able to add models on the fly" do
+    @model = Config.new
+    @model.add_model SDP.new(:name=>'c', :value=>3)
+    @model.add_model SDP.new(:name=>'d', :value=>4)
+    @model.sdps.size.should == 4
+    @model.sdps.first.name.should == 'a'
+    @model.sdps.last.name.should == 'd'
+  end
+
 end
 
-# how to contain a bunch of models of the same type. (pluralize and make an enumerable)
+
+
    # can I add models on the fly to a model after instantiating it?
 
-
+#
+#AdminManagerModel = Watirmark::Model::Person.new(*AdminManagerView.keywords) do
+#  default.login_as_constituent = 'Convio Site Administrator (1000000)'
+#  default.admin_password =   "Password_#{rand(9999)}"
+#end

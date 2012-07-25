@@ -23,8 +23,8 @@ module Watirmark
           composed_fields[name] = block
         end
 
-        def add_model(name)
-          models[name.class] << name
+        def add_model(model)
+          models[model.class] << model
         end
 
         def uuid
@@ -80,6 +80,9 @@ module Watirmark
         self
       end
 
+      def add_model(model)
+        @models[model.class] << model
+      end
 
       def to_h
         h = {}
