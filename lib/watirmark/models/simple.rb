@@ -2,11 +2,11 @@ module Watirmark
   module Model
 
     class Simple < Class.new(Struct)
-      attr_accessor :defaults, :name, :uuid, :model_name
+      attr_accessor :defaults, :name, :uuid, :model_name, :models
 
       class << self
         def models
-          @models ||= []
+          @models ||= Hash.new{|h,k| h[k]=Array.new}
         end
 
         def composed_fields
@@ -24,7 +24,7 @@ module Watirmark
         end
 
         def add_model(name)
-          models << name
+          models[name.class] << name
         end
 
         def uuid
@@ -55,12 +55,6 @@ module Watirmark
         @model_name = x
         @uuid = self.class.generate_uuid @model_name
         reload_settings
-      end
-
-      def models
-        model_list = [self]
-        @models.each { |x| model_list += x.models }
-        model_list.flatten.uniq
       end
 
       # This method is used to test the models to see if the updates to the models
@@ -125,10 +119,21 @@ module Watirmark
       end
 
       def add_models
-        @models.each do |model|
-          method_name = model.class.to_s.sub(/Model$/, '').downcase
+        @models.each_key do |model_class|
+          # if there are more than one of a particular model present, create a collection
+          # using the pluralized name of the model's class
+          if @models[model_class].size > 1
+            method_name = model_class.to_s.sub(/Model$/, '').downcase.pluralize
+            meta_def method_name do
+              @models[model_class]
+            end
+          end
+
+          # Always create a singular method that returns the first item
+          # whether or not there are a collection of models of that class
+          method_name = model_class.to_s.sub(/Model$/, '').downcase
           meta_def method_name do
-            model
+            @models[model_class].first
           end
         end
       end

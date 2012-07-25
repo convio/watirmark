@@ -136,6 +136,7 @@ describe "instance values" do
 
 end
 
+
 describe "models containing models" do
   before :all do
     Login = Watirmark::Model::Simple.new(:username, :password) do
@@ -169,3 +170,35 @@ describe "models containing models" do
   end
 
 end
+
+
+describe "models containing collections of models" do
+  before :all do
+    SDP = Watirmark::Model::Simple.new(:name, :value)
+
+    Collection = Watirmark::Model::Simple.new(:name) do
+      add_model SDP.new(:name=>'a', :value=>1)
+      add_model SDP.new(:name=>'b', :value=>2)
+    end
+  end
+
+
+  specify "call to singular method will return the first model added" do
+    @model = Collection.new
+    @model.sdp.should be_kind_of Struct
+    @model.sdp.name.should == 'a'
+  end
+
+  specify "call to collection should be an enumerable" do
+    @model = Collection.new
+    @model.sdps.size.should == 2
+    @model.sdps.first.name.should == 'a'
+    @model.sdps.last.name.should == 'b'
+  end
+
+end
+
+# how to contain a bunch of models of the same type. (pluralize and make an enumerable)
+   # can I add models on the fly to a model after instantiating it?
+
+
