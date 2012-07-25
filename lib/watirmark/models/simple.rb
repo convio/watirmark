@@ -1,7 +1,7 @@
 module Watirmark
   module Model
 
-    class Simple < Class.new(Struct)
+    class Base < Class.new(Struct)
       attr_accessor :defaults, :name, :uuid, :model_name, :models
 
       class << self

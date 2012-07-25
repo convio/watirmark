@@ -1,6 +1,6 @@
 module Watirmark
   module Model
-    class Person < Simple
+    class Person < Base
 
       def self.inherited(subclass)
         subclass.default.firstname     {"first_#{subclass.uuid}"}
