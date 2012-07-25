@@ -206,13 +206,3 @@ describe "models containing collections of models" do
   end
 
 end
-
-
-
-   # can I add models on the fly to a model after instantiating it?
-
-#
-#AdminManagerModel = Watirmark::Model::Person.new(*AdminManagerView.keywords) do
-#  default.login_as_constituent = 'Convio Site Administrator (1000000)'
-#  default.admin_password =   "Password_#{rand(9999)}"
-#end
