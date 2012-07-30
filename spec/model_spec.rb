@@ -180,24 +180,22 @@ describe "models containing collections of models" do
       add_model SDP.new(:name=>'a', :value=>1)
       add_model SDP.new(:name=>'b', :value=>2)
     end
+    @model = Config.new
   end
 
 
   specify "call to singular method will return the first model added" do
-    @model = Config.new
     @model.sdp.should be_kind_of Struct
     @model.sdp.name.should == 'a'
   end
 
   specify "call to collection should be an enumerable" do
-    @model = Config.new
     @model.sdps.size.should == 2
     @model.sdps.first.name.should == 'a'
     @model.sdps.last.name.should == 'b'
   end
 
   specify "should be able to add models on the fly" do
-    @model = Config.new
     @model.add_model SDP.new(:name=>'c', :value=>3)
     @model.add_model SDP.new(:name=>'d', :value=>4)
     @model.sdps.size.should == 4
