@@ -19,10 +19,10 @@ module ModelHelper
     update_model(model, table)
     block.call
     if Watirmark::IESession.instance.post_failure
-      log.info  "Reverting Model: #{Watirmark::IESession.instance.post_failure}"
+      log.info  "Reverting Model #{Watirmark::IESession.instance.post_failure}"
       model.update(orig_model.to_h) # revert models on failure
     elsif model.to_h != orig_model.to_h
-      log.info "Updated models '#{model.model_name}':\n#{hash_record(table).inspect}"
+      log.info "Updated model '#{model.model_name}' #{hash_record(table).inspect}"
     end
   end
 end

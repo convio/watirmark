@@ -7,7 +7,6 @@ NEW_MODEL = Transform /^\[new ([^:]+): (\S+)\]$/ do |model_name, user_defined_na
     model = model_class.new
     model.model_name = user_defined_name
     DataModels.instance[user_defined_name] = model
-    log.info("Declared models '#{user_defined_name}' using #{model_class}:\n#{DataModels.instance[user_defined_name].to_h.inspect}")
   end
   DataModels.instance[user_defined_name]
 end

@@ -44,7 +44,10 @@ module Watirmark
         @models = self.class.models
         @params = params
         @uuid = self.class.uuid
+        @log = Logger.new STDOUT
+        @log.formatter = proc {|severity, datetime, progname, msg| "#{msg}\n"}
         reload_settings
+        @log.info inspect
       end
 
       # this is a unique name that can be defined after the models is instantiated.
@@ -88,6 +91,14 @@ module Watirmark
         h = {}
         each_pair { |name, value| h[name] = value unless value.nil? }
         h
+      end
+
+      def inspect
+        class_name = self.class
+        class_name = self.class.superclass if class_name.to_s =~ /Class/
+        model_details = " #{to_h}" unless to_h.empty?
+        included_models = "\n   #{@models.values.flatten.map(&:inspect).join("\n   ")}" unless @models.empty?
+        "#{class_name}#{model_details}#{included_models}"
       end
 
 
