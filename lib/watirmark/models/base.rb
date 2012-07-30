@@ -40,6 +40,7 @@ module Watirmark
         def model_class_name
           name = self.inspect
           name = self.class.superclass if name.to_s =~ /Class/
+          name = 'Model' if name.to_s =~ /Module/
           name
         end
 
@@ -137,7 +138,7 @@ module Watirmark
 
       def define_composed_fields
         @composed_fields.each_key do |method_name|
-          meta_def method_name do
+          meta_def method_name do                2
             instance_eval &@composed_fields[method_name]
           end
         end
