@@ -206,3 +206,23 @@ describe Watirmark::WebPage::Controller do
   end
 
 end
+
+describe "controllers should be able to detect and use embedded models" do
+
+  before :all do
+    class MyView < Page
+      keyword(:element) {@@element}
+    end
+    @controller = Class.new Watirmark::WebPage::Controller do
+      @view = MyView
+    end
+    User = Watirmark::Model::Base.new(:first_name)
+    Login = Watirmark::Model::Person.new(:username)
+    @model = User.new(:first_name=> 'first')
+    @model.add_model Login.new
+  end
+
+  it 'should be able to see the sub_model' do
+    puts @model.models.inspect
+  end
+end

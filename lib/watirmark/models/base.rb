@@ -6,7 +6,7 @@ module Watirmark
 
       class << self
         def models
-          @models ||= Hash.new{|h,k| h[k]=Array.new}
+          @models ||= []
         end
 
         def composed_fields
@@ -24,7 +24,7 @@ module Watirmark
         end
 
         def add_model(model)
-          models[model.class] << model
+          models << model
         end
 
         def uuid
@@ -36,12 +36,20 @@ module Watirmark
                   model_name.to_s + Watirmark::Configuration.instance.uuid :
                   model_name.to_s + UUID.new.generate(:compact)[0..9])
         end
+
+        def model_class_name
+          name = self.inspect
+          name = self.class.superclass if name.to_s =~ /Class/
+          name
+        end
+
       end
 
       def initialize(params={})
         @defaults = self.class.default
         @composed_fields = self.class.composed_fields
         @models = self.class.models
+        @submodels ||= []
         @params = params
         @uuid = self.class.uuid
         @log = Logger.new STDOUT
@@ -58,6 +66,10 @@ module Watirmark
         @model_name = x
         @uuid = self.class.generate_uuid @model_name
         reload_settings
+      end
+
+      def model_class_name
+        self.class.model_class_name
       end
 
       # This method is used to test the models to see if the updates to the models
@@ -84,7 +96,8 @@ module Watirmark
       end
 
       def add_model(model)
-        @models[model.class] << model
+        @models << model
+        update_models
       end
 
       def to_h
@@ -94,11 +107,9 @@ module Watirmark
       end
 
       def inspect
-        class_name = self.class
-        class_name = self.class.superclass if class_name.to_s =~ /Class/
         model_details = " #{to_h}" unless to_h.empty?
-        included_models = "\n   #{@models.values.flatten.map(&:inspect).join("\n   ")}" unless @models.empty?
-        "#{class_name}#{model_details}#{included_models}"
+        included_models = "\n   #{@models.flatten.map(&:inspect).join("\n   ")}" unless @models.empty?
+        "#{model_class_name}#{model_details}#{included_models}"
       end
 
 
@@ -108,7 +119,7 @@ module Watirmark
         set_defaults
         define_composed_fields
         update @params
-        add_models
+        update_models
       end
 
       def set_defaults
@@ -132,22 +143,26 @@ module Watirmark
         end
       end
 
-      def add_models
-        @models.each_key do |model_class|
+      def update_models
+        @models.each do |model|
+
+          method_name = model.model_class_name.to_s.sub(/Model$/, '').downcase
+          @submodels << model unless @submodels.include? model
+
           # if there are more than one of a particular model present, create a collection
           # using the pluralized name of the model's class
-          if @models[model_class].size > 1
-            method_name = model_class.to_s.sub(/Model$/, '').downcase.pluralize
-            meta_def method_name do
-              @models[model_class]
+          if respond_to? method_name
+            meta_def method_name.pluralize do
+              @submodels
             end
           end
 
           # Always create a singular method that returns the first item
           # whether or not there are a collection of models of that class
-          method_name = model_class.to_s.sub(/Model$/, '').downcase
-          meta_def method_name do
-            @models[model_class].first
+          unless respond_to? method_name
+            meta_def method_name do
+              model
+            end
           end
         end
       end

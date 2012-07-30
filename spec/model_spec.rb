@@ -204,3 +204,4 @@ describe "models containing collections of models" do
   end
 
 end
+
