@@ -160,7 +160,7 @@ end
         end
 
         def reject(*items)
-          Kernel.warn("Warning: Deprecated use of reject in #{self}. Use navigation_keyword instead")
+          Kernel.warn("Warning: Deprecated use of reject in #{self}. Use private_keyword instead")
           items.each { |item| stub "populate_#{item}"; stub "verify_#{item}";}
         end
 
