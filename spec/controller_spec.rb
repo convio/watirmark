@@ -216,13 +216,31 @@ describe "controllers should be able to detect and use embedded models" do
     @controller = Class.new Watirmark::WebPage::Controller do
       @view = MyView
     end
+    Foo =  Watirmark::Model::Base.new(:first_name)
     User = Watirmark::Model::Base.new(:first_name)
     Login = Watirmark::Model::Person.new(:username)
+    Password = Watirmark::Model::Base.new(:password)
+    @password = Password.new
+    @login = Login.new
+    @login.add_model @password
     @model = User.new(:first_name=> 'first')
-    @model.add_model Login.new
+    @model.add_model @login
   end
 
-  it 'should be able to see the sub_model' do
-    puts @model.models.inspect
+  it 'should be able to see itself' do
+    @model.find(User).should == @model
   end
+
+  it 'should be able to see a sub_model' do
+    @model.find(Login).should == @login
+  end
+
+  it 'should be able to see a nested sub_model' do
+    @model.find(Password).should == @password
+  end
+
+  it 'should be able to see a sub_model' do
+    lambda{@model.find(Foo)}.should raise_error(Watirmark::ModelNotFound)
+  end
+
 end

@@ -43,8 +43,8 @@ module Watirmark
           name = 'Model' if name.to_s =~ /Module/
           name
         end
-
       end
+
 
       def initialize(params={})
         @defaults = self.class.default
@@ -59,6 +59,7 @@ module Watirmark
         @log.info inspect
       end
 
+
       # this is a unique name that can be defined after the models is instantiated.
       # if the value changes, all initial settings are reloaded. This allows us
       # to set it during models creation in cucumber and make the fields take on
@@ -69,8 +70,23 @@ module Watirmark
         reload_settings
       end
 
+
       def model_class_name
         self.class.model_class_name
+      end
+
+
+      # add a submodel to the model after it has been instantiated
+      def add_model(model)
+        @models << model
+        update_models
+      end
+
+
+      def find(model_class)
+        return self if self.kind_of? model_class
+        @models.each {|m| return m.find model_class}
+        raise Watirmark::ModelNotFound, "unable to locate model #{model_class}"
       end
 
       # This method is used to test the models to see if the updates to the models
@@ -82,6 +98,7 @@ module Watirmark
       end
 
 
+
       # Update the models with the provided hash
       def update hash
         hash.each_pair { |key, value| send "#{key}=", value }
@@ -89,16 +106,12 @@ module Watirmark
       end
 
 
+
       # Update the models with the hash, only for members that exist in this models.
       # TODO: this may be unncessary after we add composition of models
       def update_existing_members hash
         hash.each_pair { |key, value| send "#{key}=", value if respond_to? "#{key}=".to_sym }
         self
-      end
-
-      def add_model(model)
-        @models << model
-        update_models
       end
 
       def to_h
@@ -114,7 +127,9 @@ module Watirmark
       end
 
 
+
       private
+
 
       def reload_settings
         set_defaults
