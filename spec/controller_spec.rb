@@ -28,6 +28,14 @@ describe Watirmark::WebPage::Controller do
     keyword(:validate2)   {browser.text_field(:id, 'validate2')}
     keyword(:validate3)   {browser.text_field(:id, 'validate3')}
     keyword(:validate4)   {browser.select_list(:id, 'validate3')}
+
+    verify_keyword(:label1)      {browser.td(:id, 'label1')}
+    verify_keyword(:value1)      {browser.td(:id, 'value1')}
+    populate_keyword(:populate1) {browser.text_field(:id, 'validate4')}
+    populate_keyword(:populate2) {browser.td(:id, 'value1')}
+
+    private_keyword(:private_validate1)  {browser.text_field(:id, 'validate1')}
+    navigation_keyword(:click_submit)    {browser.button(:id, 'Submit').click}
   end
 
   class VerifyController < Watirmark::WebPage::Controller
@@ -205,6 +213,60 @@ describe Watirmark::WebPage::Controller do
     }.should raise_error(Watirmark::VerificationException,/Multiple problems/)
   end
 
+  it 'should throw an exception when verifying a verify_keyword fails' do
+    lambda {
+      VerifyController.new(:label1 => 'text').verify_data
+    }.should raise_error(Watirmark::VerificationException,"label1: expected 'text' (String) got 'numbers' (String)")
+  end
+
+  it 'should not throw an exception when verifying a verify_keyword succeeds' do
+    VerifyController.new(:label1 => 'numbers', :value1 => 1).verify_data
+  end
+
+  it 'should not throw an exception when populating with a verify_keyword' do
+    VerifyController.new(:label1 => 'string').populate
+  end
+
+  it 'should throw an exception when populating a populate_keyword fails' do
+    lambda {
+      VerifyController.new(:populate2 => '32').populate
+    }.should raise_error(NoMethodError)
+  end
+
+  it 'should not throw an exception when populating a populate_keyword succeeds' do
+    VerifyController.new(:populate1 => '3.14159').populate
+  end
+
+  it 'should not throw an exception when verifying with a populate_keyword' do
+    VerifyController.new(:populate1 => 'void').verify_data
+  end
+
+  it 'should not populate a private_keyword successfully' do
+    c = VerifyController.new(:validate1 => 'hello')
+    c.populate
+    VerifyController.new(:private_validate1 => 'goodbye').populate
+    c.verify_data
+  end
+
+  it 'should not verify a private_keyword successfully' do
+    c = VerifyController.new(:private_validate1 => 'hello')
+    VerifyController.new(:validate1 => 'goodbye').populate
+    c.verify_data
+  end
+
+  it 'should not throw an exception when populating or verifying a private_keyword fails' do
+    c = VerifyController.new(:private_validate1 => 'goodbye')
+    c.populate
+    c.update(:private_validate1 => 'hello')
+    c.verify_data
+  end
+
+  it 'should not throw an exception when populating or verifying a nagivation_keyword fails' do
+    c = VerifyController.new(:button1 => 'Cancel')
+    c.populate
+    c.update(:button1 => 'Submit')
+    c.verify_data
+  end
 end
 
 describe "controllers should be able to detect and use embedded models" do
