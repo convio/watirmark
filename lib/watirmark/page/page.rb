@@ -68,15 +68,14 @@ module Watirmark
       end
 
       def navigation_keyword(method_sym, map=nil, &block)
-        add_to_keywords(method_sym)
+        keyed_element = get_keyed_element(method_sym, map, &block)
 
         meta_def method_sym do |*args|
-          # do nothing
+          keyed_element.get *args
         end
         meta_def "#{method_sym}=" do |*args|
           # do nothing
         end
-        @current_process_page << method_sym
       end
 
       def populate_keyword(method_sym, map=nil, &block)
@@ -102,7 +101,6 @@ module Watirmark
         meta_def "#{method_sym}=" do |*args|
           keyed_element.set *args
         end
-        @current_process_page << method_sym
       end
 
       def verify_keyword(method_sym, map=nil, &block)
