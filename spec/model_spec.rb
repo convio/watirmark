@@ -205,3 +205,35 @@ describe "models containing collections of models" do
 
 end
 
+describe "search a model's collection for a given model'" do
+
+  before :all do
+    Foo =  Watirmark::Model::Base.new(:first_name)
+    User = Watirmark::Model::Base.new(:first_name)
+    Login = Watirmark::Model::Person.new(:username)
+    Password = Watirmark::Model::Base.new(:password)
+    @password = Password.new
+    @login = Login.new
+    @login.add_model @password
+    @user = User.new
+    @user.add_model @login
+  end
+
+  it 'should be able to see itself' do
+    @user.find(User).should == @user
+  end
+
+  it 'should be able to see a sub_model' do
+    @user.find(Login).should == @login
+  end
+
+  it 'should be able to see a nested sub_model' do
+    @user.find(Password).should == @password
+  end
+
+  it 'should be able to see a sub_model' do
+    lambda{@user.find(Foo)}.should raise_error(Watirmark::ModelNotFound)
+  end
+end
+
+

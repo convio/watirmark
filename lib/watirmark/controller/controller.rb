@@ -143,10 +143,11 @@ end
       include Watirmark::Actions
 
       class << self
-        attr_accessor :view, :process_page, :specified_keywords
+        attr_accessor :view, :model, :process_page, :specified_keywords
 
         def inherited(klass) #:nodoc:
           klass.view ||= @view if @view
+          klass.model ||= @model if @model
         end
 
         # For custom Keyword classes we want to filter out
@@ -202,7 +203,11 @@ end
         if Hash === data # convert to a model
           @model = hash_to_model data
         else
-          @model = data
+          if self.class.model
+            @model = data.find(self.class.model) || data
+          else
+            @model = data
+          end
         end
         # Create a session if one does not exist
         @session = Watirmark::IESession.instance

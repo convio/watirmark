@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'watirmark'
 
-context Watirmark::Matcher do
+describe Watirmark::Matcher do
   before :all do
     @matcher = Watirmark::Matcher.new
   end
