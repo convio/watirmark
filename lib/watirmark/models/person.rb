@@ -1,50 +1,32 @@
 module Watirmark
   module Model
-    module Person
-      include Simple
+    class Person < Base
 
-      def __first_name__
-        "first_#{uuid}"
-      end
+      def self.inherited(subclass)
+        subclass.default.firstname     {"first_#{subclass.uuid}"}
+        subclass.default.lastname      {"last_#{subclass.uuid}"}
+        subclass.default.username      {"user_#{subclass.uuid}"}
 
-      def __last_name__
-        "last_#{uuid}"
-      end
+        subclass.default.password       {"password"}
+        subclass.default.reminder_hint  {"hint"}
 
-      def __user_name__
-        "user_#{uuid}"
-      end
+        subclass.default.email_prefix   Watirmark::Configuration.instance.email || "devnull"
+        subclass.default.email_suffix   "qasendmail.corp.convio.com"
+        subclass.default.email          {"#{subclass.default.email_prefix}+#{subclass.uuid}@#{subclass.default.email_suffix}"}
 
-      def __email_address__
-        "#{__email_prefix__}+#{@uuid}@#{__email_suffix__}"
-      end
+        # TODO: should move to add_model address, add_model credit_card
+        # but will need some refactor of controllers to handle properly
+        subclass.default.street1 = '3405 Mulberry Creek Dr'
+        subclass.default.city = 'Austin'
+        subclass.default.state = 'TX'
+        subclass.default.zip = '78732'
+        subclass.default.country = 'United States'
 
-      def __email_prefix__
-        Watirmark::Configuration.instance.email || "devnull"
-      end
-
-      def __email_suffix__
-        "qasendmail.corp.convio.com"
-      end
-
-      def __address__
-        {
-            :street1 => '3405 Mulberry Creek Dr',
-            :city => 'Austin',
-            :state => 'TX',
-            :zip => '78732',
-            :country => 'United States',
-        }
-      end
-
-      def __credit_card__
-        {
-            :creditcard => "Visa",
-            :cardnumber => "4111 1111 1111 1111",
-            :verificationcode => 111,
-            :expmonth => 12,
-            :expyear => Date::today.strftime("%Y")
-        }
+        subclass.default.creditcard = "Visa"
+        subclass.default.cardnumber = "4111 1111 1111 1111"
+        subclass.default.verificationcode = 111
+        subclass.default.expmonth = 12
+        subclass.default.expyear = Date::today.strftime("%Y")
       end
     end
   end

@@ -8,7 +8,6 @@ require 'watirmark'
 
 RSpec.configure do |config|
   config.mock_with :mocha
-  alias :context :describe
 end
 
 module Setup

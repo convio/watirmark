@@ -34,7 +34,7 @@ module CukeHelper
   def model_gsub(text)
     result = text
     regexp = /\[([^\]]+)\]\.(\w+)/
-    while result =~ regexp #get value from model
+    while result =~ regexp #get value from models
       model_name = $1
       method     = $2
       value = DataModels.instance[model_name].send method.to_sym
@@ -43,7 +43,7 @@ module CukeHelper
     result
   end
 
-  # calls the model method if of the pattern <name>.method
+  # calls the models method if of the pattern <name>.method
   def call_model_methods(hash)
     hash.each { |key, value| hash[key] = eval(value[1..value.length]) if value[0, 1].eql?("=") }
     return hash

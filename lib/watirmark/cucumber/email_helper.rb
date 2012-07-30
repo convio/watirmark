@@ -23,28 +23,28 @@ module EmailHelper
 
       # Return an email if we've seen it
       def found_email(model)
-        email[model.__name__]
+        email[model.model_name]
       end
 
       # Read the contents of an email, cache it and delete the email
       def read_email(model, subject, timeout=30)
         email_content = qa_inbox(model).get_email_text(["SUBJECT", subject, "TO", model.email], timeout)
-        email[model.__name__] = EmailBody.new(email_content)
+        email[model.model_name] = EmailBody.new(email_content)
       end
 
       def log_email(model)
         puts "Email Received"
-        puts email[model.__name__].body.inspect
+        puts email[model.model_name].body.inspect
       end
 
       # Access a cached copy of an email
       def [](model)
-        email[model.__name__]
+        email[model.model_name]
       end
 
       # Remove our cached copy of the email
       def delete(model)
-        email[model.__name__] = nil
+        email[model.model_name] = nil
       end
 
       # Format the email address so we're always referring to the qasendmail domain
