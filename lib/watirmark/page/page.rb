@@ -248,7 +248,7 @@ module Watirmark
       end
 
       def browser
-        @@browser ||= Watirmark::IESession.instance.openbrowser
+        @@browser ||= Watirmark::Session.instance.openbrowser
         @@browser
       end
 

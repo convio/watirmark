@@ -17,7 +17,7 @@ require 'watirmark'
 
 
 def attach(title)
-  session = Watirmark::IESession.instance
+  session = Watirmark::Session.instance
   session.config.attach = true
   session.attach_title = Regexp.new(title)
   browser = session.openbrowser

@@ -18,8 +18,8 @@ module ModelHelper
     orig_model = model.clone
     update_model(model, table)
     block.call
-    if Watirmark::IESession.instance.post_failure
-      log.info  "Reverting Model #{Watirmark::IESession.instance.post_failure}"
+    if Watirmark::Session.instance.post_failure
+      log.info  "Reverting Model #{Watirmark::Session.instance.post_failure}"
       model.update(orig_model.to_h) # revert models on failure
     elsif model.to_h != orig_model.to_h
       log.info "Updated model '#{model.model_name}' #{hash_record(table).inspect}"

@@ -8,7 +8,7 @@ end
 module Watirmark
   
   # This class manages a browser
-  class IESession
+  class Session
     include Singleton
 
     POST_WAIT_CHECKERS = []
@@ -106,4 +106,5 @@ module Watirmark
     end
 
   end
+  IESession = Session  #need to deprecate other usage
 end

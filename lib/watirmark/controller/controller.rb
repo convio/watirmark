@@ -210,7 +210,7 @@ end
           end
         end
         # Create a session if one does not exist
-        @session = Watirmark::IESession.instance
+        @session = Watirmark::Session.instance
         @browser = @session.openbrowser
       end
 
