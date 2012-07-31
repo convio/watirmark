@@ -1,14 +1,11 @@
 #!/usr/bin/env ruby
+$:<< File.dirname(__FILE__)
+$:<< File.expand_path(File.dirname(__FILE__) + '/../svn')
 
-require 'rubygems'
 require 'rubigen'
-
-if %w(-v --version).include? ARGV.first
-  require 'watirmark'
-  puts "#{File.basename($0)} #{Watirmark::VERSION}"
-  exit(0)
-end
-
 require 'rubigen/scripts/generate'
-RubiGen::Base.use_application_sources!
-RubiGen::Scripts::Generate.new.run(ARGV, :generator => 'project')
+
+source = RubiGen::PathSource.new(:application,File.join(File.dirname(__FILE__), "../generators"))
+RubiGen::Base.reset_sources
+RubiGen::Base.append_sources source
+RubiGen::Scripts::Generate.new.run(ARGV, :generator => 'create_project')

@@ -1,14 +1,14 @@
 require 'rubygems'
 require 'rubigen'
-class ProjectGenerator < RubiGen::Base
+class CreateProjectGenerator < RubiGen::Base
   default_options :author => nil
   attr_reader :name
 
   def initialize(runtime_args, runtime_options = {})
     super
     usage if args.empty?
-    @destination_root = File.expand_path(args.shift)
     @name = args.shift
+    @destination_root = File.expand_path(@name)
     extract_options
   end
 
@@ -18,7 +18,7 @@ class ProjectGenerator < RubiGen::Base
       m.template "gemfile.rb.erb", "Gemfile"
       m.template "local_config.rb.erb", "config.txt"
       m.template "configuration.rb.erb", File.join("lib/#{name}","configuration.rb")
-      m.template "project.rb.erb", File.join("lib","#{name}.rb")
+      m.template "create_project.rb.erb", File.join("lib","#{name}.rb")
       m.template "sample_controller.rb.erb", File.join("lib/#{name}/workflows/sample", "sample_controller.rb")
       m.template "sample_model.rb.erb", File.join("lib/#{name}/workflows/sample","sample_model.rb")
       m.template "sample_view.rb.erb", File.join("lib/#{name}/workflows/sample","sample_view.rb")
@@ -36,7 +36,7 @@ class ProjectGenerator < RubiGen::Base
   protected
     def banner
       <<-EOS
-USAGE: #{spec.name} path/for/your/test/project project_name [options]
+USAGE: #{spec.name} path/for/your/test/create_project project_name [options]
 EOS
     end
 
