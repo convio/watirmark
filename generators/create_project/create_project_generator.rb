@@ -7,7 +7,7 @@ class CreateProjectGenerator < RubiGen::Base
   def initialize(runtime_args, runtime_options = {})
     super
     usage if args.empty?
-    @name = args.shift
+    @name = File.basename(args.shift)
     @destination_root = File.expand_path(@name)
     extract_options
   end
