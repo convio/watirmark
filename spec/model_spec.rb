@@ -168,7 +168,32 @@ describe "models containing models" do
     @model.user.login.should be_kind_of Struct
     @model.user.login.username.should == 'username'
   end
+end
 
+describe "models containing models in modules should not break model_class_name" do
+  before :all do
+    module Foo
+      module Bar
+        Login = Watirmark::Model::Base.new(:username, :password) do
+          default.username  'username'
+          default.password  'password'
+        end
+
+        User = Watirmark::Model::Base.new(:first_name, :last_name) do
+          default.first_name  'my_first_name'
+          default.last_name   'my_last_name'
+
+          add_model Login.new
+        end
+      end
+    end
+  end
+
+  specify "should be able to see the sub-models" do
+    @model = Foo::Bar::User.new
+    @model.login.should be_kind_of Struct
+    @model.login.username.should == 'username'
+  end
 end
 
 

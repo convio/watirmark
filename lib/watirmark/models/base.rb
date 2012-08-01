@@ -79,6 +79,7 @@ module Watirmark
           name = self.inspect
           name = self.class.superclass if name.to_s =~ /Class/
           name = 'Model' if name.to_s =~ /Module/
+          name.sub!(/.+::/,'')
           name
         end
       end
