@@ -31,6 +31,8 @@ module Watirmark
         cuke_table.rows_hash.each do |key, value|
           send "#{key}=", format_value(value)
         end
+        @log.info "Updated #{inspect}"
+        self
       end
 
     end
