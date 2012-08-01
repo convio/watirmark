@@ -29,12 +29,13 @@ module Watirmark
 
       def merge_cucumber_table(cuke_table)
         cuke_table.rows_hash.each do |key, value|
-          send "#{key}=", format_value(value)
+          method_chain = key.split('.')
+          method = method_chain.pop
+          method_chain.inject(self) { |obj, m| obj.send m}.send "#{method}=", format_value(value)
         end
         @log.info "Updated #{inspect}"
         self
       end
-
     end
 
     class Base < Class.new(Struct)
