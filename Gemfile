@@ -17,4 +17,6 @@ group :development do
   gem 'rake'
   gem 'bundler'
   gem 'mocha'
+  gem 'cucumber'
+  gem 'rspec-mocks'
 end
