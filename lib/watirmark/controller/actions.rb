@@ -21,69 +21,76 @@ module Watirmark
       end
     end
 
+    def search_for_record
+      return unless @search
+      @search.new(@supermodel.find(@search.class + 'Model')).search
+    end
+
     # Navigate to the View's edit page and for every value in
     # the models hash, verify that the html element has
     # the proper value for each keyword
     def verify
-      call_view_method(:edit, @model)
+      search_for_record
+      @view.edit @model
       verify_data
     end
 
     # Navigate to the View's edit page and
     # verify all values in the models hash
     def edit
-      call_view_method(:edit, @model)
+      search_for_record
+      @view.edit @model
       populate_data
     end
 
     # Navigate to the View's create page and
     # populate with values from the models hash
     def create
-      call_view_method(:create, @model)
+      @view.create @model
       populate_data
     end
 
     # Navigate to the View's create page and
     # populate with values from the models hash
     def get
-      unless call_view_method(:exists?, @model)
-        call_view_method(:create, @model)
+      unless @view.exists? @model
+        @view.create @model
         populate_data
       end
     end
 
     # delegate to the view to delete
     def delete
-      call_view_method(:delete, @model)
+      @view.delete @model
     end
 
     # delegate to the view to copy
     def copy
-      call_view_method(:copy, @model)
+      @view.copy @model
     end
 
     # delegate to the view to restore
     def restore
-      call_view_method(:restore, @model)
+      @view.restore @model
     end
 
     # delegate to the view to archive
     def archive
-      call_view_method(:archive, @model)
+      @view.archive @model
     end
 
     # delegate to the view to activate
     def activate
-      call_view_method(:activate, @model)
+      @view.activate @model
     end
 
     # delegate to the view to deactivate
     def deactivate
-      call_view_method(:deactivate, @model)
+      @view.deactivate @model
     end
 
     def locate_record
-      call_view_method(:locate_record, @model)
+      @view.locate_record @model
     end
 
     # Navigate to the View's create page and verify
@@ -91,24 +98,11 @@ module Watirmark
     # sure that the create page has the proper default
     # values and contains the proper elements
     def check_defaults
-      call_view_method(:create, @model)
+      @view.create @model
       verify_data
     end
     alias :check_create_defaults :check_defaults
 
-
-    def call_view_method(method_name, model_values) #:nodoc:
-      view = self.class.view
-      if view
-        if view.respond_to?(method_name)
-          view.send method_name, model_values
-        else
-          raise Watirmark::TestError, "Method #{method_name} undefined in #{@view}"
-        end
-      else
-        log.info "No view defined for controller: #{self}"
-      end
-    end
 
     # A helper function for translating a string into a
     # pattern match for the beginning of a string
