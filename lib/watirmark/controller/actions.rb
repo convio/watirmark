@@ -23,7 +23,7 @@ module Watirmark
 
     def search_for_record
       return unless @search
-      @search.new(@supermodel.find(@search.class + 'Model')).search
+      @search.new(@supermodel).create
     end
 
     # Navigate to the View's edit page and for every value in
