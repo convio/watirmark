@@ -200,6 +200,7 @@ end
       @supermodel = data
       @records ||= []
       @view = self.class.view
+      @search = self.class.search
       @process_page = self.class.process_page
       @specified_keywords = self.class.specified_keywords
       if @supermodel.kind_of? Hash # convert to a model
