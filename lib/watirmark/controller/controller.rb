@@ -200,7 +200,7 @@ end
         @view = self.class.view
         @process_page = self.class.process_page
         @specified_keywords = self.class.specified_keywords
-        if Hash === data # convert to a model
+        if data.kind_of? Hash # convert to a model
           @model = hash_to_model data
         else
           if self.class.model
