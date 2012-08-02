@@ -11,7 +11,6 @@ module Watirmark
       def method_missing(name, &block)
         @members << name unless @members.include? name
         meta_def name do
-          puts caller[0]
           block
         end
       end

@@ -7,6 +7,8 @@ module Watirmark
       include CucumberHelper
 
       class << self
+        attr_accessor :search
+
         def default
           @default ||= Watirmark::Model::Default.new
         end
@@ -15,8 +17,12 @@ module Watirmark
           @models ||= []
         end
 
-        def add_model(model)
+        def add_model model
           models << model
+        end
+
+        def search_term &block
+          @search = block
         end
       end
 
@@ -25,6 +31,7 @@ module Watirmark
       def initialize(params={})
         @default = self.class.default
         @models = self.class.models
+        @search = self.class.search || Proc.new{nil}
         @submodels ||= []
         @params = params
         @uuid = generate_uuid
@@ -34,6 +41,9 @@ module Watirmark
         @log.info inspect
       end
 
+      def search_term
+        instance_eval(&@search) || (parent.search_term if parent)
+      end
 
       # this is a unique name that can be defined after the models is instantiated.
       # if the value changes, all initial settings are reloaded. This allows us
@@ -119,7 +129,7 @@ module Watirmark
           meta_def name do
             value = instance_eval("self[:#{name}]") || instance_exec(nil, &@default.send(name))
             # When a default refers to a default then we need this
-            value.kind_of?(Proc) ? value.call : value
+            value.kind_of?(Proc) ? instance_eval(&value) : value
           end
         end
       end

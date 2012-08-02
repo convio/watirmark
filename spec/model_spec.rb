@@ -269,3 +269,40 @@ describe "defaults referring to other defaults" do
   end
 
 end
+
+describe "search term" do
+
+  specify "is a string" do
+    Item = Watirmark::Model::Base.new(:name, :sort_name) do
+      search_term       {"name"}
+      default.name      {"name"}
+    end
+    model = Item.new
+    model.search_term.should == 'name'
+  end
+
+  specify "matches another default" do
+    Item = Watirmark::Model::Base.new(:name, :sort_name) do
+      search_term       {name}
+      default.name      {"name"}
+    end
+    model = Item.new
+    model.search_term.should == 'name'
+  end
+
+  specify "is found in a parent" do
+    Item = Watirmark::Model::Base.new(:name, :sort_name)
+
+    Container = Watirmark::Model::Base.new(:name, :sort_name) do
+      search_term       {name}
+      default.name      {"name"}
+      add_model Item.new
+    end
+
+    item = Item.new
+    item.search_term.should be_nil
+    container = Container.new
+    container.search_term.should == 'name'
+    container.item.search_term.should == 'name'
+  end
+end
