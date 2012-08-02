@@ -233,32 +233,62 @@ end
 describe "search a model's collection for a given model'" do
 
   before :all do
-    Foo =  Watirmark::Model::Base.new(:first_name)
-    User = Watirmark::Model::Base.new(:first_name)
-    Login = Watirmark::Model::Person.new(:username)
-    Password = Watirmark::Model::Base.new(:password)
-    @password = Password.new
-    @login = Login.new
-    @login.add_model @password
-    @user = User.new
-    @user.add_model @login
+    FirstModel =  Watirmark::Model::Base.new(:x)
+    SecondModel =  Watirmark::Model::Base.new(:x)
+    NoAddedModels =  Watirmark::Model::Base.new(:x)
+    SingleModel = Watirmark::Model::Base.new(:x)
+    MultipleModels =  Watirmark::Model::Base.new(:x)
+
+    @first_model = FirstModel.new
+    @second_model = SecondModel.new
+
+    @no_added_models =  NoAddedModels.new
+
+    @single_model = SingleModel.new
+    @single_model.add_model @first_model
+
+    @multiple_models = MultipleModels.new
+    @multiple_models.add_model @first_model
+    @multiple_models.add_model @second_model
   end
 
-  it 'should be able to see itself' do
-    @user.find(User).should == @user
+  it 'should find itself' do
+    @no_added_models.find(NoAddedModels).should == @no_added_models
+    @single_model.find(SingleModel).should == @single_model
+    @multiple_models.find(MultipleModels).should == @multiple_models
   end
 
   it 'should be able to see a sub_model' do
-    @user.find(Login).should == @login
+    @single_model.find(FirstModel).should == @first_model
+    @multiple_models.find(FirstModel).should == @first_model
+    @multiple_models.find(SecondModel).should == @second_model
   end
 
-  it 'should be able to see a nested sub_model' do
-    @user.find(Password).should == @password
-  end
-
-  it 'should be able to see a sub_model' do
-    lambda{@user.find(Foo)}.should raise_error(Watirmark::ModelNotFound)
+  it 'should be return nil when no model is found' do
+    @no_added_models.find(FirstModel).should be_nil
+    @single_model.find(NoAddedModels).should be_nil
+    @multiple_models.find(NoAddedModels).should be_nil
   end
 end
 
+describe "parent/child relationships" do
+  before :all do
+    SDP = Watirmark::Model::Base.new(:name, :value)
 
+    Config = Watirmark::Model::Base.new(:name) do
+      default.name 'a'
+      add_model SDP.new do
+        default.name parent.name
+      end
+
+    end
+    @model = Config.new
+  end
+
+
+  specify "ask for a parent" do
+    @model.sdp.parent.should == @model
+    @model.sdp.parent.name.should == 'a'
+  end
+
+end

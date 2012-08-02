@@ -41,7 +41,7 @@ module Watirmark
     class Base < Class.new(Struct)
       include CucumberHelper
 
-      attr_accessor :defaults, :name, :uuid, :model_name, :models
+      attr_accessor :defaults, :name, :uuid, :model_name, :models, :parent
 
       class << self
         def models
@@ -125,8 +125,11 @@ module Watirmark
 
       def find(model_class)
         return self if self.kind_of? model_class
-        @models.each {|m| return m.find model_class}
-        raise Watirmark::ModelNotFound, "unable to locate model #{model_class}"
+        @models.each do |m|
+          found_model = m.find model_class
+          return found_model if found_model
+        end
+        return nil
       end
 
       # This method is used to test the models to see if the updates to the models
@@ -199,6 +202,7 @@ module Watirmark
 
       def update_models
         @models.each do |model|
+          model.parent = self
 
           method_name = model.model_class_name.to_s.sub(/Model$/, '').downcase
           @submodels << model unless @submodels.include? model
