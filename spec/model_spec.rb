@@ -4,10 +4,7 @@ require 'watirmark'
 describe "models name" do
   before :all do
     @model = Watirmark::Model::Base.new(:middle_name) do
-      default.middle_name  {"#{model_name} middle_name".strip}
-      compose :full_name do
-        "#{model_name}foo"
-      end
+      default.middle_name    {"#{@model_name} middle_name".strip}
     end
   end
 
@@ -31,23 +28,16 @@ describe "models name" do
     m.model_name = 'my_model'
     m.middle_name.should =~ /^my_model/
   end
-
-
-  specify "setting the models name changes the composed fields" do
-    m = @model.new
-    m.model_name = 'my_model'
-    m.full_name.should =~ /^my_model/
-  end
 end
 
 
 describe "default values" do
   before :all do
     @model = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
-      default.first_name  'my_first_name'
-      default.last_name   'my_last_name'
-      default.middle_name  {"#{model_name} middle_name".strip}
-      default.id  "#{uuid}"
+      default.first_name  {'my_first_name'}
+      default.last_name   {'my_last_name'}
+      default.middle_name {"#{model_name} middle_name".strip}
+      default.id          {uuid}
     end
   end
 
@@ -75,35 +65,6 @@ describe "default values" do
     m.first_name.should == 'fred'
   end
 end
-
-describe "composed fields" do
-  before :all do
-    @model = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname) do
-      default.first_name  'my_first_name'
-      default.last_name   'my_last_name'
-      default.middle_name  {"#{model_name}middle_name".strip}
-
-      compose :full_name do
-        "#{first_name} #{last_name}"
-      end
-
-    end
-  end
-
-  specify "set a value that gets used in the composed string" do
-    m = @model.new
-    m.full_name.should == "my_first_name my_last_name"
-    m.first_name = 'coolio'
-    m.full_name.should == "coolio my_last_name"
-  end
-
-  specify "get a string composed in the default declaration" do
-    m = @model.new
-    m.model_name = 'foo_'
-    m.middle_name.should == "foo_middle_name"
-  end
-end
-
 
 describe "Inherited Models" do
   specify "should inherit defaults" do
@@ -140,13 +101,13 @@ end
 describe "models containing models" do
   before :all do
     Login = Watirmark::Model::Base.new(:username, :password) do
-      default.username  'username'
-      default.password  'password'
+      default.username  {'username'}
+      default.password  {'password'}
     end
 
     User = Watirmark::Model::Base.new(:first_name, :last_name) do
-      default.first_name  'my_first_name'
-      default.last_name   'my_last_name'
+      default.first_name  {'my_first_name'}
+      default.last_name   {'my_last_name'}
 
       add_model Login.new
     end
@@ -175,13 +136,13 @@ describe "models containing models in modules should not break model_class_name"
     module Foo
       module Bar
         Login = Watirmark::Model::Base.new(:username, :password) do
-          default.username  'username'
-          default.password  'password'
+          default.username  {'username'}
+          default.password  {'password'}
         end
 
         User = Watirmark::Model::Base.new(:first_name, :last_name) do
-          default.first_name  'my_first_name'
-          default.last_name   'my_last_name'
+          default.first_name  {'my_first_name'}
+          default.last_name   {'my_last_name'}
 
           add_model Login.new
         end
@@ -273,14 +234,14 @@ end
 
 describe "parent/child relationships" do
   before :all do
-    SDP = Watirmark::Model::Base.new(:name, :value)
+    SDP = Watirmark::Model::Base.new(:name, :value) do
+      default.name {parent.name}
+    end
 
     Config = Watirmark::Model::Base.new(:name) do
-      default.name 'a'
-      add_model SDP.new do
-        default.name parent.name
-      end
+      default.name {'a'}
 
+      add_model SDP.new
     end
     @model = Config.new
   end
@@ -289,6 +250,22 @@ describe "parent/child relationships" do
   specify "ask for a parent" do
     @model.sdp.parent.should == @model
     @model.sdp.parent.name.should == 'a'
+    @model.sdp.name.should == 'a'
+  end
+
+end
+
+describe "defaults referring to other defaults" do
+
+  specify "default matches exactly" do
+    SDP = Watirmark::Model::Base.new(:name, :sort_name) do
+      default.name      {"name"}
+      default.sort_name {name}
+    end
+
+    model = SDP.new
+    model.name.should == 'name'
+    model.sort_name.should == 'name'
   end
 
 end
