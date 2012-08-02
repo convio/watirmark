@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'watirmark'
 
-describe "models name" do
+describe "model names" do
   before :all do
     @model = Watirmark::Model::Base.new(:middle_name) do
       default.middle_name    {"#{@model_name} middle_name".strip}
@@ -98,8 +98,10 @@ describe "instance values" do
 end
 
 
-describe "models containing models" do
+describe "creates model methods" do
   before :all do
+    CamelCase = Watirmark::Model::Base.new(:first_name, :last_name)
+
     Login = Watirmark::Model::Base.new(:username, :password) do
       default.username  {'username'}
       default.password  {'password'}
@@ -110,6 +112,7 @@ describe "models containing models" do
       default.last_name   {'my_last_name'}
 
       add_model Login.new
+      add_model CamelCase.new
     end
 
     Donor = Watirmark::Model::Base.new(:credit_card) do
@@ -122,9 +125,10 @@ describe "models containing models" do
     @model = User.new
     @model.login.should be_kind_of Struct
     @model.login.username.should == 'username'
+    @model.camel_case.should be_kind_of Struct
   end
 
-  specify "should be able to see the models multiple steps down" do
+  specify "should be able to see nested models" do
     @model = Donor.new
     @model.user.login.should be_kind_of Struct
     @model.user.login.username.should == 'username'

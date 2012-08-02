@@ -138,7 +138,7 @@ module Watirmark
         @models.each do |model|
           model.parent = self
 
-          method_name = model.model_class_name.to_s.sub(/Model$/, '').downcase
+          method_name = model.model_class_name.to_s.sub(/Model$/, '').underscore
           @submodels << model unless @submodels.include? model
 
           # if there are more than one of a particular model present, create a collection
