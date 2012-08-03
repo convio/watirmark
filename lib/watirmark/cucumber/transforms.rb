@@ -4,7 +4,8 @@ module Watirmark
       model_name = "#{model_name}Model".camelcase
       DataModels.instance ||= {}
       unless DataModels.instance.has_key?(user_defined_name)
-        model_class = TransformHelper.find_class_by_name(model_name.to_sym)
+        # Get the reference to the class
+        model_class = model_name.split('::').inject(Kernel) {|context, x| context.const_get x}
         model = model_class.new
         model.model_name = user_defined_name
         DataModels.instance[user_defined_name] = model

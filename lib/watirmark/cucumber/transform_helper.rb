@@ -10,14 +10,3 @@ end
 class DataModels < Hash
   include Singleton
 end
-
-module TransformHelper
-  def self.find_class_by_name(classname)
-    ObjectSpace.each_object(Class) do |klass|
-      if klass.inspect =~ /(^|:)#{classname}$/
-        return klass
-      end
-    end
-    raise LoadError, "Class '#{classname}' not found!"
-  end
-end
