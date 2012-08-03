@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'rubigen'
 class CreateProjectGenerator < RubiGen::Base
   default_options :author => nil
