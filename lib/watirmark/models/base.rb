@@ -18,6 +18,7 @@ module Watirmark
         end
 
         def model model
+          raise Watirmark::ModelCreationError unless Class === model
           children << model
         end
 

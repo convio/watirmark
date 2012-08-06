@@ -6,6 +6,7 @@ module Watirmark
   class Watirmark::SecurityIssue < RuntimeError; end
   class Watirmark::WebPageElementNotFound < RuntimeError ;end
   class Watirmark::ModelNotFound < RuntimeError ;end
+  class Watirmark::ModelCreationError < RuntimeError ;end
   class Watirmark::VerificationException < RuntimeError
     attr_accessor :actual, :expected
   end

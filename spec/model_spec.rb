@@ -269,6 +269,19 @@ describe "submodel" do
   end
 end
 
+describe "chidl models" do
+  it "should raise an exception if an instance is passed into a class" do
+    SDP = Watirmark::Model::Base.new(:name, :value)
+
+    lambda{
+      Config = Watirmark::Model::Base.new(:name) do
+        model SDP.new
+      end
+    }.should raise_error Watirmark::ModelCreationError
+  end
+
+end
+
 describe "parent/child relationships" do
   before :all do
     SDP = Watirmark::Model::Base.new(:name, :value) do
