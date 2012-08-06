@@ -191,7 +191,9 @@ module Watirmark
       def add_superclass_keywords(klass)
         if @kwds
           klass.kwds ||= Hash.new { |h, k| h[k] = Array.new }
-          klass.kwds[self] = @kwds[self].dup
+          @kwds.each_key do |k|
+            klass.kwds[k] = @kwds[k].dup
+          end
         end
       end
 
@@ -206,7 +208,9 @@ module Watirmark
       def add_superclass_permissions(klass)
         if @perms
           klass.perms ||= Hash.new { |h, k| h[k] = Hash.new }
-          klass.perms[self] = @perms[self].dup
+          @perms.each_key do |k|
+            klass.perms[k] = @perms[k].dup
+          end
         end
       end
 
