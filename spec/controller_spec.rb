@@ -257,14 +257,14 @@ describe Watirmark::WebPage::Controller do
   it 'should not throw an exception when populating or verifying a private_keyword fails' do
     c = VerifyController.new(:private_validate1 => 'goodbye')
     c.populate
-    c.update(:private_validate1 => 'hello')
+    c.model.update(:private_validate1 => 'hello')
     c.verify_data
   end
 
-  it 'should not throw an exception when populating or verifying a nagivation_keyword fails' do
+  it 'should not throw an exception when populating or verifying a navigation_keyword fails' do
     c = VerifyController.new(:button1 => 'Cancel')
     c.populate
-    c.update(:button1 => 'Submit')
+    c.model.update(:button1 => 'Submit')
     c.verify_data
   end
 end
