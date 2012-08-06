@@ -31,6 +31,20 @@ describe "model names" do
 end
 
 
+describe "uuid" do
+  before :all do
+    @model = Watirmark::Model::Base.new(:middle_name) do
+      default.middle_name    {uuid}
+    end
+  end
+
+
+  specify "should set the default" do
+    m = @model.new
+    m.middle_name.should_not be_nil
+  end
+end
+
 describe "default values" do
   before :all do
     @model = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
@@ -111,12 +125,12 @@ describe "creates model methods" do
       default.first_name  {'my_first_name'}
       default.last_name   {'my_last_name'}
 
-      add_model Login.new
-      add_model CamelCase.new
+      model Login
+      model CamelCase
     end
 
     Donor = Watirmark::Model::Base.new(:credit_card) do
-      add_model User.new
+      model User
     end
   end
 
@@ -148,7 +162,7 @@ describe "models containing models in modules should not break model_class_name"
           default.first_name  {'my_first_name'}
           default.last_name   {'my_last_name'}
 
-          add_model Login.new
+          model Login
         end
       end
     end
@@ -166,11 +180,11 @@ describe "models containing collections of models" do
   before :all do
     SDP = Watirmark::Model::Base.new(:name, :value)
 
-    Config = Watirmark::Model::Base.new(:name) do
-      add_model SDP.new(:name=>'a', :value=>1)
-      add_model SDP.new(:name=>'b', :value=>2)
-    end
+    Config = Watirmark::Model::Base.new(:name)
     @model = Config.new
+    @model.add_model SDP.new(:name=>'a', :value=>1)
+    @model.add_model SDP.new(:name=>'b', :value=>2)
+
   end
 
 
@@ -183,14 +197,6 @@ describe "models containing collections of models" do
     @model.sdps.size.should == 2
     @model.sdps.first.name.should == 'a'
     @model.sdps.last.name.should == 'b'
-  end
-
-  specify "should be able to add models on the fly" do
-    @model.add_model SDP.new(:name=>'c', :value=>3)
-    @model.add_model SDP.new(:name=>'d', :value=>4)
-    @model.sdps.size.should == 4
-    @model.sdps.first.name.should == 'a'
-    @model.sdps.last.name.should == 'd'
   end
 
 end
@@ -236,6 +242,33 @@ describe "search a model's collection for a given model'" do
   end
 end
 
+describe "submodel" do
+  specify "a new model should instantiate NEW instances of a submodel" do
+    class Hash
+      def rows_hash
+        self
+      end
+    end
+    Item = Watirmark::Model::Base.new(:name, :sort_name) do
+      default.name {"name"}
+    end
+
+    Container = Watirmark::Model::Base.new(:name, :sort_name) do
+      search_term       {name}
+      default.name      {"name_container"}
+      model Item
+    end
+
+    c = Container.new
+    c.item.name.should == 'name'
+    c.item.name = 'foo'
+    c.item.name.should == 'foo'
+    d = Container.new
+    d.item.name.should_not == 'foo'
+
+  end
+end
+
 describe "parent/child relationships" do
   before :all do
     SDP = Watirmark::Model::Base.new(:name, :value) do
@@ -245,11 +278,10 @@ describe "parent/child relationships" do
     Config = Watirmark::Model::Base.new(:name) do
       default.name {'a'}
 
-      add_model SDP.new
+      model SDP
     end
     @model = Config.new
   end
-
 
   specify "ask for a parent" do
     @model.sdp.parent.should == @model
@@ -300,7 +332,7 @@ describe "search term" do
     Container = Watirmark::Model::Base.new(:name, :sort_name) do
       search_term       {name}
       default.name      {"name"}
-      add_model Item.new
+      model Item
     end
 
     item = Item.new
@@ -310,3 +342,4 @@ describe "search term" do
     container.item.search_term.should == 'name'
   end
 end
+

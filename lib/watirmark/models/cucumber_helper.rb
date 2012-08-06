@@ -29,7 +29,7 @@ module Watirmark
 
       def merge_cucumber_table(cuke_table)
         cuke_table.rows_hash.each do |key, value|
-          method_chain = key.split('.')
+          method_chain = key.to_s.split('.')
           method = method_chain.pop
           method_chain.inject(self) { |obj, m| obj.send m}.send "#{method}=", format_value(value)
         end
