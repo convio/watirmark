@@ -76,6 +76,14 @@ describe "defaults" do
     end
   end
 
+  specify "should raise error unless a proc is defined" do
+    lambda {
+      Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
+       default.first_name  'my_first_name'
+      end
+    }.should raise_error ArgumentError
+  end
+
   specify "retrieve a default proc setting" do
     m = @model.new
     m.middle_name.should == 'middle_name'
