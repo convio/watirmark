@@ -109,8 +109,9 @@ describe "defaults" do
   end
 
   specify "should inherspecify defaults" do
-    User = Watirmark::Model::Person.new(:username, :password, :street1)
+    User = Watirmark::Model::Person.new(:username, :password, :street1, :email)
     login = User.new
+    puts login.email
     login.username.should =~ /user_/
     login.password.should == 'password'
     login.street1.should == '3405 Mulberry Creek Dr'
