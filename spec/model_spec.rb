@@ -1,6 +1,17 @@
 require 'spec_helper'
 require 'watirmark'
 
+
+describe "model declaration" do
+  specify "set a value on instantiation" do
+    Login = Watirmark::Model::Base.new(:username, :password)
+    login = Login.new(:username => 'username', :password => 'password' )
+    login.username.should == 'username'
+    login.password.should == 'password'
+  end
+end
+
+
 describe "model names" do
   before :all do
     @model = Watirmark::Model::Base.new(:middle_name) do
@@ -28,24 +39,34 @@ describe "model names" do
     m.model_name = 'my_model'
     m.middle_name.should =~ /^my_model/
   end
+
 end
 
 
-describe "uuid" do
+describe "parents" do
   before :all do
-    @model = Watirmark::Model::Base.new(:middle_name) do
-      default.middle_name    {uuid}
+    SDP = Watirmark::Model::Base.new(:name, :value) do
+      default.name {parent.name}
     end
+
+    Config = Watirmark::Model::Base.new(:name) do
+      default.name {'a'}
+
+      model SDP
+    end
+    @model = Config.new
   end
 
-
-  specify "should set the default" do
-    m = @model.new
-    m.middle_name.should_not be_nil
+  specify "ask for a parent" do
+    @model.sdp.parent.should == @model
+    @model.sdp.parent.name.should == 'a'
+    @model.sdp.name.should == 'a'
   end
 end
 
-describe "default values" do
+
+describe "defaults" do
+
   before :all do
     @model = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
       default.first_name  {'my_first_name'}
@@ -55,12 +76,6 @@ describe "default values" do
     end
   end
 
-
-  specify "retrieve a default setting" do
-    @model.new.first_name.should == 'my_first_name'
-  end
-
-
   specify "retrieve a default proc setting" do
     m = @model.new
     m.middle_name.should == 'middle_name'
@@ -68,51 +83,44 @@ describe "default values" do
     m.middle_name.should == 'foo middle_name'
   end
 
-  specify "should set a uuid" do
-    m = @model.new
-    m.id.should_not be_nil
-  end
-
   specify "update a default setting" do
     m = @model.new
     m.first_name = 'fred'
     m.first_name.should == 'fred'
   end
-end
 
-describe "Inherited Models" do
-  specify "should inherit defaults" do
+  specify "containing proc pointing to another default" do
+    SDP = Watirmark::Model::Base.new(:name, :sort_name) do
+      default.name      {"name"}
+      default.sort_name {name}
+    end
+
+    model = SDP.new
+    model.name.should == 'name'
+    model.sort_name.should == 'name'
+  end
+
+  specify "should inherspecify defaults" do
     User = Watirmark::Model::Person.new(:username, :password, :street1)
-    @login = User.new
-    @login.username.should =~ /user_/
-    @login.password.should == 'password'
-    @login.street1.should == '3405 Mulberry Creek Dr'
+    login = User.new
+    login.username.should =~ /user_/
+    login.password.should == 'password'
+    login.street1.should == '3405 Mulberry Creek Dr'
   end
 
-  specify "should inherit unnamed methods" do
+  specify "should inherspecify unnamed methods" do
     User = Watirmark::Model::Person.new(:username, :password, :firstname)
-    @login = User.new
-    @login.firstname.should =~ /first_/
+    login = User.new
+    login.firstname.should =~ /first_/
   end
 
-end
-
-describe "instance values" do
-  before :all do
-    Login = Watirmark::Model::Base.new(:username, :password)
+  specify "retrieve a default setting" do
+    @model.new.first_name.should == 'my_first_name'
   end
-
-
-  specify "set a value on instantiation" do
-    @login = Login.new(:username => 'username', :password => 'password' )
-    @login.username.should == 'username'
-    @login.password.should == 'password'
-  end
-
 end
 
 
-describe "creates model methods" do
+describe "children" do
   before :all do
     CamelCase = Watirmark::Model::Base.new(:first_name, :last_name)
 
@@ -132,118 +140,47 @@ describe "creates model methods" do
     Donor = Watirmark::Model::Base.new(:credit_card) do
       model User
     end
-  end
 
-
-  specify "should be able to see the models" do
-    @model = User.new
-    @model.login.should be_kind_of Struct
-    @model.login.username.should == 'username'
-    @model.camel_case.should be_kind_of Struct
-  end
-
-  specify "should be able to see nested models" do
-    @model = Donor.new
-    @model.user.login.should be_kind_of Struct
-    @model.user.login.username.should == 'username'
-  end
-end
-
-describe "models containing models in modules should not break model_class_name" do
-  before :all do
-    module Foo
-      module Bar
-        Login = Watirmark::Model::Base.new(:username, :password) do
-          default.username  {'username'}
-          default.password  {'password'}
-        end
-
-        User = Watirmark::Model::Base.new(:first_name, :last_name) do
-          default.first_name  {'my_first_name'}
-          default.last_name   {'my_last_name'}
-
-          model Login
-        end
-      end
-    end
-  end
-
-  specify "should be able to see the sub-models" do
-    @model = Foo::Bar::User.new
-    @model.login.should be_kind_of Struct
-    @model.login.username.should == 'username'
-  end
-end
-
-
-describe "models containing collections of models" do
-  before :all do
     SDP = Watirmark::Model::Base.new(:name, :value)
 
     Config = Watirmark::Model::Base.new(:name)
-    @model = Config.new
-    @model.add_model SDP.new(:name=>'a', :value=>1)
-    @model.add_model SDP.new(:name=>'b', :value=>2)
-
   end
 
-
-  specify "call to singular method will return the first model added" do
-    @model.sdp.should be_kind_of Struct
-    @model.sdp.name.should == 'a'
+  specify "should be able to see the models" do
+    model = User.new
+    model.login.should be_kind_of Struct
+    model.login.username.should == 'username'
+    model.camel_case.should be_kind_of Struct
   end
 
-  specify "call to collection should be an enumerable" do
-    @model.sdps.size.should == 2
-    @model.sdps.first.name.should == 'a'
-    @model.sdps.last.name.should == 'b'
+  specify "should be able to see nested models" do
+    model = Donor.new
+    model.user.login.should be_kind_of Struct
+    model.user.login.username.should == 'username'
   end
 
-end
-
-describe "search a model's collection for a given model'" do
-
-  before :all do
-    FirstModel =  Watirmark::Model::Base.new(:x)
-    SecondModel =  Watirmark::Model::Base.new(:x)
-    NoAddedModels =  Watirmark::Model::Base.new(:x)
-    SingleModel = Watirmark::Model::Base.new(:x)
-    MultipleModels =  Watirmark::Model::Base.new(:x)
-
-    @first_model = FirstModel.new
-    @second_model = SecondModel.new
-
-    @no_added_models =  NoAddedModels.new
-
-    @single_model = SingleModel.new
-    @single_model.add_model @first_model
-
-    @multiple_models = MultipleModels.new
-    @multiple_models.add_model @first_model
-    @multiple_models.add_model @second_model
+  specify "multiple models of the same class should form a collection" do
+    model = Config.new
+    model.add_model SDP.new(:name=>'a', :value=>1)
+    model.add_model SDP.new(:name=>'b', :value=>2)
+    model.sdp.should be_kind_of Struct
+    model.sdp.name.should == 'a'
+    model.sdps.size.should == 2
+    model.sdps.first.name.should == 'a'
+    model.sdps.last.name.should == 'b'
   end
 
-  it 'should find itself' do
-    @no_added_models.find(NoAddedModels).should == @no_added_models
-    @single_model.find(SingleModel).should == @single_model
-    @multiple_models.find(MultipleModels).should == @multiple_models
+  specify "should raise an exception if the model is not a constant" do
+    SDP = Watirmark::Model::Base.new(:name, :value)
+
+    lambda{
+      Config = Watirmark::Model::Base.new(:name) do
+        model SDP.new
+      end
+    }.should raise_error
   end
 
-  it 'should be able to see a sub_model' do
-    @single_model.find(FirstModel).should == @first_model
-    @multiple_models.find(FirstModel).should == @first_model
-    @multiple_models.find(SecondModel).should == @second_model
-  end
-
-  it 'should be return nil when no model is found' do
-    @no_added_models.find(FirstModel).should be_nil
-    @single_model.find(NoAddedModels).should be_nil
-    @multiple_models.find(NoAddedModels).should be_nil
-  end
-end
-
-describe "submodel" do
-  specify "a new model should instantiate NEW instances of a submodel" do
+  specify "should always instantiate NEW instances of submodels" do
     class Hash
       def rows_hash
         self
@@ -265,62 +202,33 @@ describe "submodel" do
     c.item.name.should == 'foo'
     d = Container.new
     d.item.name.should_not == 'foo'
-
   end
-end
 
-describe "chidl models" do
-  it "should raise an exception if an instance is passed into a class" do
-    SDP = Watirmark::Model::Base.new(:name, :value)
+  specify "models containing models in modules should not break model_class_name" do
+    module Foo
+      module Bar
+        Login = Watirmark::Model::Base.new(:username, :password) do
+          default.username  {'username'}
+          default.password  {'password'}
+        end
 
-    lambda{
-      Config = Watirmark::Model::Base.new(:name) do
-        model SDP.new
+        User = Watirmark::Model::Base.new(:first_name, :last_name) do
+          default.first_name  {'my_first_name'}
+          default.last_name   {'my_last_name'}
+
+          model Login
+        end
       end
-    }.should raise_error Watirmark::ModelCreationError
-  end
-
-end
-
-describe "parent/child relationships" do
-  before :all do
-    SDP = Watirmark::Model::Base.new(:name, :value) do
-      default.name {parent.name}
     end
 
-    Config = Watirmark::Model::Base.new(:name) do
-      default.name {'a'}
-
-      model SDP
-    end
-    @model = Config.new
+    model = Foo::Bar::User.new
+    model.login.should be_kind_of Struct
+    model.login.username.should == 'username'
   end
-
-  specify "ask for a parent" do
-    @model.sdp.parent.should == @model
-    @model.sdp.parent.name.should == 'a'
-    @model.sdp.name.should == 'a'
-  end
-
 end
 
-describe "defaults referring to other defaults" do
 
-  specify "default matches exactly" do
-    SDP = Watirmark::Model::Base.new(:name, :sort_name) do
-      default.name      {"name"}
-      default.sort_name {name}
-    end
-
-    model = SDP.new
-    model.name.should == 'name'
-    model.sort_name.should == 'name'
-  end
-
-end
-
-describe "search term" do
-
+describe "search_term" do
   specify "is a string" do
     Item = Watirmark::Model::Base.new(:name, :sort_name) do
       search_term       {"name"}
@@ -356,3 +264,44 @@ describe "search term" do
   end
 end
 
+
+describe "find" do
+
+  before :all do
+    FirstModel =  Watirmark::Model::Base.new(:x)
+    SecondModel =  Watirmark::Model::Base.new(:x)
+    NoAddedModels =  Watirmark::Model::Base.new(:x)
+    SingleModel = Watirmark::Model::Base.new(:x)
+    MultipleModels =  Watirmark::Model::Base.new(:x)
+
+    @first_model = FirstModel.new
+    @second_model = SecondModel.new
+
+    @no_added_models =  NoAddedModels.new
+
+    @single_model = SingleModel.new
+    @single_model.add_model @first_model
+
+    @multiple_models = MultipleModels.new
+    @multiple_models.add_model @first_model
+    @multiple_models.add_model @second_model
+  end
+
+  specify 'should find itself' do
+    @no_added_models.find(NoAddedModels).should == @no_added_models
+    @single_model.find(SingleModel).should == @single_model
+    @multiple_models.find(MultipleModels).should == @multiple_models
+  end
+
+  specify 'should be able to see a sub_model' do
+    @single_model.find(FirstModel).should == @first_model
+    @multiple_models.find(FirstModel).should == @first_model
+    @multiple_models.find(SecondModel).should == @second_model
+  end
+
+  specify 'should be return nil when no model is found' do
+    @no_added_models.find(FirstModel).should be_nil
+    @single_model.find(NoAddedModels).should be_nil
+    @multiple_models.find(NoAddedModels).should be_nil
+  end
+end

@@ -120,7 +120,7 @@ module Watirmark
             h[name] = value unless value.nil?
           end
           rescue NoMethodError => e
-            h[name] = "[undefined]"
+            h[name] = "[defined at runtime]"
           end
         end
         h
