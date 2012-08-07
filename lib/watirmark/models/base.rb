@@ -33,7 +33,6 @@ module Watirmark
         @default = self.class.default
         @children = []
         @search = self.class.search || Proc.new{nil}
-        @submodels ||= []
         @params = params
         @uuid = generate_uuid
         @log = Logger.new STDOUT
@@ -156,24 +155,33 @@ module Watirmark
       def update_models
         @children.each do |model|
           model.parent = self
+          create_model_collection model
+          create_model_method model
+        end
+      end
 
-          method_name = model.model_class_name.to_s.sub(/Model$/, '').underscore
-          @submodels << model unless @submodels.include? model
+      def method_name model
+        model.model_class_name.to_s.sub(/Model$/, '').underscore
+      end
 
-          # if there are more than one of a particular model present, create a collection
-          # using the pluralized name of the model's class
-          if respond_to? method_name
-            meta_def method_name.pluralize do
-              @submodels
-            end
+      def collection_name model
+        method_name(model).pluralize
+      end
+
+      def create_model_collection model
+        @collection ||= []
+        @collection << model unless @collection.include? model
+        if respond_to? method_name(model)
+          meta_def collection_name(model).pluralize do
+            @collection
           end
+        end
+      end
 
-          # Always create a singular method that returns the first item
-          # whether or not there are a collection of models of that class
-          unless respond_to? method_name
-            meta_def method_name do
-              model
-            end
+      def create_model_method model
+        unless respond_to? method_name(model)
+          meta_def method_name(model) do
+            model
           end
         end
       end
