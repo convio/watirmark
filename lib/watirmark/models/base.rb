@@ -27,44 +27,38 @@ module Watirmark
         end
       end
 
+
       attr_accessor :default, :uuid, :model_name, :models, :parent, :children
 
       def initialize(params={})
-        @default = self.class.default
-        @children = []
-        @search = self.class.search || Proc.new{nil}
         @params = params
+        @children = self.class.children.map(&:new)
+        @default = self.class.default
+        @search = self.class.search || Proc.new{nil}
         @uuid = generate_uuid
         @log = Logger.new STDOUT
         @log.formatter = proc {|severity, datetime, progname, msg| "#{msg}\n"}
-        initialize_child_models
         reload_settings
         @log.info inspect
       end
 
-      def initialize_child_models
-        self.class.children.each {|child| @children << child.new}
-      end
 
+      # The search_term, used for a controller's search can be defined in this model
+      # or will look in a parent's model. This allows us to define it once for a composed model
       def search_term
         instance_eval(&@search) || (parent.search_term if parent)
       end
 
 
-      # this is a unique name that can be defined after the models is instantiated.
-      # if the value changes, all initial settings are reloaded. This allows us
-      # to set it during models creation in cucumber and make the fields take on
-      # a string that we used to identify the models in the gherkin
       def model_name=(x)
         @model_name = x
         @uuid = generate_uuid @model_name
       end
 
 
-      # add a submodel to the model after it has been instantiated
       def add_model(model)
         @children << model
-        update_models
+        create_model_methods
         @log.info "Added Model #{inspect}"
       end
 
@@ -78,11 +72,13 @@ module Watirmark
         return nil
       end
 
+
       def inspect
         model_details = " #{to_h}" unless to_h.empty?
         included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
         "#{model_class_name}#{model_details}#{included_models}"
       end
+
 
       def model_class_name
         name = self.class.inspect.to_s
@@ -92,10 +88,12 @@ module Watirmark
         name
       end
 
+
       def includes? hash
         hash.each_pair { |key, value| return false unless send("#{key}") == value }
         true
       end
+
 
       # Update the model using the provided hash
       def update hash
@@ -103,11 +101,13 @@ module Watirmark
         self
       end
 
+
       # Update the model using the provided hash but only if exists (TODO: may not be needed any more)
       def update_existing_members hash
         hash.each_pair { |key, value| send "#{key}=", value if respond_to? "#{key}=".to_sym }
         self
       end
+
 
       def to_h
         h = {}
@@ -126,7 +126,7 @@ module Watirmark
       end
 
 
-      private
+    private
 
 
       def generate_uuid model_name=nil
@@ -135,24 +135,31 @@ module Watirmark
             model_name.to_s + UUID.new.generate(:compact)[0..9])
       end
 
+
       def reload_settings
-        set_default
         update @params
-        update_models
+        create_default_methods
+        create_model_methods
       end
 
-      def set_default
+
+      def create_default_methods
         @default.each do |name|
           meta_def name do
-            value = self[name.to_sym]
-            # When a default refers to a default then we need this
-            value.kind_of?(Proc) ? instance_eval(&value) : value
+            normalize self[name.to_sym]
           end
           send "#{name}=", @default.send(name) if respond_to? "#{name}="
         end
       end
 
-      def update_models
+
+      # if the value is a proc, evaluate it, otherwise just return
+      def normalize(val)
+        val.kind_of?(Proc) ? instance_eval(&val) : val
+      end
+
+
+      def create_model_methods
         @children.each do |model|
           model.parent = self
           create_model_collection model
@@ -160,13 +167,16 @@ module Watirmark
         end
       end
 
+
       def method_name model
         model.model_class_name.to_s.sub(/Model$/, '').underscore
       end
 
+
       def collection_name model
         method_name(model).pluralize
       end
+
 
       def create_model_collection model
         @collection ||= []
@@ -177,6 +187,7 @@ module Watirmark
           end
         end
       end
+
 
       def create_model_method model
         unless respond_to? method_name(model)
