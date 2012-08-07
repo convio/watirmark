@@ -154,8 +154,8 @@ describe Watirmark::WebPage::Controller do
       end
     end
     controller.view.should == MyView
-    @@element.expects(:exists?).returns(true)
-    @@element.expects(:value).twice.returns('new value')
+    @@element.expects(:exists?).at_least_once.returns(true)
+    @@element.expects(:value).at_least_once.returns('new value')
     controller.verify :element => 'new value'
   end
 
@@ -280,7 +280,7 @@ describe "controllers should be able to detect and use embedded models" do
     end
     Foo =  Watirmark::Model::Base.new(:first_name)
     User = Watirmark::Model::Base.new(:first_name)
-    Login = Watirmark::Model::Person.new(:username)
+    Login = Watirmark::Model::Base.new(:username)
     Password = Watirmark::Model::Base.new(:password)
     @password = Password.new
     @login = Login.new
@@ -300,9 +300,4 @@ describe "controllers should be able to detect and use embedded models" do
   it 'should be able to see a nested sub_model' do
     @model.find(Password).should == @password
   end
-
-  it 'should be able to see a sub_model' do
-    lambda{@model.find(Foo)}.should raise_error(Watirmark::ModelNotFound)
-  end
-
 end

@@ -8,7 +8,7 @@ describe "controllers should be able to detect and use embedded models" do
     end
     Foo =  Watirmark::Model::Base.new(:first_name)
     User = Watirmark::Model::Base.new(:first_name)
-    Login = Watirmark::Model::Person.new(:username)
+    Login = Watirmark::Model::Base.new(:username)
     Password = Watirmark::Model::Base.new(:password)
     @password = Password.new
     @login = Login.new

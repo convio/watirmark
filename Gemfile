@@ -13,7 +13,7 @@ gem 'i18n'
 
 group :development do
   gem 'rdoc'
-  gem 'rspec', '~>2'
+  gem 'rspec'
   gem 'rake'
   gem 'bundler'
   gem 'mocha'
