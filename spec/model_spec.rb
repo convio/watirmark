@@ -108,20 +108,6 @@ describe "defaults" do
     model.sort_name.should == 'name'
   end
 
-  specify "should inherspecify defaults" do
-    User = Watirmark::Model::Person.new(:username, :password, :street1, :email)
-    login = User.new
-    login.username.should =~ /user_/
-    login.password.should == 'password'
-    login.street1.should == '3405 Mulberry Creek Dr'
-  end
-
-  specify "should inherspecify unnamed methods" do
-    User = Watirmark::Model::Person.new(:username, :password, :firstname)
-    login = User.new
-    login.firstname.should =~ /first_/
-  end
-
   specify "retrieve a default setting" do
     @model.new.first_name.should == 'my_first_name'
   end
