@@ -75,7 +75,7 @@ module Watirmark
           keyed_element.get *args
         end
         meta_def "#{method_sym}=" do |*args|
-          Kernel.warn("trying to set value to navigation_keyword #{method_sym}")
+          Kernel.warn("Warning: trying to set value to navigation_keyword #{method_sym}")
         end
       end
 
@@ -85,7 +85,7 @@ module Watirmark
         add_permission(method_sym, {:populate => true})
 
         meta_def method_sym do |*args|
-          Kernel.warn("trying to get value of populate_keyword #{method_sym}")
+          keyed_element.get *args
         end
         meta_def "#{method_sym}=" do |*args|
           keyed_element.set *args
@@ -114,7 +114,7 @@ module Watirmark
           keyed_element.get *args
         end
         meta_def "#{method_sym}=" do |*args|
-          Kernel.warn("trying to set value to verify_keyword #{method_sym}")
+          keyed_element.set *args
         end
         @current_process_page << method_sym
       end
