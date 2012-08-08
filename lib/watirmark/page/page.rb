@@ -68,6 +68,7 @@ module Watirmark
       end
 
       def navigation_keyword(method_sym, map=nil, &block)
+        add_to_keywords(method_sym)
         keyed_element = get_keyed_element(method_sym, map, &block)
 
         meta_def method_sym do |*args|
@@ -93,6 +94,7 @@ module Watirmark
       end
 
       def private_keyword(method_sym, map=nil, &block)
+        add_to_keywords(method_sym)
         keyed_element = get_keyed_element(method_sym, map, &block)
 
         meta_def method_sym do |*args|
