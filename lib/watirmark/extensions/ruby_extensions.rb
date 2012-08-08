@@ -141,4 +141,21 @@ class ModelOpenStruct < OpenStruct
     members.each { |name| h[name.to_sym] = self.send name}
     h
   end
+
+  # Stub these out so it doesn't find anything
+  def find(model)
+  end
+
+  def search_term
+  end
+
+  def model_class_name
+    'ModelOpenStruct'
+  end
+
+  def inspect
+    puts "ModelOpenStruct #{to_h}"
+  end
+
+
 end
