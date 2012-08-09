@@ -137,9 +137,9 @@ module Watirmark
 
 
       def reload_settings
-        update @params
         create_default_methods
         create_model_methods
+        update @params
       end
 
 

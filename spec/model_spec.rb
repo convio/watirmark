@@ -91,8 +91,18 @@ describe "defaults" do
     m.middle_name.should == 'foo middle_name'
   end
 
+  specify "should be able to override default settings on initialization" do
+    ModelWithDefaults = Watirmark::Model::Base.new(:foo, :bar) do
+      default.foo         {"hello from proc"}
+    end
+
+    m = ModelWithDefaults.new  :foo => 'hello init'
+    m.foo.should == 'hello init'
+  end
+
   specify "update a default setting" do
     m = @model.new
+    m.first_name.should == 'my_first_name'
     m.first_name = 'fred'
     m.first_name.should == 'fred'
   end
