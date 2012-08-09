@@ -32,8 +32,9 @@ module Watirmark
             end
           when Watir::TextField
             element.value
+          when Watir::TableCell
           else
-            if element.value != ''
+            if element.respond_to?(:value) && element.value != ''
               element.value
             else
               element.text
