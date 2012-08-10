@@ -17,9 +17,21 @@ if Watirmark::Configuration.instance.webdriver
       # fail to run because the window has been destroyed
       alias :old_run_checkers :run_checkers
 
+      # this is basically a check to make sure we're not
+      # running the checkers on a modal dialog that has closed
+      # by the time the checkers have run
       def run_checkers
-        return unless (browser.windows.first.current? rescue false)
+        return unless window_accessible
         old_run_checkers
+      end
+
+      def window_accessible
+        begin
+          title
+        rescue Selenium::WebDriver::Error::UnknownError
+          return false
+        end
+        true
       end
     end
 
