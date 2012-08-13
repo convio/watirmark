@@ -26,7 +26,7 @@ if Watirmark::Configuration.instance.webdriver
           begin
             e.call(self) unless $in_model_dialog || windows.size > 1
           rescue Selenium::WebDriver::Error::UnknownError => e
-            warn e.message
+            warn "Unable to run checker: #{e.message}"
             break
           end
         end
