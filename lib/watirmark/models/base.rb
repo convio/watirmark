@@ -181,10 +181,8 @@ module Watirmark
       def create_model_collection model
         @collection ||= []
         @collection << model unless @collection.include? model
-        if respond_to? method_name(model)
-          meta_def collection_name(model).pluralize do
-            @collection
-          end
+        meta_def collection_name(model).pluralize do
+          @collection
         end
       end
 

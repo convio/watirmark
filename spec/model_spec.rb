@@ -161,6 +161,8 @@ describe "children" do
     model = Donor.new
     model.user.login.should be_kind_of Struct
     model.user.login.username.should == 'username'
+    model.users.first.login.should be_kind_of Struct
+    model.users.first.login.username.should == 'username'
   end
 
   specify "multiple models of the same class should form a collection" do
