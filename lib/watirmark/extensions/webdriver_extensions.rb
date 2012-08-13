@@ -21,7 +21,15 @@ if Watirmark::Configuration.instance.webdriver
       # running the checkers on a modal dialog that has closed
       # by the time the checkers have run
       def run_checkers
-        @error_checkers.each { |e| e.call(self) unless $in_model_dialog || windows.size > 1}
+
+        @error_checkers.each do |e|
+          begin
+            e.call(self) unless $in_model_dialog || windows.size > 1
+          rescue Selenium::WebDriver::Error::UnknownError => e
+            warn e.message
+            break
+          end
+        end
       end
     end
 
