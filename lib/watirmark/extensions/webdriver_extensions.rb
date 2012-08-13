@@ -21,7 +21,7 @@ if Watirmark::Configuration.instance.webdriver
       # running the checkers on a modal dialog that has closed
       # by the time the checkers have run
       def run_checkers
-        return unless window_accessible
+        return unless window_accessible && !$in_model_dialog
         old_run_checkers
       end
 
