@@ -49,7 +49,7 @@ if Watirmark::Configuration.instance.webdriver
     module Container
 
       def modal_dialog
-        raise "WebDriverImplementation!! Need to be using 'with_modal_dialog' block" unless $in_modal_dialog
+        browser.windows.last.use
         browser
       end
 

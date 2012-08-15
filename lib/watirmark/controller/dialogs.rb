@@ -11,14 +11,13 @@ module Watirmark
     def with_modal_dialog(window=Page.browser, &block)
       wait_for_modal_dialog(window)
       if Watirmark::Configuration.instance.webdriver
+        parent_window = (Page.browser.windows.size) - 2
         begin
-          $in_modal_dialog = true
           Page.browser.windows.last.use
           Page.browser.wait
           block.call
-          $in_modal_dialog = false
         ensure
-          Page.browser.windows.first.use
+          Page.browser.windows[parent_window].use
         end
       else
         modal_hwnd = window.modal_dialog.hwnd
