@@ -311,3 +311,19 @@ describe "find" do
     @multiple_models.find(NoAddedModels).should be_nil
   end
 end
+
+describe "methods in Enumerable should not collide with model defaults" do
+  it "#zip" do
+    module Watirmark
+      module Model
+        class Person < Base
+          def self.inherited(subclass)
+            subclass.default.zip {'78732'}
+          end
+        end
+      end
+    end
+    Zip = Watirmark::Model::Person.new(:zip)
+    Zip.new.zip.should == "78732"
+  end
+end
