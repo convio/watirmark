@@ -1,5 +1,5 @@
 require 'spec_helper'
-if RUBY_PLATFORM =~ /win/
+if RUBY_PLATFORM =~ /mswin/
   require 'watir/ie'
 else
   require 'watir-webdriver'
