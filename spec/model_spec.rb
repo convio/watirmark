@@ -27,13 +27,6 @@ describe "model names" do
   end
 
 
-  specify "setting the models name changes the uuid" do
-    m = @model.new
-    m.model_name = 'my_model'
-    m.uuid.should =~ /^my_model/
-  end
-
-
   specify "setting the models name changes the defaults" do
     m = @model.new
     m.model_name = 'my_model'
