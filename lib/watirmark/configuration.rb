@@ -116,6 +116,10 @@ module Watirmark
       @settings.each_key do |var|
         next if var.to_s.upcase == "USERNAME"
         env = ENV[var.to_s.upcase]
+        if var.upcase == 'WEBDRIVER'
+          ENV['JOB_NAME']=~ /WEBDRIVER=(\s+)/
+          env ||= $1
+        end
         update var.to_sym => env if env
       end
     end
