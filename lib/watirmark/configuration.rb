@@ -116,8 +116,7 @@ module Watirmark
       @settings.each_key do |var|
         next if var.to_s.upcase == "USERNAME"
         env = ENV[var.to_s.upcase]
-        if var.upcase == 'WEBDRIVER'
-          puts 'got webdriver env=' + ENV['JOB_NAME']
+        if var == :webdriver
           ENV['JOB_NAME']=~ /WEBDRIVER=(\w+)/
           env ||= $1
         end
