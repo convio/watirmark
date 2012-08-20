@@ -117,7 +117,7 @@ module Watirmark
         next if var.to_s.upcase == "USERNAME"
         env = ENV[var.to_s.upcase]
         if var.upcase == 'WEBDRIVER'
-          ENV['JOB_NAME']=~ /WEBDRIVER=(\s+)/
+          ENV['JOB_NAME']=~ /WEBDRIVER=(\w+)/
           env ||= $1
         end
         update var.to_sym => env if env
