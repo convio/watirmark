@@ -101,7 +101,7 @@ if Watirmark::Configuration.instance.webdriver
             args.delete(:has_cell)
             case val
               when String
-                args[:text] = /^\s*#{Regexp.escape(val)}\s*$/
+                args[:text] = /\s*#{Regexp.escape(val)}\s*/
               when Regexp
                 args[:text] = val
             end
@@ -109,7 +109,7 @@ if Watirmark::Configuration.instance.webdriver
             args[0] = :text
             case args[1]
               when String
-                args[1] = /^\s*#{Regexp.escape(args[1])}\s*$/
+                args[1] = /\s*#{Regexp.escape(args[1])}\s*/
             end
         end
         args
