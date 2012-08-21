@@ -99,7 +99,11 @@ module Watirmark
     private :attach_title
     
     def closebrowser
-      @@browser.close if @@browser
+      begin
+        @@browser.close if @@browser
+      rescue Errno::ECONNREFUSED
+        # browser already closed or unavailable
+      end
       @@browser = nil
       config.session = false
       config.loggedin = false
