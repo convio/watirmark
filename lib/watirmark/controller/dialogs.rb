@@ -17,7 +17,7 @@ module Watirmark
           Page.browser.wait
           block.call
         ensure
-          Page.browser.windows[parent_window].use
+          Page.browser.windows[parent_window].use if Page.browser.windows[parent_window]
         end
       else
         modal_hwnd = window.modal_dialog.hwnd
