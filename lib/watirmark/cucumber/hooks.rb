@@ -9,11 +9,11 @@ end
 
 if Watirmark::Configuration.instance.webdriver
   FileUtils.rm_rf('reports')
-  FileUtils.mkdir('reports')
+  FileUtils.mkdir_p('reports/screenshots')
   Page.browser.screenshot.base64
   After do |scenario|
-    image = "reports/screenshot+#{UUID.new.generate(:compact)}.png"
-    Page.browser.screenshot.save image
-    embed File.expand_path(image), 'image/png'
+    image = "screenshot+#{UUID.new.generate(:compact)}.png"
+    Page.browser.screenshot.save "reports/screenshots/#{image}"
+    embed "screenshots/#{image}", 'image/png'
   end
 end
