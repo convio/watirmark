@@ -14,24 +14,47 @@ class CreateProjectGenerator < RubiGen::Base
   def manifest
     record do |m|    
       create_directories(m)
-      m.template "gemfile.rb.erb", "Gemfile"
-      m.template "local_config.rb.erb", "config.txt"
-      m.template "configuration.rb.erb", File.join("lib/#{name}","configuration.rb")
-      m.template "create_project.rb.erb", File.join("lib","#{name}.rb")
-      m.template "sample_controller.rb.erb", File.join("lib/#{name}/workflows/sample", "sample_controller.rb")
-      m.template "sample_model.rb.erb", File.join("lib/#{name}/workflows/sample","sample_model.rb")
-      m.template "sample_view.rb.erb", File.join("lib/#{name}/workflows/sample","sample_view.rb")
-      m.template "sample_spec.rb.erb", File.join("spec","sample_spec.rb")
+      m.template "project/gemfile.rb.erb", "Gemfile"
+      m.template "project/config.txt.erb", "config.txt"
+      m.template "project/rakefile.rb.erb", "rakefile.rb"
+
+      # main library
+      m.template "library/page_load_checker.rb.erb", File.join("lib", name, "checkers", "page_load_checker.rb")
+      m.template "library/post_errors_checker.rb.erb", File.join("lib", name, "checkers", "post_errors_checker.rb")
+      m.template "library/base_controller.rb.erb", File.join("lib", name, "controllers", "base_controller.rb")
+      m.template "library/search_controller.rb.erb", File.join("lib", name, "controllers", "search_controller.rb")
+      m.template "library/base_view.rb.erb", File.join("lib", name, "views", "base_view.rb")
+      m.template "library/configuration.rb.erb", File.join("lib", name, "configuration.rb")
+      m.template "library/core_libraries.rb.erb", File.join("lib", name, "core_libraries.rb")
+      m.template "library/loader.rb.erb", File.join("lib", name, "loader.rb")
+      m.template "library/project_require_file.rb.erb", File.join("lib","#{name}.rb")
+
+      m.template "generators/generate.rb.erb", File.join("script","generate.rb")
+      m.template "generators/mvc_generator.rb.erb", File.join("generators","mvc","mvc_generator.rb")
+      m.template "generators/controller.rb.erb", File.join("generators","mvc","templates","controller.rb.erb")
+      m.template "generators/model.rb.erb", File.join("generators","mvc","templates","model.rb.erb")
+      m.template "generators/view.rb.erb", File.join("generators","mvc","templates","view.rb.erb")
+
+      m.template "features/model_steps.rb.erb", File.join("features","step_definitions","model_steps.rb")
+      m.template "features/post_error_steps.rb.erb", File.join("features","step_definitions","post_error_steps.rb")
+      m.template "features/env.rb.erb", File.join("features","support","env.rb")
+
     end
   end
 
   def create_directories(m)
     BASEDIRS.each { |path| m.directory path }
-    m.directory File.join('lib',@name)
-    m.directory File.join('lib',@name, 'workflows')
-    m.directory File.join('lib',@name, 'workflows', 'sample')
+    create_subdirectories m, File.join('features'), ['step_definitions', 'support']
+    create_subdirectories m, File.join('lib', @name), ['checkers', 'controllers', 'views', 'workflows']
+    create_subdirectories m, File.join('generators', 'mvc'), ['templates']
   end
-  
+
+  def create_subdirectories (m, root, directories)
+    m.directory root
+    directories.each {|dir| m.directory File.join(root, dir)}
+  end
+
+
   protected
     def banner
       <<-EOS
@@ -60,8 +83,9 @@ EOS
     # Installation skeleton.  Intermediate directories are automatically
     # created so don't sweat their absence here.
     BASEDIRS = %w(
+      features
+      generators
       lib
-      spec
-      feature
+      script
     )
 end

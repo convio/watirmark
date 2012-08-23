@@ -1,0 +1,11 @@
+module <%= name.camelcase %>
+  module <%%= product.camelcase %>
+    <%%= name.camelcase %>Model = Watirmark::Model::Base.new(*<%%= name.camelcase %>View.keywords) do
+      #search_term           {name}
+      #
+      #default.name          {"name_#{uuid}"}
+      #
+      #add_model SomeModelName.new
+    end
+  end
+end
