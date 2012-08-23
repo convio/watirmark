@@ -27,13 +27,6 @@ describe "model names" do
   end
 
 
-  specify "setting the models name changes the uuid" do
-    m = @model.new
-    m.model_name = 'my_model'
-    m.uuid.should =~ /^my_model/
-  end
-
-
   specify "setting the models name changes the defaults" do
     m = @model.new
     m.model_name = 'my_model'
@@ -309,5 +302,21 @@ describe "find" do
     @no_added_models.find(FirstModel).should be_nil
     @single_model.find(NoAddedModels).should be_nil
     @multiple_models.find(NoAddedModels).should be_nil
+  end
+end
+
+describe "methods in Enumerable should not collide with model defaults" do
+  it "#zip" do
+    module Watirmark
+      module Model
+        class Person < Base
+          def self.inherited(subclass)
+            subclass.default.zip {'78732'}
+          end
+        end
+      end
+    end
+    Zip = Watirmark::Model::Person.new(:zip)
+    Zip.new.zip.should == "78732"
   end
 end

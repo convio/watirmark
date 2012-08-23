@@ -252,7 +252,10 @@ module Watirmark
       end
 
       def browser
-        @@browser ||= Watirmark::Session.instance.openbrowser
+        unless @@browser
+          @@browser = Watirmark::Session.instance.openbrowser
+          require 'watirmark/screenshots'
+        end
         @@browser
       end
 

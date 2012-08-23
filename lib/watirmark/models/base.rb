@@ -35,7 +35,7 @@ module Watirmark
         @children = self.class.children.map(&:new)
         @default = self.class.default
         @search = self.class.search || Proc.new{nil}
-        @uuid = generate_uuid
+        @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
         @log = Logger.new STDOUT
         @log.formatter = proc {|severity, datetime, progname, msg| "#{msg}\n"}
         reload_settings
@@ -47,12 +47,6 @@ module Watirmark
       # or will look in a parent's model. This allows us to define it once for a composed model
       def search_term
         instance_eval(&@search) || (parent.search_term if parent)
-      end
-
-
-      def model_name=(x)
-        @model_name = x
-        @uuid = generate_uuid @model_name
       end
 
 
@@ -127,14 +121,6 @@ module Watirmark
 
 
     private
-
-
-      def generate_uuid model_name=nil
-        @uuid = (Watirmark::Configuration.instance.uuid ?
-            model_name.to_s + Watirmark::Configuration.instance.uuid.to_s :
-            model_name.to_s + UUID.new.generate(:compact)[0..9])
-      end
-
 
       def reload_settings
         create_default_methods

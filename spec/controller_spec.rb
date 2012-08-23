@@ -1,8 +1,8 @@
 require 'spec_helper'
-if RUBY_PLATFORM =~ /linux/
-  require 'watir-webdriver'
-else
+if RUBY_PLATFORM =~ /mswin|mingw/
   require 'watir/ie'
+else
+  require 'watir-webdriver'
 end
 require 'watirmark'
 
