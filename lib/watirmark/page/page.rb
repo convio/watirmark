@@ -254,7 +254,7 @@ module Watirmark
       def browser
         unless @@browser
           @@browser = Watirmark::Session.instance.openbrowser
-          require 'watirmark/screenshots'
+          Page.browser.screenshot.base64 if Watirmark::Configuration.instance.webdriver
         end
         @@browser
       end
