@@ -10,7 +10,7 @@ module SmokeTest
 
     def cucumber_task(task_name, files=nil, tag=:smoke)
        Cucumber::Rake::Task.new(task_name) do |t|
-         t.cucumber_opts = "--tags @#{tag} -r features #{FileList[files]} -b --format html -o reports/report.html"
+         t.cucumber_opts = "--tags @#{tag} -r features #{FileList[files]} -b --format html -o reports/report.html --format pretty"
        end
     end
   end
