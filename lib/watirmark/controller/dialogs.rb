@@ -123,7 +123,7 @@ module Watirmark
       text = dialog.text
       dialog.button(button).click
       Watir::Wait.until {!Page.browser.javascript_dialog.exists?}    #wait on dialog to close
-      browser.wait #wait on browser to refresh
+      Page.browser.wait #wait on browser to refresh
       text
     end
 
