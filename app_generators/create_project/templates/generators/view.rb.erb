@@ -1,8 +1,7 @@
 module <%= name.camelcase %>
   module <%%= product.camelcase %>
     class <%%= name.camelcase %>View < BaseView
-      #keyword(:name)                   { browser.text_field(:id, 'name') }
-      #navigation_keyword(:save_button) { browser.button(:value, 'Save') }
+      #keyword(:name)  { browser.text_field(:id, 'name') }
 
       class << self
         def home(model)

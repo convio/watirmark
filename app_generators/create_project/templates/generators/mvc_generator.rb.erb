@@ -21,8 +21,11 @@ class MvcGenerator < RubiGen::Base
   def manifest
     record do |m|
       create_directories(m)
+      unless workflow_exists?
+        update_workflow_loader_manifest
+        add_rake_task
+      end
       add_mvc_stubs m
-      update_workflow_loader_manifest
     end
   end
 
@@ -33,10 +36,24 @@ class MvcGenerator < RubiGen::Base
     m.template "workflow_loader.rb.erb", File.join(workflow_directory, "..", "#{@product}.rb")
   end
 
+  def workflow_exists?
+    File.directory? "../lib/<%= name.downcase%>/workflows/#{@product}"
+  end
+
   def update_workflow_loader_manifest
-    File.open("../lib/<%= name.downcase%>/workflows.rb", 'a+') do |f|
+    append_to_file "../lib/<%= name.downcase%>/workflows.rb" do |f|
       f.puts "require '<%= name.downcase%>/workflows/#{@product}'"
     end
+  end
+
+  def add_rake_task
+    append_to_file "../rakefile.rb" do |f|
+      f.puts "RakeHelper.cucumber_task(#{@product}, \"features/#{@product}/**/*.feature\")"
+    end
+  end
+
+  def append_to_file name, &block
+    File.open(name, 'a+') {|f| yield f}
   end
 
   def create_directories(m)
