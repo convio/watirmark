@@ -9,6 +9,7 @@ class MvcGenerator < RubiGen::Base
     usage if args.empty?
     @product = args.shift
     @name = args.shift
+    usage unless @name && @product
     @destination_root = File.expand_path(File.dirname(__FILE__) + '/../../')
     extract_options
   end
@@ -20,14 +21,26 @@ class MvcGenerator < RubiGen::Base
   def manifest
     record do |m|
       create_directories(m)
-      m.template "model.rb.erb", File.join(workflow_directory, "#{@name}_model.rb")
-      m.template "view.rb.erb", File.join(workflow_directory,"#{@name}_view.rb")
-      m.template "controller.rb.erb", File.join(workflow_directory,"#{@name}_controller.rb")
+      add_mvc_stubs m
+      update_workflow_loader_manifest
+    end
+  end
+
+  def add_mvc_stubs m
+    m.template "model.rb.erb", File.join(workflow_directory, "#{@name}_model.rb")
+    m.template "view.rb.erb", File.join(workflow_directory,"#{@name}_view.rb")
+    m.template "controller.rb.erb", File.join(workflow_directory,"#{@name}_controller.rb")
+    m.template "workflow_loader.rb.erb", File.join(workflow_directory, "..", "#{@product}.rb")
+  end
+
+  def update_workflow_loader_manifest
+    File.open("../lib/<%= name.downcase%>/workflows.rb", 'a+') do |f|
+      f.puts "require '<%= name.downcase%>/workflows/#{@product}'"
     end
   end
 
   def create_directories(m)
-    m.directory File.join('lib/<%= name.downcase%>/workflows',@product)
+    m.directory workflow_directory
   end
 
   protected

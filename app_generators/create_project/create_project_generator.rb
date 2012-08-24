@@ -25,6 +25,7 @@ class CreateProjectGenerator < RubiGen::Base
       m.template "library/search_controller.rb.erb", File.join("lib", name, "controllers", "search_controller.rb")
       m.template "library/base_view.rb.erb", File.join("lib", name, "views", "base_view.rb")
       m.template "library/configuration.rb.erb", File.join("lib", name, "configuration.rb")
+      m.template "library/workflows.rb.erb", File.join("lib", name, "workflows.rb")
       m.template "library/core_libraries.rb.erb", File.join("lib", name, "core_libraries.rb")
       m.template "library/loader.rb.erb", File.join("lib", name, "loader.rb")
       m.template "library/project_require_file.rb.erb", File.join("lib","#{name}.rb")
@@ -34,6 +35,7 @@ class CreateProjectGenerator < RubiGen::Base
       m.template "generators/controller.rb.erb", File.join("generators","mvc","templates","controller.rb.erb")
       m.template "generators/model.rb.erb", File.join("generators","mvc","templates","model.rb.erb")
       m.template "generators/view.rb.erb", File.join("generators","mvc","templates","view.rb.erb")
+      m.template "generators/workflow_loader.rb.erb", File.join("generators","mvc","templates","workflow_loader.rb.erb")
 
       m.template "features/model_steps.rb.erb", File.join("features","step_definitions","model_steps.rb")
       m.template "features/post_error_steps.rb.erb", File.join("features","step_definitions","post_error_steps.rb")
