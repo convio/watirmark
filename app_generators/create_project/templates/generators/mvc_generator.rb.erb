@@ -48,7 +48,7 @@ class MvcGenerator < RubiGen::Base
 
   def add_rake_task
     append_to_file "../rakefile.rb" do |f|
-      f.puts "RakeHelper.cucumber_task(#{@product}, \"features/#{@product}/**/*.feature\")"
+      f.puts "RakeHelper.cucumber_task(:#{@product}, \"features/#{@product}/**/*.feature\")"
     end
   end
 
