@@ -38,7 +38,12 @@ if Watirmark::Configuration.instance.webdriver
 
       def row(*args)
         if has_cell?(args)
-          rows(*transform_has_cell_args(args)).last
+          located_rows = rows(*transform_has_cell_args(args))
+          if located_rows.size == 0
+            old_row(*transform_has_cell_args(args))
+          else
+            rows.last
+          end
         else
           old_row(*args)
         end
