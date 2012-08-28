@@ -4,10 +4,14 @@ if Watirmark::Configuration.instance.webdriver
 
   # Allows us to silently ignore this exception which will never apply.
   # Once we're on webdriver completely we can remove all references to this
-  # exception
-  class WIN32OLERuntimeError < RuntimeError;
+  # exception. We check to see if it's defined to RE will work.
+  unless Kernel.const_defined? :WIN32OLERuntimeError
+    class WIN32OLERuntimeError < RuntimeError;
+    end
   end
-  class WIN32OLE < RuntimeError;
+  unless Kernel.const_defined? :WIN32OLE
+    class WIN32OLE < RuntimeError;
+    end
   end
 
   module Watir
