@@ -4,6 +4,7 @@ module Watirmark
     module CucumberHelper
 
       def format_value(value)
+        value = insert_model(value)
         if String === value && value[0, 1].eql?("=") #straight eval
           eval(value[1..value.length])
         elsif value == "true"
@@ -11,7 +12,7 @@ module Watirmark
         elsif value == "false"
           return false
         else
-          insert_model(value)
+          value
         end
       end
 

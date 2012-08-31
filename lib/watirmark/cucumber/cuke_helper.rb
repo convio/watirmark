@@ -20,6 +20,7 @@ module CukeHelper
   end
 
   def format_value(value)
+    value = model_gsub(value)
     if String === value && value[0, 1].eql?("=") #straight eval
       eval(value[1..value.length])
     elsif value == "true"
@@ -27,7 +28,7 @@ module CukeHelper
     elsif value == "false"
       return false
     else
-      model_gsub(value)
+      value
     end
   end
 
