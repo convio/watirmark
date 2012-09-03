@@ -36,6 +36,15 @@ if Watirmark::Configuration.instance.webdriver
       end
     end
 
+    # Trigger checkers when manually submitting a form
+    class Form < HTMLElement
+      alias :old_submit :submit
+      def submit
+        old_submit
+        browser.run_checkers
+      end
+    end
+
     module RowContainer
 
       alias :old_row :row
