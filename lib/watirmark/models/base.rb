@@ -53,7 +53,7 @@ module Watirmark
       def add_model(model)
         @children << model
         create_model_methods
-        @log.info "Added Model #{inspect}"
+        @log.info "Added Model #{model.inspect} to #{model_name || model_class_name}"
       end
 
 
