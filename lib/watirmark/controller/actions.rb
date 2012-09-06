@@ -63,32 +63,34 @@ module Watirmark
       end
     end
 
-    # delegate to the view to delete
     def delete
       @view.delete @model
     end
 
-    # delegate to the view to copy
     def copy
       @view.copy @model
     end
 
-    # delegate to the view to restore
     def restore
       @view.restore @model
     end
 
-    # delegate to the view to archive
     def archive
       @view.archive @model
     end
 
-    # delegate to the view to activate
+    def publish
+      @view.publish @model
+    end
+
+    def unpublish
+      @view.unpublish @model
+    end
+
     def activate
       @view.activate @model
     end
 
-    # delegate to the view to deactivate
     def deactivate
       @view.deactivate @model
     end
