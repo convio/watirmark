@@ -5,14 +5,21 @@ module Watirmark
 
       def format_value(value)
         value = insert_model(value)
-        if String === value && value[0, 1].eql?("=") #straight eval
-          eval(value[1..value.length])
-        elsif value == "true"
-          return true
-        elsif value == "false"
-          return false
-        else
-          value
+        case value
+          when String
+            if value[0, 1].eql?("=") #straight eval
+              eval(value[1..value.length])
+            elsif value.strip == ''
+              nil
+            else
+              value
+            end
+          when "true"
+            true
+          when "false"
+            false
+          else
+            value
         end
       end
 
