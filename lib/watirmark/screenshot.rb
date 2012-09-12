@@ -12,6 +12,7 @@ module Watirmark
       attr_accessor :filename
 
       def initialize
+        FileUtils.mkdir_p('reports/screenshots')
         @filename = "reports/screenshots/#{UUID.new.generate(:compact)}.png"
         Page.browser.screenshot.save @filename
       end
