@@ -25,9 +25,9 @@ module CukeHelper
       when String
         if value[0, 1].eql?("=") #straight eval
           eval(value[1..value.length])
-        elsif "true"
+        elsif value == "true"
           true
-        elsif "false"
+        elsif value == "false"
           false
         elsif value.strip == ''
           nil
