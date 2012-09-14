@@ -27,6 +27,9 @@ module Watirmark
         :uuid               => nil,
         :webdriver          => nil,
 
+        :snapshotwidth      => 1000,
+        :snapshotheight     => 1000,
+
         :dbhostname         => nil,
         :dbusername         => nil,
         :dbpassword         => nil,
