@@ -29,8 +29,12 @@ end
 
 # Return the models from the collection of existing models
 MODEL = Transform /^\[(\S+)\]$/ do |model_name|
-  DataModels.instance ||= {}
-  raise "#{model_name} is not a defined model!" unless DataModels.instance[model_name]
+  unless DataModels.instance[model_name]
+    EmptyModel = Watirmark::Model::Base.new(:base_model_no_settings)
+    model = EmptyModel.new
+    model.model_name = model_name
+    DataModels.instance[model_name] = model
+  end
   DataModels.instance[model_name]
 end
 
