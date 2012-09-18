@@ -1,9 +1,9 @@
 module <%= name.camelcase %>
-  module <%%= product.camelcase %>
+<%%= create_modules %>
     class <%%= name.camelcase %> < BaseController
       @model = <%%= name.camelcase %>Model
       @view = <%%= name.camelcase %>View
     end
-  end
+<%%= create_module_end %>
 end
 
