@@ -2,7 +2,9 @@ module Watirmark
   module Transforms
     def self.new_model model_name, user_defined_name
       model_name = "#{model_name}Model".camelcase
-      warn "Overwriting model #{user_defined_name}" if DataModels.has_key?(user_defined_name)
+      if DataModels.has_key?(user_defined_name)
+        return DataModels[user_defined_name] unless (DataModels[user_defined_name].class.to_s =~ /Class:/)
+      end
       # Get the reference to the class
       model_class = model_name.split('::').inject(Kernel) {|context, x| context.const_get x}
       model = model_class.new(:model_name => user_defined_name)
