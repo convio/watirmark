@@ -2,14 +2,11 @@ module Watirmark
   module Transforms
     def self.new_model model_name, user_defined_name
       model_name = "#{model_name}Model".camelcase
-      DataModels.instance ||= {}
-      warn "Overwriting model #{user_defined_name}" if DataModels.instance.has_key?(user_defined_name)
+      warn "Overwriting model #{user_defined_name}" if DataModels.has_key?(user_defined_name)
       # Get the reference to the class
       model_class = model_name.split('::').inject(Kernel) {|context, x| context.const_get x}
-      model = model_class.new
-      model.model_name = user_defined_name
-      DataModels.instance[user_defined_name] = model
-      DataModels.instance[user_defined_name]
+      model = model_class.new(:model_name => user_defined_name)
+      DataModels[user_defined_name] = model
     end
   end
 end
@@ -28,13 +25,6 @@ end
 
 # Return the models from the collection of existing models
 MODEL = Transform /^\[(\S+)\]$/ do |model_name|
-  if DataModels.instance[model_name]
-    DataModels.instance[model_name]
-  else
-    EmptyModel = Watirmark::Model::Base.new(:base_model_no_settings)
-    model = EmptyModel.new
-    model.model_name = model_name
-    DataModels.instance[model_name] = model
-  end
+  DataModels[model_name] ||= Struct.new(:model_name).new(model_name)
 end
 

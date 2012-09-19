@@ -31,6 +31,10 @@ module Watirmark
       attr_accessor :default, :uuid, :model_name, :models, :parent, :children
 
       def initialize(params={})
+        if params[:model_name]
+          @model_name = params[:model_name]
+          params.delete(:model_name)
+        end
         @params = params
         @children = self.class.children.map(&:new)
         @default = self.class.default
@@ -68,9 +72,10 @@ module Watirmark
 
 
       def inspect
+        model_friendly_name = @model_name ? "#{@model_name}: " : nil
         model_details = " #{to_h}" unless to_h.empty?
         included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
-        "#{model_class_name}#{model_details}#{included_models}"
+        "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
       end
 
 
@@ -119,6 +124,11 @@ module Watirmark
         h
       end
 
+      def model_name=(name)
+        @model_name = name
+        add_debug_overrides
+      end
+
 
     private
 
@@ -126,6 +136,14 @@ module Watirmark
         create_default_methods
         create_model_methods
         update @params
+        add_debug_overrides
+      end
+
+      def add_debug_overrides
+        return unless @model_name
+        warn "Adding DEBUG overrides for #{@model_name}"
+        update DebugModelValues['*'] if DebugModelValues['*']
+        update DebugModelValues[@model_name] if DebugModelValues[@model_name]
       end
 
 

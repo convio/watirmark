@@ -29,7 +29,7 @@ module Watirmark
         while result =~ regexp #get value from models
           model_name = $1
           method     = $2
-          value = DataModels.instance[model_name].send method.to_sym
+          value = DataModels[model_name].send method.to_sym
           result.sub!(regexp, value.to_s)
         end
         result

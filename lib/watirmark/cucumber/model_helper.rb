@@ -1,4 +1,9 @@
 module ModelHelper
+  def add_model_debug_values(table)
+    table.raw.each do |row|
+      DebugModelValues[row[0]][row[1]] = row[2]
+    end
+  end
 
   def update_model(model, table)
     model.update(hash_record(table))
