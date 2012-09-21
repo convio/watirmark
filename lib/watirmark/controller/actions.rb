@@ -77,6 +77,7 @@ module Watirmark
         raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
       end
     end
+    private :run_with_stop_condition
 
     # Navigate to the View's create page and
     # populate with values from the models hash
