@@ -54,26 +54,39 @@ module Watirmark
       populate_data
     end
 
+    def verify_until(&block)
+      catch :stop_condition_met do
+        begin
+          Watirmark::Session.instance.stop_condition_block = block
+          verify
+        ensure
+          Watirmark::Session.instance.stop_condition_block = Proc.new{}
+        end
+        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
+      end
+    end
+
     def edit_until(&block)
-      Watirmark::Session.instance.stop_condition_block = block
-      rescue_stop_condition{
-        edit
-      }
+      catch :stop_condition_met do
+        begin
+          Watirmark::Session.instance.stop_condition_block = block
+          edit
+        ensure
+          Watirmark::Session.instance.stop_condition_block = Proc.new{}
+        end
+        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
+      end
     end
 
     def create_until(&block)
-      Watirmark::Session.instance.stop_condition_block = block
-      rescue_stop_condition{
-        create
-      }
-    end
-
-    def rescue_stop_condition(&block)
-      begin
-        block.call
-      rescue Watirmark::AbortStopConditionMet
-        Watirmark::Session.instance.stop_condition_block = Proc.new {}
-        warn "stop_if condition has been met"
+      catch :stop_condition_met do
+        begin
+          Watirmark::Session.instance.stop_condition_block = block
+          create
+        ensure
+          Watirmark::Session.instance.stop_condition_block = Proc.new{}
+        end
+        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
       end
     end
 
