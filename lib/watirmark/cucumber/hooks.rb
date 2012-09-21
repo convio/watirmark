@@ -10,7 +10,9 @@ end
 if Watirmark::Configuration.instance.webdriver
   After do |scenario|
     image = "#{UUID.new.generate(:compact)}.png"
-    Page.browser.screenshot.save "reports/screenshots/#{image}"
+    path = "reports/screenshots"
+    FileUtils.mkdir_p path unless File.directory? path
+    Page.browser.screenshot.save "#{path}/#{image}"
     embed "screenshots/#{image}", 'image/png'
   end
 end
