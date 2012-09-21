@@ -10,4 +10,5 @@ module Watirmark
   class Watirmark::VerificationException < RuntimeError
     attr_accessor :actual, :expected
   end
+  class Watirmark::AbortStopConditionMet < RuntimeError ;end
 end

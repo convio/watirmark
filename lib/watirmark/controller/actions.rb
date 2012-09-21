@@ -54,6 +54,29 @@ module Watirmark
       populate_data
     end
 
+    def edit_until(&block)
+      Watirmark::Session.instance.stop_condition_block = block
+      rescue_stop_condition{
+        edit
+      }
+    end
+
+    def create_until(&block)
+      Watirmark::Session.instance.stop_condition_block = block
+      rescue_stop_condition{
+        create
+      }
+    end
+
+    def rescue_stop_condition(&block)
+      begin
+        block.call
+      rescue Watirmark::AbortStopConditionMet
+        Watirmark::Session.instance.stop_condition_block = Proc.new {}
+        warn "stop_if condition has been met"
+      end
+    end
+
     # Navigate to the View's create page and
     # populate with values from the models hash
     def get
