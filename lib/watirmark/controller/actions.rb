@@ -55,34 +55,22 @@ module Watirmark
     end
 
     def verify_until(&block)
-      catch :stop_condition_met do
-        begin
-          Watirmark::Session.instance.stop_condition_block = block
-          verify
-        ensure
-          Watirmark::Session.instance.stop_condition_block = Proc.new{}
-        end
-        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
-      end
+      run_with_stop_condition(:verify, block)
     end
 
     def edit_until(&block)
-      catch :stop_condition_met do
-        begin
-          Watirmark::Session.instance.stop_condition_block = block
-          edit
-        ensure
-          Watirmark::Session.instance.stop_condition_block = Proc.new{}
-        end
-        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
-      end
+      run_with_stop_condition(:edit, block)
     end
 
     def create_until(&block)
+      run_with_stop_condition(:create, block)
+    end
+
+    def run_with_stop_condition(method, block)
       catch :stop_condition_met do
         begin
           Watirmark::Session.instance.stop_condition_block = block
-          create
+          send(method)
         ensure
           Watirmark::Session.instance.stop_condition_block = Proc.new{}
         end
