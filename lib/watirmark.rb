@@ -27,5 +27,4 @@ require 'uuid'
 require 'watirmark/model'
 require 'watirmark/rake/smoketest'
 require 'active_support/inflector'
-FileUtils.rm_rf('reports')
-FileUtils.mkdir_p('reports/screenshots')
+FileUtils.rm_rf('reports/screenshots')

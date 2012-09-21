@@ -32,6 +32,7 @@ class CreateProjectGenerator < RubiGen::Base
 
       m.template "generators/generate.rb.erb", File.join("script","generate.rb")
       m.template "generators/mvc_generator.rb.erb", File.join("generators","mvc","mvc_generator.rb")
+      m.template "generators/rbeautify.rb.erb", File.join("generators", "mvc", "rbeautify.rb")
       m.template "generators/controller.rb.erb", File.join("generators","mvc","templates","controller.rb.erb")
       m.template "generators/model.rb.erb", File.join("generators","mvc","templates","model.rb.erb")
       m.template "generators/view.rb.erb", File.join("generators","mvc","templates","view.rb.erb")

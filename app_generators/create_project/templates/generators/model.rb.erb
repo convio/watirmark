@@ -1,5 +1,5 @@
 module <%= name.camelcase %>
-  module <%%= product.camelcase %>
+<%%= create_modules %>
     <%%= name.camelcase %>Model = Watirmark::Model::Base.new(*<%%= name.camelcase %>View.keywords) do
       #search_term           {name}
       #
@@ -7,5 +7,5 @@ module <%= name.camelcase %>
       #
       #add_model SomeModelName.new
     end
-  end
+<%%= create_module_end %>
 end

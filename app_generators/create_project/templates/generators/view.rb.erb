@@ -1,7 +1,7 @@
 module <%= name.camelcase %>
-  module <%%= product.camelcase %>
+<%%= create_modules %>
     class <%%= name.camelcase %>View < BaseView
-      #keyword(:name)  { browser.text_field(:id, 'name') }
+      keyword(:name)  { browser.text_field(:id, 'name') }
 
       class << self
         def home(model)
@@ -14,5 +14,5 @@ module <%= name.camelcase %>
         end
       end
     end
-  end
+<%%= create_module_end %>
 end

@@ -283,9 +283,14 @@ end
         unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:populate]
           next
         end
-        value = value_for(keyword)
-        value.nil? ? next : seen_value = true
-        set(keyword, value)
+        begin
+          value = value_for(keyword)
+          value.nil? ? next : seen_value = true
+          set(keyword, value)
+        rescue => e
+          puts "Got #{e.class} when attempting to populate '#{keyword}' on page '#{process_page}'"
+          raise e
+        end
       end
       seen_value
     end

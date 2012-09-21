@@ -2,15 +2,13 @@ module Watirmark
   module Transforms
     def self.new_model model_name, user_defined_name
       model_name = "#{model_name}Model".camelcase
-      DataModels.instance ||= {}
-      unless DataModels.instance.has_key?(user_defined_name)
-        # Get the reference to the class
-        model_class = model_name.split('::').inject(Kernel) {|context, x| context.const_get x}
-        model = model_class.new
-        model.model_name = user_defined_name
-        DataModels.instance[user_defined_name] = model
+      if DataModels.has_key?(user_defined_name)
+        return DataModels[user_defined_name] unless (DataModels[user_defined_name].class.to_s =~ /Class:/)
       end
-      DataModels.instance[user_defined_name]
+      # Get the reference to the class
+      model_class = model_name.split('::').inject(Kernel) {|context, x| context.const_get x}
+      model = model_class.new(:model_name => user_defined_name)
+      DataModels[user_defined_name] = model
     end
   end
 end
@@ -29,8 +27,6 @@ end
 
 # Return the models from the collection of existing models
 MODEL = Transform /^\[(\S+)\]$/ do |model_name|
-  DataModels.instance ||= {}
-  raise "#{model_name} is not a defined model!" unless DataModels.instance[model_name]
-  DataModels.instance[model_name]
+  DataModels[model_name] ||= Struct.new(:model_name).new(model_name)
 end
 
