@@ -50,7 +50,9 @@ module Watirmark
       if Configuration.instance.default_firefox_profile
         profile = Selenium::WebDriver::Firefox::Profile.from_name Configuration.instance.default_firefox_profile
       else
-        profile = Selenium::WebDriver::Firefox::Profile.from_name 'default'
+        profile = Selenium::WebDriver::Firefox::Profile.new
+        profile.add_extension File.join(File.expand_path(__FILE__), '..', '..', '..', 'vendor\mozilla\firebug-1.9.1-fx.xpi')
+        profile['extensions.firebug.showFirstRunPage'] = false
       end
       profile.native_events = false
       profile
