@@ -3,6 +3,8 @@ require_relative 'cucumber_helper'
 module Watirmark
   module Model
 
+    DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
+
     class Base < Class.new(Struct)
       include CucumberHelper
 
@@ -25,7 +27,12 @@ module Watirmark
         def search_term &block
           @search = block
         end
+
+        def include_defaults block
+          block.call @default
+        end
       end
+
 
 
       attr_accessor :default, :uuid, :model_name, :models, :parent, :children

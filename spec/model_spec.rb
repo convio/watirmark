@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'watirmark'
 
 
 describe "model declaration" do
@@ -319,4 +318,45 @@ describe "methods in Enumerable should not collide with model defaults" do
     Zip = Watirmark::Model::Person.new(:zip)
     Zip.new.zip.should == "78732"
   end
+end
+
+describe "allow for sharing defaults" do
+
+  before :all do
+      additional_user_information = Proc.new do |default|
+        default.last_name   {"last_#{uuid}"}
+        default.middle_name {"MiddleName".strip}
+      end
+
+    @model_a = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
+      default.first_name  {'A'}
+      include_defaults additional_user_information
+    end
+
+    @model_b = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
+      default.first_name  {'B'}
+      include_defaults additional_user_information
+    end
+  end
+
+  specify "should have same default middle names" do
+    a = @model_a.new
+    b = @model_b.new
+    a.middle_name.should == b.middle_name
+  end
+
+  specify "should have default last names that start with last_ and end with their uuid" do
+    a = @model_a.new
+    b = @model_b.new
+    a.last_name.should include "last"
+    b.last_name.should include "last"
+    a.last_name.should_not == b.last_name
+  end
+
+  specify "should have different default first names" do
+    a = @model_a.new
+    b = @model_b.new
+    a.first_name.should_not == b.first_name
+  end
+
 end

@@ -10,7 +10,7 @@ end
 DataModels = {}
 
 
-DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
+
 
 
 
