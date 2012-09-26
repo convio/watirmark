@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = %q{Watirmark is Convio's test framework}
   s.homepage = %q{http://github.com/convio/watirmark}
   s.summary = %Q{watirmark #{version}}
-  s.files = Dir['lib/**/*.rb', 'app_generators/**/*']
+  s.files = Dir['lib/**/*.rb', 'app_generators/**/*', 'bin/**/*']
   s.test_files =  Dir['spec/**/*.rb']
   s.executables = "watirmark"
   s.require_paths = ["lib"]
