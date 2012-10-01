@@ -5,27 +5,76 @@ module Watirmark
   module Screenshot
 
     def self.take
-      Current.new
+      CurrentScreenShots.new
+    end
+
+    def self.compare_screenshots(masters, currents)
+      raise ArguementError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenshots
+
+      if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
+        puts "Checking Snapshot:\n   master: #{masters.masters.filename}\n   screenshot: #{currents.snapshots.filename}"
+        raise ArgumentError, "Master snapshot: #{masters.masters.md5} does not match current snapshot: #{currents.snapshots.md5}" unless masters.masters.md5 == currents.snapshots.md5
+      else
+        masters.masters.each_with_index do |master, index|
+          puts "Checking Snapshot:\n   master: #{master.filename}\n   screenshot: #{currents.snapshots[index].filename}"
+          raise ArgumentError, "Master snapshot: #{master.md5} does not match current snapshot: #{currents.snapshots[index].md5}" unless master.md5 == currents.snapshots[index].md5
+        end
+      end
+    end
+
+    class CurrentScreenShots
+      attr_accessor :screenshots
+
+      def initialize
+        if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
+          @screenshots = Current.new
+        else
+          widths = Watirmark::Configuration.instance.snapshotwidth.split(",").map {|s| s.to_i}
+          @screenshots = []
+          widths.each {|width| @screenshots << Current.new(width) }
+        end
+      end
+    end
+
+    class MasterAlbum
+      attr_accessor :album
+
+      def initialize(filename, screenshot)
+        if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
+          @album = Master.new(filename, screenshot.snapshots)
+        else
+          widths = Watirmark::Configuration.instance.snapshotwidth.split(",").map {|s| s.to_i}
+          @album = []
+          widths.each_with_index do |width, index|
+            @album << Master.new(filename.sub(/\.png/, "_width_#{width}.png"), screenshot.snapshots[index])
+          end
+        end
+      end
     end
 
     class Current
       attr_accessor :filename, :screenwidth, :screenheight
 
-      def initialize
-        update_window_size
+      def initialize(snapshotwidth=Watirmark::Configuration.instance.snapshotwidth)
+        get_screen_size
         FileUtils.mkdir_p('reports/screenshots')
-        @filename = "reports/screenshots/#{UUID.new.generate(:compact)}.png"
-        Page.browser.screenshot.save @filename
+        take_screen_shot(snapshotwidth)
         revert_window_size
+      end
+
+      def take_screen_shot(snapshotwidth)
+        update_window_size(snapshotwidth)
+        @filename = "reports/screenshots/#{UUID.new.generate(:compact)}.png"
+        Page.browser.window.use
+        Page.browser.screenshot.save @filename
       end
 
       def md5
         Digest::MD5.hexdigest(File.read(@filename))
       end
 
-      def update_window_size
-        get_screen_size
-        Page.browser.window.resize_to(Watirmark::Configuration.instance.snapshotwidth, Watirmark::Configuration.instance.snapshotheight)
+      def update_window_size(width)
+        Page.browser.window.resize_to(width, Watirmark::Configuration.instance.snapshotheight)
       end
 
       def get_screen_size
@@ -41,10 +90,8 @@ module Watirmark
 
     class Master < Current
       def initialize(filename, screenshot)
-        update_window_size
         @filename = filename
         update(screenshot) if Watirmark::Configuration.instance.create_master_snapshots
-        revert_window_size
       end
 
       def update(screenshot)
@@ -54,7 +101,6 @@ module Watirmark
         puts "Created new master: #{@filename}"
       end
     end
-
   end
 end
 
