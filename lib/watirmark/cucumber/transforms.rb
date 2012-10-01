@@ -1,7 +1,7 @@
 module Watirmark
   module Transforms
     def self.new_model model_name, user_defined_name
-      model_name = "#{model_name}Model".camelize
+      model_name = "#{model_name.delete(' ')}Model".camelize
       if DataModels.has_key?(user_defined_name)
         return DataModels[user_defined_name] unless (DataModels[user_defined_name].class.to_s =~ /Class:/)
       end
