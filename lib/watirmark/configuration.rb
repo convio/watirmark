@@ -143,9 +143,8 @@ module Watirmark
 
     # Use a common db connection
     def db
-      @db = nil if @db && @db.dbh.handle == nil
+      @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
       @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
-      @db
     end
   end
 end
