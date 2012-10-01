@@ -77,8 +77,8 @@ GEM
       user-choices
       win32-process (>= 0.5.5)
       windows-pr (>= 0.6.6)
-    watir-webdriver (0.5.3.1)
-      selenium-webdriver (>= 2.12.0)
+    watir-webdriver (0.6.1.2)
+      selenium-webdriver (>= 2.18.0)
     watirmark-log (1.0.6)
       colored
     win32-api (1.4.8-x86-mingw32)
@@ -110,5 +110,5 @@ DEPENDENCIES
   rubigen
   uuid
   watir
-  watir-webdriver (= 0.5.3.1)
+  watir-webdriver (= 0.6.1.2)
   watirmark-log
