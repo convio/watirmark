@@ -19,4 +19,5 @@ group :development do
   gem 'mocha'
   gem 'cucumber'
   gem 'rspec-mocks'
+  gem 'factory_girl'
 end

@@ -20,6 +20,7 @@ require 'watirmark/controller/controller'
 require 'american_date'
 require 'uuid'
 require 'watirmark/model'
+require 'watirmark/traits'
 require 'watirmark/rake/smoketest'
 require 'active_support/inflector'
 FileUtils.rm_rf('reports/screenshots')

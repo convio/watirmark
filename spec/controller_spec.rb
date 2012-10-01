@@ -67,11 +67,16 @@ describe Watirmark::WebPage::Controller do
     @view = ProcessPageControllerView
   end
 
+  def setup_browser
+    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
+    Page.browser.goto "file://#{@html}"
+    Page.browser = @browser
+  end
+
   before :all do
     @controller = TestController.new
     @keyword = @controller.class.specified_keywords[0]
-    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#{@html}"
+    setup_browser
   end
 
   it 'should supportradio maps in controllers' do

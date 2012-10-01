@@ -327,9 +327,12 @@ describe "allow for sharing defaults" do
         default.middle_name {"MiddleName".strip}
       end
 
+
+
     @model_a = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
       default.first_name  {'A'}
       include_defaults additional_user_information
+      #traits :middle
     end
 
     @model_b = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
@@ -359,3 +362,72 @@ describe "allow for sharing defaults" do
   end
 
 end
+
+describe "Traits test" do
+
+  before :all do
+    trait = Watirmark::Model::Traits.new
+    trait.trait :contact_name do |default|
+      default.first_name   {"first_#{uuid}"}
+      default.last_name   {"last_#{uuid}"}
+    end
+
+    trait.trait :credit_card do |default|
+      default.cardnumber {4111111111111111}
+    end
+
+    puts trait.declarations
+    @model_a = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
+
+      traits trait, :contact_name
+    end
+
+    a = @model_a.new
+  end
+
+  specify "Still Testing" do
+
+  end
+end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

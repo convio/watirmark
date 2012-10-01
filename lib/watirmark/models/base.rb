@@ -31,6 +31,13 @@ module Watirmark
         def include_defaults block
           block.call @default
         end
+
+        def traits(t, *name)
+          default if @default.nil?
+          name.each do |n|
+            t.declarations[n].call @default
+          end
+        end
       end
 
 
