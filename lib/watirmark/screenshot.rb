@@ -12,12 +12,12 @@ module Watirmark
       raise ArguementError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenshots
 
       if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
-        puts "Checking Snapshot:\n   master: #{masters.masters.filename}\n   screenshot: #{currents.snapshots.filename}"
-        raise ArgumentError, "Master snapshot: #{masters.masters.md5} does not match current snapshot: #{currents.snapshots.md5}" unless masters.masters.md5 == currents.snapshots.md5
+        puts "Checking Snapshot:\n   master: #{masters.album.filename}\n   screenshot: #{currents.screenshots.filename}"
+        raise ArgumentError, "Master snapshot: #{masters.album.md5} does not match current snapshot: #{currents.screenshots.md5}" unless masters.album.md5 == currents.screenshots.md5
       else
-        masters.masters.each_with_index do |master, index|
-          puts "Checking Snapshot:\n   master: #{master.filename}\n   screenshot: #{currents.snapshots[index].filename}"
-          raise ArgumentError, "Master snapshot: #{master.md5} does not match current snapshot: #{currents.snapshots[index].md5}" unless master.md5 == currents.snapshots[index].md5
+        masters.album.each_with_index do |master, index|
+          puts "Checking Snapshot:\n   master: #{master.filename}\n   screenshot: #{currents.screenshots[index].filename}"
+          raise ArgumentError, "Master snapshot: #{master.md5} does not match current snapshot: #{currents.screenshots[index].md5}" unless master.md5 == currents.screenshots[index].md5
         end
       end
     end
@@ -41,12 +41,12 @@ module Watirmark
 
       def initialize(filename, screenshot)
         if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
-          @album = Master.new(filename, screenshot.snapshots)
+          @album = Master.new(filename, screenshot.screenshots)
         else
           widths = Watirmark::Configuration.instance.snapshotwidth.split(",").map {|s| s.to_i}
           @album = []
           widths.each_with_index do |width, index|
-            @album << Master.new(filename.sub(/\.png/, "_width_#{width}.png"), screenshot.snapshots[index])
+            @album << Master.new(filename.sub(/\.png/, "_width_#{width}.png"), screenshot.screenshots[index])
           end
         end
       end
