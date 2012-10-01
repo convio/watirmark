@@ -1,5 +1,4 @@
-require 'spec_helper'
-
+require_relative 'spec_helper'
 
 describe "model declaration" do
   specify "set a value on instantiation" do
@@ -118,7 +117,7 @@ end
 
 describe "children" do
   before :all do
-    CamelCase = Watirmark::Model::Base.new(:first_name, :last_name)
+    camelize = Watirmark::Model::Base.new(:first_name, :last_name)
 
     Login = Watirmark::Model::Base.new(:username, :password) do
       default.username  {'username'}
@@ -130,7 +129,7 @@ describe "children" do
       default.last_name   {'my_last_name'}
 
       model Login
-      model CamelCase
+      model camelize
     end
 
     Donor = Watirmark::Model::Base.new(:credit_card) do
@@ -146,7 +145,7 @@ describe "children" do
     model = User.new
     model.login.should be_kind_of Struct
     model.login.username.should == 'username'
-    model.camel_case.should be_kind_of Struct
+    model.should be_kind_of Struct
   end
 
   specify "should be able to see nested models" do
@@ -315,8 +314,8 @@ describe "methods in Enumerable should not collide with model defaults" do
         end
       end
     end
-    Zip = Watirmark::Model::Person.new(:zip)
-    Zip.new.zip.should == "78732"
+    z = Watirmark::Model::Person.new(:zip)
+    z.new.zip.should == "78732"
   end
 end
 

@@ -1,8 +1,8 @@
-module <%= name.camelcase %>
+module <%= name.camelize %>
 <%%= create_modules %>
-    class <%%= name.camelcase %> < BaseController
-      @model = <%%= name.camelcase %>Model
-      @view = <%%= name.camelcase %>View
+    class <%%= name.camelize %> < BaseController
+      @model = <%%= name.camelize %>Model
+      @view = <%%= name.camelize %>View
     end
 <%%= create_module_end %>
 end

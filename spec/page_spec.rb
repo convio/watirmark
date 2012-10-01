@@ -1,11 +1,6 @@
-require 'spec_helper'
-require 'watirmark'
+require_relative 'spec_helper'
 
 describe 'Page' do
-
-  before :all do
-    Page.browser = nil
-  end
 
   class Page1 < Page
     keyword(:a) {"a"}
@@ -39,10 +34,6 @@ describe 'Page' do
 
   it "should list populate and verify keywords" do
     Page3.keywords.should == [:d, :e]
-  end
-
-  it "should not list navigation or private keywords" do
-    Page4.keywords.should == [:h]
   end
 
   it 'should permit verify and populate on keywords' do
@@ -105,21 +96,7 @@ describe 'Page' do
      Page1.methods.include?(:aliased_keyword=).should be_true
      Page1.aliased_keyword.should == 'a'
   end
-
 end
 
-describe 'With window' do
-  it 'should instance eval anything in the closure in the context of the window' do
-    default_browser = mock('default-browser')
-    default_browser.expects(:called).never
-    Page.browser = default_browser
-    other_browser = mock('other-browser')
-    other_browser.expects(:called)
-    Watirmark::with_window other_browser do
-      Page.browser.called
-    end
-    Page.browser.should == default_browser
-  end
-end
 
 

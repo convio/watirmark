@@ -1,58 +1,30 @@
 module Watirmark
   module Dialogs
     def modal_exists?(window=Page.browser)
-      if Watirmark::Configuration.instance.webdriver
-        !!(Page.browser.windows.size > 1)
-      else
-        Page.browser.modal_dialog.exists?
-      end
+      !!(Page.browser.windows.size > 1)
     end
 
     def with_modal_dialog(window=Page.browser, &block)
       wait_for_modal_dialog(window)
-      if Watirmark::Configuration.instance.webdriver
-        parent_window = (Page.browser.windows.size) - 2
-        begin
-          Page.browser.windows.last.use
-          Page.browser.wait
-          block.call
-        ensure
-          Page.browser.windows[parent_window].use
-        end
-      else
-        modal_hwnd = window.modal_dialog.hwnd
+      parent_window = (Page.browser.windows.size) - 2
+      begin
+        Page.browser.windows.last.use
+        Page.browser.wait
         block.call
-        wait_until_modal_closed(window, modal_hwnd)
-        wait_until_frames_loaded(window)
-        wait_until_document_loaded(window)
+      ensure
+        Page.browser.windows[parent_window].use
       end
     end
 
     def wait_for_modal_dialog(window=Page.browser)
       begin
-        if Watirmark::Configuration.instance.webdriver
-          Timeout::timeout(30) {
-            until modal_exists?
-              sleep 0.002
-            end
-            Page.browser.wait
-            sleep 0.02
-          }
-        else
-          Timeout::timeout(30) {
-            begin
-              until modal_exists?(window) == true
-                sleep 0.002
-              end
-              sleep 0.02
-              until window.modal_dialog.document.readyState == 'complete'
-                sleep 0.002
-              end
-            rescue WIN32OLERuntimeError
-              retry
-            end
-          }
-        end
+        Timeout::timeout(30) {
+          until modal_exists?
+            sleep 0.002
+          end
+          Page.browser.wait
+          sleep 0.02
+        }
       rescue Timeout::Error
         raise Watirmark::TestError, 'Timed out while waiting for modal dialog to open'
       end
@@ -78,33 +50,16 @@ module Watirmark
 
     def wait_until_frames_loaded(window)
       begin
-        if Watirmark::Configuration.instance.webdriver
-          Timeout::timeout(30) {
-            return if window.document.frames.length == 0
-            window.frames.each do |frame|
-              begin
-                Watir::Wait.until { frame.document.readyState == 'complete' }
-              rescue Watir::Exception::FrameAccessDeniedException
-                # ignore these frames which could be from another domain or not accessible (javascript-fu)
-              end
-            end
-          }
-        else
-          Timeout::timeout(30) {
+        Timeout::timeout(30) {
+          return if window.document.frames.length == 0
+          window.frames.each do |frame|
             begin
-              return if window.document.frames.length == 0
-              window.frames.each do |frame|
-                begin
-                  Watir::Wait.until { frame.document.readyState == 'complete' }
-                rescue Watir::Exception::FrameAccessDeniedException
-                  # ignore these frames which could be from another domain or not accessible (javascript-fu)
-                end
-              end
-            rescue WIN32OLERuntimeError => e
-              retry unless e.message =~ /unknown property or method `readyState'/
+              Watir::Wait.until { frame.document.readyState == 'complete' }
+            rescue Watir::Exception::FrameAccessDeniedException
+              # ignore these frames which could be from another domain or not accessible (javascript-fu)
             end
-          }
-        end
+          end
+        }
       rescue Timeout::Error
         raise Watirmark::TestError, 'Timed out while waiting for frames to load'
       end

@@ -51,7 +51,7 @@ class MvcGenerator < RubiGen::Base
     end
 
     def create_modules
-        @product.split('/').map{|x| "module #{x.camelcase}\n"}.join.strip
+        @product.split('/').map{|x| "module #{x.camelize}\n"}.join.strip
     end
 
     def create_module_end

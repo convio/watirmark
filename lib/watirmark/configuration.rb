@@ -25,7 +25,7 @@ module Watirmark
         :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
         :uuid               => nil,
-        :webdriver          => nil,
+        :webdriver          => :firefox,
 
         :snapshotwidth      => 1000,
         :snapshotheight     => 1000,

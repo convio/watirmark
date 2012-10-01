@@ -1,5 +1,4 @@
-require 'spec_helper'
-require 'watirmark'
+require_relative 'spec_helper'
 
 describe Watirmark::Matcher do
   before :all do

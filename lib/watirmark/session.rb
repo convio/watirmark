@@ -1,9 +1,5 @@
 require 'watirmark/page/page'
-if Watirmark::Configuration.instance.webdriver
-  require 'watir-webdriver'
-else
-  require 'watir'
-end
+require 'watir-webdriver'
 
 module Watirmark
   
@@ -39,7 +35,6 @@ module Watirmark
     # set up the global variables, reading from the config file
     def initialize
       @@post_failure = nil
-      Watir::IE.attach_timeout = 5 unless config.webdriver
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
       }
@@ -70,21 +65,11 @@ module Watirmark
 
     # Set up @@browser
     def initialize_browser
-      if config.webdriver
-        case config.webdriver.to_sym
-        when :firefox
-          @@browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
-        else
-          @@browser ||= Watir::Browser.new config.webdriver.to_sym
-        end
+      case config.webdriver.to_sym
+      when :firefox
+        @@browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
       else
-        Watir::IE.visible = !!config.visible
-        @@browser = Watir::IE.find(:title, attach_title) if config.attach
-        @@browser ||= Watir::IE.new_process
-        @@browser.speed = config.speed
-        if Watir.constants.include?('VERSION') && Watir::VERSION =~ /1\.(8|9)/
-          @@browser.disable_waiter(:ie_busy) if  @@browser.waiters.include? :ie_busy
-        end
+        @@browser ||= Watir::Browser.new config.webdriver.to_sym
       end
       POST_WAIT_CHECKERS.each {|p| @@browser.add_checker p}
       nil
@@ -112,7 +97,5 @@ module Watirmark
       config.session = false
       config.loggedin = false
     end
-
   end
-  IESession = Session  #need to deprecate other usage
 end

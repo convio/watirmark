@@ -14,7 +14,6 @@ Gem::Specification.new do |s|
   s.test_files =  Dir['spec/**/*.rb']
   s.executables = "watirmark"
   s.require_paths = ["lib"]
-  s.add_dependency("watir") if RUBY_PLATFORM == "i386-mingw32"
   s.add_dependency("watir-webdriver")
   s.add_dependency("american_date")
   s.add_dependency("logger")

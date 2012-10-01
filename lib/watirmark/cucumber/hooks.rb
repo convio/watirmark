@@ -7,12 +7,10 @@ Before('~@catch-post-failure') do
   Watirmark::Session.instance.post_failure = nil
 end
 
-if Watirmark::Configuration.instance.webdriver
-  After do |scenario|
-    image = "#{UUID.new.generate(:compact)}.png"
-    path = "reports/screenshots"
-    FileUtils.mkdir_p path unless File.directory? path
-    Page.browser.screenshot.save "#{path}/#{image}"
-    embed "screenshots/#{image}", 'image/png'
-  end
+After do |scenario|
+  image = "#{UUID.new.generate(:compact)}.png"
+  path = "reports/screenshots"
+  FileUtils.mkdir_p path unless File.directory? path
+  Page.browser.screenshot.save "#{path}/#{image}"
+  embed "screenshots/#{image}", 'image/png'
 end

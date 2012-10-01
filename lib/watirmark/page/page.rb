@@ -254,7 +254,7 @@ module Watirmark
       def browser
         unless @@browser
           @@browser = Watirmark::Session.instance.openbrowser
-          Page.browser.screenshot.base64 if Watirmark::Configuration.instance.webdriver
+          Page.browser.screenshot.base64
         end
         @@browser
       end
@@ -290,36 +290,23 @@ module Watirmark
         if @map
           val = @map.lookup(val)
         end
-        if Watirmark::Configuration.instance.webdriver
-          case val
-            when 'nil'
-              element.clear # workaround to empty element values
-            else
-              case element
-                when Watir::Radio
-                  element.set val
-                when Watir::CheckBox
-                  val ? element.set : element.clear
-                when Watir::Select
-                  element.select val
-                when Watir::Button
-                  element.click
-                else
-                  element.value = val
-              end
-          end
-        else
-          case val
-            when 'nil'
-              element.clear # workaround to empty element values
-            when /devnull([^@]*@(.+))/
-              element.value = "#{Watirmark::Configuration.instance.email}#{$1}"
-            else
-              element.value = val
-          end
+        case val
+          when 'nil'
+            element.clear # workaround to empty element values
+          else
+            case element
+              when Watir::Radio
+                element.set val
+              when Watir::CheckBox
+                val ? element.set : element.clear
+              when Watir::Select
+                element.select val
+              when Watir::Button
+                element.click
+              else
+                element.value = val
+            end
         end
-
-
       end
 
       def activate_process_page

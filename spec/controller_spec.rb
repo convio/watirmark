@@ -1,10 +1,4 @@
-require 'spec_helper'
-if RUBY_PLATFORM =~ /mswin|mingw/
-  require 'watir/ie'
-else
-  require 'watir-webdriver'
-end
-require 'watirmark'
+require_relative 'spec_helper'
 
 describe Watirmark::WebPage::Controller do
 
@@ -73,16 +67,11 @@ describe Watirmark::WebPage::Controller do
     @view = ProcessPageControllerView
   end
 
-  def setup_browser
-    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#{@html}"
-    Page.browser = @browser
-  end
-
   before :all do
     @controller = TestController.new
     @keyword = @controller.class.specified_keywords[0]
-    setup_browser
+    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
+    Page.browser.goto "file://#{@html}"
   end
 
   it 'should supportradio maps in controllers' do

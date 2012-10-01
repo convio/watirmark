@@ -1,6 +1,6 @@
-module <%= name.camelcase %>
+module <%= name.camelize %>
 <%%= create_modules %>
-    class <%%= name.camelcase %>View < BaseView
+    class <%%= name.camelize %>View < BaseView
       keyword(:name)  { browser.text_field(:id, 'name') }
 
       class << self

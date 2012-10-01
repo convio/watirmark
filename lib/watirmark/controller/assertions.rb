@@ -18,48 +18,25 @@ module Watirmark
 
     # Returns the user visible value of the element.
     def actual_value element, expected=nil
-      if Watirmark::Configuration.instance.webdriver
-        case element
-          when Watir::Select
-            element.selected_options.first.text
-          when Watir::CheckBox
-            element.set?
-          when Watir::Radio
-            if element.set?(expected)
-              expected
-            else
-              element.value
-            end
-          when Watir::TextField
+      case element
+        when Watir::Select
+          element.selected_options.first.text
+        when Watir::CheckBox
+          element.set?
+        when Watir::Radio
+          if element.set?(expected)
+            expected
+          else
+            element.value
+          end
+        when Watir::TextField
+          element.value
+        else
+          if element.respond_to?(:value) && element.value != ''
             element.value
           else
-            if element.respond_to?(:value) && element.value != ''
-              element.value
-            else
-              element.text
-            end
-        end
-      else
-        case element
-          when Watir::SelectList
-            element.getSelectedItems[0]
-          when Watir::CheckBox
-            element.isSet?
-          when Watir::Radio
-            if element.valueIsSet?(expected)
-              expected
-            else
-              element.value # not really correct, but the best we can do right now
-            end
-          when Watir::TextField
-            element.value
-          else
-            if element.value != ''
-              element.value
-            else
-              element.text
-            end
-        end
+            element.text
+          end
       end
     end
     
