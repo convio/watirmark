@@ -9,7 +9,7 @@ module Watirmark
     end
 
     def self.compare_screenshots(masters, currents)
-      raise ArguementError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenshots
+      raise ArguementError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenShots
 
       if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
         puts "Checking Snapshot:\n   master: #{masters.album.filename}\n   screenshot: #{currents.screenshots.filename}"
