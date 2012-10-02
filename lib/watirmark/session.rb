@@ -38,7 +38,7 @@ module Watirmark
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
       }
-      config.firefox_profile = default_firefox_profile if config.webdriver == :firefox
+      config.firefox_profile = default_firefox_profile if config.webdriver.to_s == 'firefox'
     end
 
     def default_firefox_profile
