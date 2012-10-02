@@ -38,11 +38,12 @@ module Watirmark
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
       }
-      config.firefox_profile = default_firefox_profile if config.webdriver == 'firefox'
+      config.firefox_profile = default_firefox_profile if config.webdriver == :firefox
     end
 
     def default_firefox_profile
       if Configuration.instance.default_firefox_profile
+        puts "Using firefox profile: #{Configuration.instance.default_firefox_profile}"
         profile = Selenium::WebDriver::Firefox::Profile.from_name Configuration.instance.default_firefox_profile
       else
         profile = Selenium::WebDriver::Firefox::Profile.new
