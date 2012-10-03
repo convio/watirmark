@@ -96,6 +96,9 @@ module Watirmark
           parse_text_file filename
         when ".yml"
           parse_yaml_file filename
+        else
+          warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
+          parse_text_file filename
       end
     end
     alias :read :read_from_file
