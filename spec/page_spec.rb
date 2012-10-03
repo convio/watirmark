@@ -75,11 +75,16 @@ describe 'Page' do
   end
 
   it 'should be able to get and set the browser' do
-    Page.browser = 'browser'
-    Page1.browser.should == 'browser'
-    Page2.browser.should == 'browser'
-    Page3.browser.should == 'browser'
-    Page4.browser.should == 'browser'
+    old_browser = Page.browser
+    begin
+      Page.browser = 'browser'
+      Page1.browser.should == 'browser'
+      Page2.browser.should == 'browser'
+      Page3.browser.should == 'browser'
+      Page4.browser.should == 'browser'
+    ensure
+      Page.browser = old_browser
+    end
   end
 
   it 'should not leak keywords to other classes' do

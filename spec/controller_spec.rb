@@ -166,10 +166,10 @@ describe Watirmark::WebPage::Controller do
     VerifyController.new(:validate1 => '1',:validate2 => 'a',:validate3 => 1.1).verify_data
   end
 
-  it 'should only throw the first validation exception when there are 3 three problems' do
+  it 'should only throw one validation exception when there are 3 three problems' do
     lambda {
     VerifyController.new(:validate1 => 'z',:validate2 => 'y',:validate3 => 'x').verify_data
-    }.should raise_error(Watirmark::VerificationException,/Multiple problems/)
+    }.should raise_error(Watirmark::VerificationException)
   end
 
   it 'should throw an exception when verifying a verify_keyword fails' do
