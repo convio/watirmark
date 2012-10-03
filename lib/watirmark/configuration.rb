@@ -103,27 +103,6 @@ module Watirmark
     end
     alias :read :read_from_file
 
-
-    def parse_yaml_file filename
-      settings = YAML.load_file filename
-      settings.each_pair do |key, value|
-        update_key key, value
-      end
-    end
-
-    # This is the old-style method of using a config.txt
-    def parse_text_file filename
-      warn("Warning: Deprecated use of config.txt. Please use config.yml instead")
-      for line in IO.readlines(filename)
-        line.strip!                             # Remove all extraneous whitespace
-        line.sub!(/#.*$/, "")                   # Remove comments
-        next unless line.length > 0             # Anything left?
-        (key, value) = line.split(/\s*=\s*/, 2)
-        update_profile key
-        update_key key, value
-      end
-    end
-      
     # The variable needs to be set as a default here or in the
     # library to be read from the environment
     def read_from_environment
@@ -180,7 +159,21 @@ module Watirmark
       end
     end
 
+    def parse_yaml_file filename
+      YAML.load_file(filename).each_pair {|key, value| update_key key, value}
+    end
 
-
+    # This is the old-style method of using a config.txt
+    def parse_text_file filename
+      warn("Warning: Deprecated use of config.txt. Please use config.yml instead")
+      for line in IO.readlines(filename)
+        line.strip!                             # Remove all extraneous whitespace
+        line.sub!(/#.*$/, "")                   # Remove comments
+        next unless line.length > 0             # Anything left?
+        (key, value) = line.split(/\s*=\s*/, 2)
+        update_profile key
+        update_key key, value
+      end
+    end
   end
 end
