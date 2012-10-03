@@ -8,7 +8,6 @@ describe Watirmark::WebPage::Controller do
   end
 
   class TestController < Watirmark::WebPage::Controller
-    keyword :text_field
     attr_accessor :model
     @view = TestView
     def initialize
@@ -69,7 +68,7 @@ describe Watirmark::WebPage::Controller do
 
   before :all do
     @controller = TestController.new
-    @keyword = @controller.class.specified_keywords[0]
+    @keyword = :text_field
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
     Page.browser.goto "file://#{@html}"
   end
@@ -119,12 +118,7 @@ describe Watirmark::WebPage::Controller do
     def @controller.after_text_field; 'after';  end
     @controller.expects(:before_text_field).returns('before').once
     @controller.expects(:after_text_field).returns('after').once
-    @controller.populate {}
-  end
-
-  it 'should create class methods for the keyword in the controller' do
-    TestController.respond_to?('keyword').should be_true
-    TestController.respond_to?('keywords').should be_true
+    @controller.populate_data {}
   end
 
   it 'should propogate page declaration to subclasses' do
@@ -143,43 +137,17 @@ describe Watirmark::WebPage::Controller do
       end
     end
     controller.view.should == MyView
+    instance = controller.new :element => 'new value'
     @@element.expects(:exists?).at_least_once.returns(true)
     @@element.expects(:value).at_least_once.returns('new value')
-    controller.verify :element => 'new value'
-  end
-
-  it 'should support direct reject requests' do
-    class TestControllerReject < TestController
-      reject :select_list
-    end
-    c = TestControllerReject.new
-    c.respond_to?(:populate_select_list).should be_true
-    c.respond_to?(:verify_select_list).should be_true
-  end
-
-  it 'should support direct populate_only requests' do
-    class TestControllerPopulateOnly < TestController
-      populate_only :select_list
-    end
-    c = TestControllerPopulateOnly.new
-    c.respond_to?(:populate_select_list).should be_false
-    c.respond_to?(:verify_select_list).should be_true
-  end
-
-  it 'should support direct verify_only requests' do
-    class TestControllerVerifyOnly < TestController
-      verify_only :select_list
-    end
-    c = TestControllerVerifyOnly.new
-    c.respond_to?(:populate_select_list).should be_true
-    c.respond_to?(:verify_select_list).should be_false
+    instance.verify_data
   end
 
   it 'should support before methods for process pages' do
     c = TestProcessPageController.new({:a=>1, :b=>1, :c=>1})
     def c.before_process_page_page_1; true; puts '11111'; end
     c.expects(:before_process_page_page_1).returns('true').once
-    c.populate
+    c.populate_data
   end
 
   it 'should throw a Watirmark::VerificationException when a verification fails' do
@@ -213,17 +181,17 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should not throw an exception when populating with a verify_keyword' do
-    VerifyController.new(:label1 => 'string').populate
+    VerifyController.new(:label1 => 'string').populate_data
   end
 
   it 'should throw an exception when populating a populate_keyword fails' do
     lambda {
-      VerifyController.new(:populate2 => '32').populate
+      VerifyController.new(:populate2 => '32').populate_data
     }.should raise_error(NoMethodError)
   end
 
   it 'should not throw an exception when populating a populate_keyword succeeds' do
-    VerifyController.new(:populate1 => '3.14159').populate
+    VerifyController.new(:populate1 => '3.14159').populate_data
   end
 
   it 'should not throw an exception when verifying with a populate_keyword' do
@@ -232,27 +200,27 @@ describe Watirmark::WebPage::Controller do
 
   it 'should not populate a private_keyword successfully' do
     c = VerifyController.new(:validate1 => 'hello')
-    c.populate
-    VerifyController.new(:private_validate1 => 'goodbye').populate
+    c.populate_data
+    VerifyController.new(:private_validate1 => 'goodbye').populate_data
     c.verify_data
   end
 
   it 'should not verify a private_keyword successfully' do
     c = VerifyController.new(:private_validate1 => 'hello')
-    VerifyController.new(:validate1 => 'goodbye').populate
+    VerifyController.new(:validate1 => 'goodbye').populate_data
     c.verify_data
   end
 
   it 'should not throw an exception when populating or verifying a private_keyword fails' do
     c = VerifyController.new(:private_validate1 => 'goodbye')
-    c.populate
+    c.populate_data
     c.model.update(:private_validate1 => 'hello')
     c.verify_data
   end
 
   it 'should not throw an exception when populating or verifying a navigation_keyword fails' do
     c = VerifyController.new(:button1 => 'Cancel')
-    c.populate
+    c.populate_data
     c.model.update(:button1 => 'Submit')
     c.verify_data
   end
