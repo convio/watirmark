@@ -67,7 +67,9 @@ describe Watirmark::WebPage::Controller do
   end
 
   before :all do
-    @controller = TestController.new
+    @controller = Class.new(TestController) do
+     public :set, :value_for
+    end.new
     @keyword = :text_field
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
     Page.browser.goto "file://#{@html}"
