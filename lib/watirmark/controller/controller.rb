@@ -32,11 +32,7 @@ module Watirmark
       end
 
       def model=(x)
-        if Hash === x
-          @model = hash_to_model(x)
-        else
-          @model = x
-        end
+        @model = (x.kind_of?(Hash) ? hash_to_model(x) : x)
       end
 
       def populate_data
@@ -57,9 +53,7 @@ module Watirmark
               self.send(method);
             end
           end
-          unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:populate]
-            next
-          end
+          next unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:populate]
           begin
             value = value_for(keyword)
             value.nil? ? next : seen_value = true
