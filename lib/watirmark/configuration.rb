@@ -55,6 +55,10 @@ module Watirmark
       @settings.inspect
     end
 
+    def reset
+      @settings.each_key {|key| @settings.delete key}
+    end
+
     def [](key)
       @settings[key.to_sym]
     end
@@ -76,6 +80,13 @@ module Watirmark
       end
     end
 
+    # Use a common db connection
+    def db
+      @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
+      @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
+    end
+
+
     # This will read in ANY variable set in a configuration file
     def read_from_file
       return unless File.exists?(configfile.to_s)
@@ -86,14 +97,15 @@ module Watirmark
         when ".yml"
           parse_yaml_file filename
       end
-
     end
     alias :read :read_from_file
 
 
     def parse_yaml_file filename
-      configuration = YAML.load_file filename
-
+      settings = YAML.load_file filename
+      settings.each_pair do |key, value|
+        update_key key, value
+      end
     end
 
     # This is the old-style method of using a config.txt
@@ -103,33 +115,12 @@ module Watirmark
         line.strip!                             # Remove all extraneous whitespace
         line.sub!(/#.*$/, "")                   # Remove comments
         next unless line.length > 0             # Anything left?
-        var = String.new
-        value = String.new
-        (var, value) = line.split(/\s*=\s*/, 2)
-        if var =~ /^profile\[:(.+)\]\[:(.+)\]/
-          if self[:profile][$1.to_sym] == nil
-            self[:profile] = ({$1.to_sym => {$2.to_sym => value.to_s}})
-          else
-            self[:profile][$1.to_sym].merge!({$2.to_sym => value.to_s})
-          end
-        end
-        case value
-          when 'true'
-            update var.to_sym => true
-          when 'false'
-            update var.to_sym => false
-          when /^:(.+)/
-            update var.to_sym => $1.to_sym
-          when /^\d+\s*$/
-            update var.to_sym => value.to_i
-          when /^(\d*\.\d+)\s*$/
-            update var.to_sym => value.to_f
-          else
-            update var.to_sym => value
-        end
+        (key, value) = line.split(/\s*=\s*/, 2)
+        update_profile key
+        update_key key, value
       end
     end
-
+      
     # The variable needs to be set as a default here or in the
     # library to be read from the environment
     def read_from_environment
@@ -158,10 +149,35 @@ module Watirmark
       update({:logger => logger})
     end
 
-    # Use a common db connection
-    def db
-      @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
-      @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
+  private
+
+    def update_key key, value
+      case value
+        when 'true'
+          update key.to_sym => true
+        when 'false'
+          update key.to_sym => false
+        when /^:(.+)/
+          update key.to_sym => $1.to_sym
+        when /^\d+\s*$/
+          update key.to_sym => value.to_i
+        when /^(\d*\.\d+)\s*$/
+          update key.to_sym => value.to_f
+        else
+          update key.to_sym => value
+      end
     end
+
+    def update_profile key
+      return unless key =~ /^profile\[:(.+)\]\[:(.+)\]/
+      if self[:profile][$1.to_sym] == nil
+        self[:profile] = ({$1.to_sym => {$2.to_sym => value.to_s}})
+      else
+        self[:profile][$1.to_sym].merge!({$2.to_sym => value.to_s})
+      end
+    end
+
+
+
   end
 end

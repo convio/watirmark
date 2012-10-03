@@ -27,6 +27,7 @@ describe "text file" do
 
   before :all do
     @config = Watirmark::Configuration.instance
+    @config.reset
     @config.configfile = File.dirname(__FILE__) + '/configurations/config.txt'
     @config.read_from_file
   end
@@ -37,7 +38,8 @@ describe "yaml file" do
 
   before :all do
     @config = Watirmark::Configuration.instance
-    @config.configfile = File.dirname(__FILE__) + '/configurations/config.yaml'
+    @config.reset
+    @config.configfile = File.dirname(__FILE__) + '/configurations/config.yml'
     @config.read_from_file
   end
 end
