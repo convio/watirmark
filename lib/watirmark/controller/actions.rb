@@ -141,11 +141,6 @@ module Watirmark
       /^#{Regexp.escape(x)}/
     end
 
-    # Return all of the text in a browser. :TODO: remove
-    def verify_contains_text
-      @browser.text
-    end
-
     # Stubs so converted XLS->RSPEC files don't fail
     def before_all; end
     def before_each; end

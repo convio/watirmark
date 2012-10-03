@@ -13,58 +13,12 @@ module Watirmark
       include Watirmark::Actions
 
       class << self
-        attr_accessor :view, :model, :search, :process_page, :specified_keywords
+        attr_accessor :view, :model, :search, :process_page
 
         def inherited(klass) #:nodoc:
           klass.view ||= @view if @view
           klass.model ||= @model if @model
           klass.search ||= @search if @search
-        end
-
-        # For custom Keyword classes we want to filter out
-        # any keywords that are automatically generated so
-        # we don't get or set them twice. This builds a list
-        # of keywords to remove from the auto-generated lists.
-
-        def stub (method_name)
-          define_method method_name.to_sym do
-            ;
-          end
-        end
-
-        def reject(*items)
-          Kernel.warn("Warning: Deprecated use of reject in #{self}. Use private_keyword instead")
-          items.each { |item| stub "populate_#{item}"; stub "verify_#{item}"; }
-        end
-
-        def verify_only(*items)
-          Kernel.warn("Warning: Deprecated use of verify_only in #{self}. Use verify_keyword instead")
-          items.each { |item| stub "populate_#{item}" }
-        end
-
-        def populate_only(*items)
-          Kernel.warn("Warning: Deprecated use of populate_only in #{self}. Use populate_keyword instead")
-          items.each { |item| stub "verify_#{item}" }
-        end
-
-        def keyword(x)
-          (@specified_keywords ||= []) << x
-        end
-
-        def keywords(items)
-          items.each { |item| self.keyword(item) }
-        end
-
-        # Populate with model values
-        def populate(x)
-          new(x).populate
-          return
-        end
-
-        # Verify the UI values and compare with the model values
-        def verify(x)
-          new(x)._verify_
-          return
         end
       end
 
@@ -74,7 +28,6 @@ module Watirmark
         @view = self.class.view
         @search = self.class.search
         @process_page = self.class.process_page
-        @specified_keywords = self.class.specified_keywords
         case @supermodel
           when Hash
             if self.class.model
@@ -110,12 +63,7 @@ module Watirmark
       end
 
       def each_keyword #:nodoc:
-                       # user has overridden keywords so don't automatically get anything else
-        if @specified_keywords
-          @specified_keywords.each { |x| yield x, nil }
-          # This should probably go away if we can work out how to
-          # handle TR process pages in what is required and not
-        elsif @process_page
+        if @process_page
           process_page_keywords(@view[@process_page]) { |x| yield x, @process_page }
         elsif @view.process_pages
           @view.process_pages.each { |page| process_page_keywords(page) { |x| yield x, page.name } }
@@ -141,11 +89,9 @@ module Watirmark
 
       # This action will populate all of the items
       # in the view with values in @model
-      def populate
-        _submit_ if populate_values
+      def populate_data
+        submit_process_page if populate_values
       end
-
-      alias :populate_data :populate
 
       def populate_values
         seen_value = false
@@ -153,7 +99,7 @@ module Watirmark
         each_keyword do |keyword, process_page|
           if @last_process_page != process_page
             if seen_value && @view[process_page].page_name !~ /::/ #hack so we handle inherited kwds without submits
-              _submit_
+              submit_process_page
               seen_value = false
             end
             @last_process_page = process_page
@@ -178,7 +124,7 @@ module Watirmark
 
       # This action will verify all values in the
       # view against @model without page submission
-      def _verify_ #:nodoc:
+      def verify_data
         verification_errors = []
         each_keyword do |keyword, process_page_name|
           unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:verify]
@@ -202,12 +148,10 @@ module Watirmark
         end
       end
 
-      alias :verify_data :_verify_
-
       # Check before submitting to see if the process page
       # submit override is being used, then submit and allow the controller
       # to override the submit method if necessary
-      def _submit_
+      def submit_process_page
         method = nil
         method = "submit_process_page_#{last_process_page_name}" if @last_process_page
         if method && self.respond_to?(method)
@@ -270,10 +214,6 @@ module Watirmark
         self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @model.send(keyword)
       end
 
-    end
-
-    def log
-      Watirmark::Configuration.instance.logger
     end
 
   end
