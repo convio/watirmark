@@ -152,10 +152,9 @@ module Watirmark
       private :get_keyed_element
 
       # Create an alias to an existing keyword
-      # @deprecated Use of keyword_alias is deprecated
       def keyword_alias(keyword_alias_name, keyword_name)
         keyword(keyword_alias_name) do
-          Kernel.warn("Warning: Deprecated use of `#{__callee__}` to access "\
+          warn("Warning: Deprecated use of `#{__callee__}` to access "\
               "`#{keyword_name}` with `#{keyword_alias_name}`in #{self}.")
           send keyword_name
         end
