@@ -67,16 +67,11 @@ describe Watirmark::WebPage::Controller do
     @view = ProcessPageControllerView
   end
 
-  def setup_browser
-    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#{@html}"
-    Page.browser = @browser
-  end
-
   before :all do
     @controller = TestController.new
     @keyword = @controller.class.specified_keywords[0]
-    setup_browser
+    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
+    Page.browser.goto "file://#{@html}"
   end
 
   it 'should supportradio maps in controllers' do
@@ -264,7 +259,6 @@ describe Watirmark::WebPage::Controller do
 end
 
 describe "controllers should be able to detect and use embedded models" do
-
   before :all do
     class MyView < Page
       keyword(:element) {@@element}
@@ -272,6 +266,7 @@ describe "controllers should be able to detect and use embedded models" do
     @controller = Class.new Watirmark::WebPage::Controller do
       @view = MyView
     end
+    Foo =  Watirmark::Model::Base.new(:first_name)
     User = Watirmark::Model::Base.new(:first_name)
     Login = Watirmark::Model::Base.new(:username)
     Password = Watirmark::Model::Base.new(:password)
@@ -295,46 +290,20 @@ describe "controllers should be able to detect and use embedded models" do
   end
 end
 
-describe "Similar Models" do
-
+describe "controllers should create a default model if one exists" do
   before :all do
-
-    ModelFactory do
-      name     :DonationModel
-      role     :Donation
-      keywords :first_name
-      default.first_name {"A"}
+    class MyView < Page
+      private_keyword(:element)
     end
-
-    DonationModel = Watirmark::Model::Base.new(:first_name) do
-      default.first_name {"A"}
-    end
-
-    ModelFactory do
-      name :DonationModel2
-
-      keywords :first_name
-      default.first_name {"A"}
-    end
-
-    class DonationModel2 < DonationModel
-      default.first_name {"B"}
-    end
-
-    Registration = Watirmark::Model::Base.new(:first_name) do
-      model Donation
-    end
-
-    Registration2 = Watirmark::Model::Base.new(:first_name) do
-      model Donation2
+    MyModel = Watirmark::Model::Base.new(:element)
+    @controller = Class.new Watirmark::WebPage::Controller do
+      @view = MyView
+      @model = MyModel
     end
   end
 
-  it 'should have similar models' do
-    r = Registration.new
-    r2 = Registration2.new
-    r2.donation2.kind_of.should == r.donation.class
+  it 'should be able to see itself' do
+    c = @controller.new
+    c.model.should be_kind_of(MyModel)
   end
-
-
 end
