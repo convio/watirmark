@@ -20,7 +20,6 @@ module Watirmark
         :closebrowseronexit => false,
         :loggedin           => false,
         :visible            => true,
-        :speed              => :zippy,
         :profile            => Hash.new {|h,k| h[k] = Hash.new},
         :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
@@ -79,8 +78,27 @@ module Watirmark
 
     # This will read in ANY variable set in a configuration file
     def read_from_file
-      return nil if !configfile || (configfile && !File.exists?(configfile))
+      return unless File.exists?(configfile.to_s)
       filename = File.expand_path(configfile)
+      case File.extname filename
+        when ".txt"
+          parse_text_file filename
+        when ".yml"
+          parse_yaml_file filename
+      end
+
+    end
+    alias :read :read_from_file
+
+
+    def parse_yaml_file filename
+      configuration = YAML.load_file filename
+
+    end
+
+    # This is the old-style method of using a config.txt
+    def parse_text_file filename
+      warn("Warning: Deprecated use of config.txt. Please use config.yml instead")
       for line in IO.readlines(filename)
         line.strip!                             # Remove all extraneous whitespace
         line.sub!(/#.*$/, "")                   # Remove comments
@@ -111,7 +129,6 @@ module Watirmark
         end
       end
     end
-    alias :read :read_from_file
 
     # The variable needs to be set as a default here or in the
     # library to be read from the environment

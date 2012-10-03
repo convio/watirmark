@@ -1,0 +1,5 @@
+string:  foo
+boolean: true
+integer: 3
+float:   1.2
+symbol:  :foo
