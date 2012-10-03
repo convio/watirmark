@@ -30,41 +30,6 @@ module Watirmark
       end
     end
 
-    def wait_until_modal_closed(window, hwnd=nil)
-      return unless modal_exists?(window)
-      return if hwnd && window.modal_dialog.hwnd != hwnd
-      begin
-        Timeout::timeout(30) {
-          until modal_exists?(window) == false
-            sleep 0.002
-          end
-        }
-      rescue Timeout::Error
-        raise Watirmark::TestError, 'Timed out while waiting for modal dialog to close'
-      end
-    end
-
-    def wait_until_document_loaded(window)
-      window.wait if window.document.readyState != 'complete'
-    end
-
-    def wait_until_frames_loaded(window)
-      begin
-        Timeout::timeout(30) {
-          return if window.document.frames.length == 0
-          window.frames.each do |frame|
-            begin
-              Watir::Wait.until { frame.document.readyState == 'complete' }
-            rescue Watir::Exception::FrameAccessDeniedException
-              # ignore these frames which could be from another domain or not accessible (javascript-fu)
-            end
-          end
-        }
-      rescue Timeout::Error
-        raise Watirmark::TestError, 'Timed out while waiting for frames to load'
-      end
-    end
-
     # Dialog is expected so wait for it and by default,
     # the title should be an exact match
     def close_dialog(window=nil, button='OK', exact_match=true, timeout=60, &block)
