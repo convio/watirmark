@@ -272,7 +272,6 @@ describe "controllers should be able to detect and use embedded models" do
     @controller = Class.new Watirmark::WebPage::Controller do
       @view = MyView
     end
-    Foo =  Watirmark::Model::Base.new(:first_name)
     User = Watirmark::Model::Base.new(:first_name)
     Login = Watirmark::Model::Base.new(:username)
     Password = Watirmark::Model::Base.new(:password)
@@ -294,4 +293,48 @@ describe "controllers should be able to detect and use embedded models" do
   it 'should be able to see a nested sub_model' do
     @model.find(Password).should == @password
   end
+end
+
+describe "Similar Models" do
+
+  before :all do
+
+    ModelFactory do
+      name     :DonationModel
+      role     :Donation
+      keywords :first_name
+      default.first_name {"A"}
+    end
+
+    DonationModel = Watirmark::Model::Base.new(:first_name) do
+      default.first_name {"A"}
+    end
+
+    ModelFactory do
+      name :DonationModel2
+
+      keywords :first_name
+      default.first_name {"A"}
+    end
+
+    class DonationModel2 < DonationModel
+      default.first_name {"B"}
+    end
+
+    Registration = Watirmark::Model::Base.new(:first_name) do
+      model Donation
+    end
+
+    Registration2 = Watirmark::Model::Base.new(:first_name) do
+      model Donation2
+    end
+  end
+
+  it 'should have similar models' do
+    r = Registration.new
+    r2 = Registration2.new
+    r2.donation2.kind_of.should == r.donation.class
+  end
+
+
 end

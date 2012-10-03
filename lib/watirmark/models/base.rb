@@ -32,11 +32,8 @@ module Watirmark
           block.call @default
         end
 
-        def traits(t, *name)
-          default if @default.nil?
-          name.each do |n|
-            t.declarations[n].call @default
-          end
+        def traits(*name)
+          name.each {|n| instance_exec(&Watirmark::Model::Traits.instance[n])}
         end
       end
 
@@ -65,6 +62,10 @@ module Watirmark
       # or will look in a parent's model. This allows us to define it once for a composed model
       def search_term
         instance_eval(&@search) || (parent.search_term if parent)
+      end
+
+      def kind_of
+        self.class.superclass
       end
 
 

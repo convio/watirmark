@@ -365,28 +365,56 @@ end
 
 describe "Traits test" do
 
+
   before :all do
-    trait = Watirmark::Model::Traits.new
-    trait.trait :contact_name do |default|
-      default.first_name   {"first_#{uuid}"}
-      default.last_name   {"last_#{uuid}"}
+
+    module Watirmark::Model
+      trait :contact_name do
+        default.first_name   {"first"}
+        default.last_name   {"last_#{uuid}"}
+      end
+
+      trait :credit_card do
+        default.cardnumber {4111111111111111}
+      end
     end
 
-    trait.trait :credit_card do |default|
-      default.cardnumber {4111111111111111}
+    @model_a = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :cardnumber) do
+      default.middle_name {"A"}
+      traits :contact_name, :credit_card
     end
 
-    puts trait.declarations
-    @model_a = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :nickname, :id) do
-
-      traits trait, :contact_name
+    @model_b = Watirmark::Model::Base.new(:first_name, :last_name, :middle_name, :cardnumber) do
+      default.middle_name {"B"}
+      traits :contact_name, :credit_card
     end
 
-    a = @model_a.new
   end
 
-  specify "Still Testing" do
+  specify "should have different last names" do
+    a = @model_a.new
+    b = @model_b.new
+    a.middle_name.should_not == b.middle_name
+  end
 
+  specify "should have same first names" do
+      a = @model_a.new
+      b = @model_b.new
+      b.first_name.should == b.first_name
+  end
+
+  specify "should have same last name but with different UUID" do
+    a = @model_a.new
+    b = @model_b.new
+    a.last_name.should include "last"
+    b.last_name.should include "last"
+    a.last_name.should_not == b.last_name
+  end
+
+  specify "should have same credit card number" do
+    a = @model_a.new
+    b = @model_b.new
+    a.cardnumber.should == b.cardnumber
   end
 end
 
