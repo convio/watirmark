@@ -3,17 +3,8 @@ require 'watirmark/page/radio_maps'
 
 module Watirmark
 
-  class << self
-    def with_window (window_reference, &block)
-      old_browser = Page.browser
-      Page.browser = window_reference
-      block.call
-      Page.browser = old_browser
-    end
-  end
-
   module KeywordMethods
-    ; attr_accessor :keyword, :radio_map;
+    attr_accessor :keyword, :radio_map
   end
 
   class Page
