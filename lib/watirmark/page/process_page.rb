@@ -10,27 +10,27 @@ module Watirmark
 
     class << self
       def navigate_method_default=(proc)
-        ; @@navigate_method_default = proc;
+        @@navigate_method_default = proc
       end
 
       def submit_method_default=(proc)
-        ; @@submit_method_default = proc;
+        @@submit_method_default = proc
       end
 
       def active_page_method_default=(proc)
-        ; @@active_page_method_default = proc;
+        @@active_page_method_default = proc
       end
 
-      def navigate_method_default;
-        @@navigate_method_default;
+      def navigate_method_default
+        @@navigate_method_default
       end
 
-      def submit_method_default;
-        @@submit_method_default;
+      def submit_method_default
+        @@submit_method_default
       end
 
-      def active_page_method_default;
-        @@active_page_method_default;
+      def active_page_method_default
+        @@active_page_method_default
       end
     end
 
