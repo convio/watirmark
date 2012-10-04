@@ -85,18 +85,18 @@ module Watirmark
           else
             browser ||= Watir::Browser.new config.webdriver.to_sym
         end
-        POST_WAIT_CHECKERS.each { |p| @@browser.add_checker p }
+        POST_WAIT_CHECKERS.each { |p| browser.add_checker p }
       end
       browser
     end
 
     def closebrowser
       begin
-        @@browser.close if @@browser
+        browser.close if browser
       rescue Errno::ECONNREFUSED
         # browser already closed or unavailable
       end
-      @@browser = nil
+      browser = nil
       config.session = false
       config.loggedin = false
     end
