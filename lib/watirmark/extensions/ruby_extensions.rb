@@ -1,32 +1,37 @@
-class String
+module Watirmark::MatchMethod
   def matches(x)
-    return self == x
+    self == x
   end
 end
 
-class Regexp
-  def matches(x)
-    return self.match(x)
+class String
+  include Watirmark::MatchMethod
+
+  def strip_number_formatting
+    self.gsub!(/\$|,/,'')
+    self.gsub!(/\.00/,'')
+    return self
   end
 end
 
 class Integer
-  def matches(x)
-    return self == x
-  end
+  include Watirmark::MatchMethod
 end
 
 class TrueClass
-  def matches(x)
-    self.== x
-  end
+  include Watirmark::MatchMethod
 end
 
 class FalseClass
+  include Watirmark::MatchMethod
+end
+
+class Regexp
   def matches(x)
-    self.== x
+    self.match(x)
   end
 end
+
 
 class Hash
   # Returns a hash that only contains pairs with the specified keys
@@ -38,15 +43,6 @@ class Hash
   end
   alias :slice :extract
 end
-
-class String
-  def strip_number_formatting
-    self.gsub!(/\$|,/,'')
-    self.gsub!(/\.00/,'')
-    return self
-  end
-end
-
 
 class Array
   def diff(a)
