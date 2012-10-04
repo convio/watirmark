@@ -15,26 +15,22 @@ module Watirmark
       {
         :configfile         => nil,
         :hostname           => nil,
-        :attach             => nil,
         :email              => 'devnull',
         :closebrowseronexit => false,
-        :loggedin           => false,
-        :visible            => true,
         :profile            => Hash.new {|h,k| h[k] = Hash.new},
         :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
         :uuid               => nil,
         :webdriver          => :firefox,
-
-        :snapshotwidth      => 1000,
-        :snapshotheight     => 1000,
-
+        # database
         :dbhostname         => nil,
         :dbusername         => nil,
         :dbpassword         => nil,
         :dbsid              => nil,
         :dbport             => nil,
-
+        # snapshots
+        :snapshotwidth      => 1000,
+        :snapshotheight     => 1000,
         :sandbox            => false,
       }.merge @runtime_defaults
     end
