@@ -1,22 +1,9 @@
-require 'watirmark/page/page'
-require 'watir-webdriver'
-
 module Watirmark
 
-  # This class manages a browser
-  class Session
-    include Singleton
-
-    POST_WAIT_CHECKERS = []
+  # This functionality allows us to ignore and buffer
+  # post failures and then compare on a cucumber step
+  module CucumberPostFailureBuffering
     @@buffer_post_failure = false
-
-    def browser
-      Page.browser
-    end
-
-    def browser=(x)
-      Page.browser = x
-    end
 
     def post_failure
       @@post_failure
@@ -37,6 +24,21 @@ module Watirmark
       @@buffer_post_failure = false
       @@post_failure
     end
+  end
+
+  class Session
+    include Singleton
+    include CucumberPostFailureBuffering
+
+    POST_WAIT_CHECKERS = []
+
+    def browser
+      Page.browser
+    end
+
+    def browser=(x)
+      Page.browser = x
+    end
 
     def config
       Watirmark::Configuration.instance
@@ -44,7 +46,6 @@ module Watirmark
 
     # set up the global variables, reading from the config file
     def initialize
-      @@post_failure = nil
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
       }
