@@ -68,7 +68,6 @@ module Watirmark
     end
 
     def openbrowser
-      config.session = true
       case config.webdriver.to_sym
         when :firefox
           browser = Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
@@ -82,12 +81,12 @@ module Watirmark
 
     def closebrowser
       begin
-        browser.close if browser
+        browser.close
       rescue Errno::ECONNREFUSED
         # browser already closed or unavailable
+      ensure
+        browser = nil
       end
-      browser = nil
-      config.session = false
     end
   end
 end
