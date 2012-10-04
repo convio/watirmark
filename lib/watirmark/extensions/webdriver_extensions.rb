@@ -58,6 +58,7 @@ module Watir
 
     def row(*args)
       if has_cell?(args)
+        warn "Warning: deprecated use of :has_cell. Please try tro re-implement using :text near #{caller}"
         located_rows = trs(*transform_has_cell_args(args))
         if located_rows.size > 0
           located_rows.last
@@ -73,6 +74,7 @@ module Watir
 
     def table(*args)
       if has_cell?(args)
+        warn "Warning: deprecated use of :has_cell. Please try tro re-implement using :text near #{caller}"
         located_tables = tables(*transform_has_cell_args(args))
         if located_tables.size > 0
           located_tables.last
@@ -87,7 +89,6 @@ module Watir
     alias :cell :td
 
     def has_cell?(args)
-      warn "Warning: deprecated use of :has_cell. Please try tro re-implement using :text"
       case args
         when Hash
           return true if args[:has_cell]
