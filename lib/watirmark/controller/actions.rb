@@ -28,6 +28,7 @@ module Watirmark
          return if search_controller.current_record_visible?
       end
       search_controller.create
+      @view.edit @model
     end
 
     # Navigate to the View's edit page and for every value in
@@ -35,7 +36,6 @@ module Watirmark
     # the proper value for each keyword
     def verify
       search_for_record
-      @view.edit @model
       verify_data
     end
 
@@ -43,7 +43,6 @@ module Watirmark
     # verify all values in the models hash
     def edit
       search_for_record
-      @view.edit @model
       populate_data
     end
 
@@ -65,19 +64,6 @@ module Watirmark
     def create_until(&block)
       run_with_stop_condition(:create, block)
     end
-
-    def run_with_stop_condition(method, block)
-      catch :stop_condition_met do
-        begin
-          Watirmark::Session.instance.stop_condition_block = block
-          send(method)
-        ensure
-          Watirmark::Session.instance.stop_condition_block = Proc.new{}
-        end
-        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
-      end
-    end
-    private :run_with_stop_condition
 
     # Navigate to the View's create page and
     # populate with values from the models hash
@@ -146,5 +132,21 @@ module Watirmark
     def before_each; end
     def after_all; end
     def after_each; end
+
+    private
+
+    def run_with_stop_condition(method, block)
+      catch :stop_condition_met do
+        begin
+          Watirmark::Session.instance.stop_condition_block = block
+          send(method)
+        ensure
+          Watirmark::Session.instance.stop_condition_block = Proc.new{}
+        end
+        raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
+      end
+    end
+
+
   end
 end
