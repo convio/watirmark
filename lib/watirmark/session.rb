@@ -78,15 +78,14 @@ module Watirmark
 
     def openbrowser
       config.session = true
-      unless browser
-        case config.webdriver.to_sym
-          when :firefox
-            browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
-          else
-            browser ||= Watir::Browser.new config.webdriver.to_sym
-        end
-        POST_WAIT_CHECKERS.each { |p| browser.add_checker p }
+      case config.webdriver.to_sym
+        when :firefox
+          browser = Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
+        else
+          browser = Watir::Browser.new config.webdriver.to_sym
       end
+      POST_WAIT_CHECKERS.each { |p| browser.add_checker p }
+      browser.screenshot.base64
       browser
     end
 

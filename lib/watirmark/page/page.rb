@@ -242,11 +242,7 @@ module Watirmark
       end
 
       def browser
-        unless @@browser
-          @@browser = Watirmark::Session.instance.openbrowser
-          Page.browser.screenshot.base64
-        end
-        @@browser
+        @@browser ||= Watirmark::Session.instance.openbrowser
       end
 
       def browser=(x)
