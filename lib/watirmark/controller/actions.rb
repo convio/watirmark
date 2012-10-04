@@ -22,12 +22,13 @@ module Watirmark
     end
 
     def search_for_record
-      return unless @search
-      search_controller = @search.new(@supermodel)
-      if search_controller.respond_to?(:current_record_visible?)
-         return if search_controller.current_record_visible?
+      if @search
+        search_controller = @search.new(@supermodel)
+        if search_controller.respond_to?(:current_record_visible?)
+          return if search_controller.current_record_visible?
+        end
+        search_controller.create
       end
-      search_controller.create
       @view.edit @model
     end
 
