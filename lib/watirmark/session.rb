@@ -2,23 +2,42 @@ require 'watirmark/page/page'
 require 'watir-webdriver'
 
 module Watirmark
-  
+
   # This class manages a browser
   class Session
     include Singleton
 
     POST_WAIT_CHECKERS = []
-    @@browser = nil
-    @@logged_in = false  #used for autologin on --continue
+    @@logged_in = false #used for autologin on --continue
     @@buffer_post_failure = false
 
-    def browser; @@browser; end
-    def browser=(x); @@browser=x; ::Page.browser=x end
-    def logged_in; @@logged_in; end
-    def logged_in=(x); @@logged_in = x; end
-    def post_failure; @@post_failure; end
-    def post_failure=(x); @@post_failure = x; end
-    def buffer_post_failure; @@buffer_post_failure; end
+    def browser
+      Page.browser
+    end
+
+    def browser=(x)
+      Page.browser = x
+    end
+
+    def logged_in
+      @@logged_in
+    end
+
+    def logged_in=(x)
+      @@logged_in = x
+    end
+
+    def post_failure
+      @@post_failure
+    end
+
+    def post_failure=(x)
+      @@post_failure = x
+    end
+
+    def buffer_post_failure
+      @@buffer_post_failure
+    end
 
     def catch_post_failures(&block)
       @@post_failure = nil
@@ -31,7 +50,7 @@ module Watirmark
     def config
       Watirmark::Configuration.instance
     end
-    
+
     # set up the global variables, reading from the config file
     def initialize
       @@post_failure = nil
@@ -59,35 +78,18 @@ module Watirmark
 
     def openbrowser
       config.session = true
-      initialize_browser unless @@browser
-      self.browser = @@browser
-      @@browser
+      unless browser
+        case config.webdriver.to_sym
+          when :firefox
+            browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
+          else
+            browser ||= Watir::Browser.new config.webdriver.to_sym
+        end
+        POST_WAIT_CHECKERS.each { |p| @@browser.add_checker p }
+      end
+      browser
     end
 
-    # Set up @@browser
-    def initialize_browser
-      case config.webdriver.to_sym
-      when :firefox
-        @@browser ||= Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
-      else
-        @@browser ||= Watir::Browser.new config.webdriver.to_sym
-      end
-      POST_WAIT_CHECKERS.each {|p| @@browser.add_checker p}
-      nil
-    end
-    private :initialize_browser
-    
-    attr_writer :attach_title
-    def attach_title
-      if ENV['watir_browser'] == 'firefox'
-        default = /.*/
-      else
-        default = //
-      end
-      @attach_title || default 
-    end
-    private :attach_title
-    
     def closebrowser
       begin
         @@browser.close if @@browser
