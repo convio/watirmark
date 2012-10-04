@@ -28,7 +28,10 @@ module Watirmark
         @records ||= []
         @view = self.class.view
         @search = self.class.search
-        @browser = Page.browser
+      end
+
+      def browser
+        Page.browser
       end
 
       def model=(x)
