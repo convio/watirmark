@@ -87,6 +87,7 @@ module Watir
     alias :cell :td
 
     def has_cell?(args)
+      warn "Warning: deprecated use of :has_cell. Please try tro re-implement using :text"
       case args
         when Hash
           return true if args[:has_cell]
