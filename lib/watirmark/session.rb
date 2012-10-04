@@ -8,7 +8,6 @@ module Watirmark
     include Singleton
 
     POST_WAIT_CHECKERS = []
-    @@logged_in = false #used for autologin on --continue
     @@buffer_post_failure = false
 
     def browser
@@ -17,14 +16,6 @@ module Watirmark
 
     def browser=(x)
       Page.browser = x
-    end
-
-    def logged_in
-      @@logged_in
-    end
-
-    def logged_in=(x)
-      @@logged_in = x
     end
 
     def post_failure
@@ -97,7 +88,6 @@ module Watirmark
       end
       browser = nil
       config.session = false
-      config.loggedin = false
     end
   end
 end
