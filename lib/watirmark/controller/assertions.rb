@@ -9,10 +9,7 @@ module Watirmark
         expected = map.lookup(expected)
       end
       
-      # Get the actual value
-      if element.exists?
-        actual = actual_value element, expected
-      end
+      actual = actual_value element, expected
       compare_values(element, expected, actual)
     end
 
