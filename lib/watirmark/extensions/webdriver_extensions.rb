@@ -1,5 +1,7 @@
 require 'watir-webdriver/extensions/select_text'
 
+Watir::always_locate = false
+
 module Watir
 
   class Browser
