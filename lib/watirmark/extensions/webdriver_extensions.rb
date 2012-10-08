@@ -33,98 +33,9 @@ module Watir
     end
   end
 
-  module RowContainer
-
-    alias :old_row :row
-
-    def row(*args)
-      if has_cell?(args)
-        located_rows = rows(*transform_has_cell_args(args))
-        if located_rows.size == 0
-          old_row(*transform_has_cell_args(args))
-        else
-          rows.last
-        end
-      else
-        old_row(*args)
-      end
-    end
-  end
-
   module Container
-
-    def modal_dialog
-      browser.windows.last.use
-      browser
-    end
-
-    def row(*args)
-      if has_cell?(args)
-        warn "Warning: deprecated use of :has_cell. Please try tro re-implement using :text near #{caller}"
-        located_rows = trs(*transform_has_cell_args(args))
-        if located_rows.size > 0
-          located_rows.last
-        else
-          tr(*transform_has_cell_args(args))
-        end
-      else
-        tr(*args)
-      end
-    end
-
-    alias :old_table :table
-
-    def table(*args)
-      if has_cell?(args)
-        warn "Warning: deprecated use of :has_cell. Please try tro re-implement using :text near #{caller}"
-        located_tables = tables(*transform_has_cell_args(args))
-        if located_tables.size > 0
-          located_tables.last
-        else
-          table(*transform_has_cell_args(args))
-        end
-      else
-        old_table(*args.flatten)
-      end
-    end
-
+    alias :row :tr
     alias :cell :td
-
-    def has_cell?(args)
-      case args
-        when Hash
-          return true if args[:has_cell]
-        when Array
-          return true if args[0] == :has_cell
-      end
-      false
-    end
-
-    private :has_cell?
-
-    def transform_has_cell_args(args)
-      case args
-        when Hash
-          val = args[:has_cell]
-          args.delete(:has_cell)
-          case val
-            when String
-              args[:text] = /\s*#{Regexp.escape(val)}\s*/
-            when Regexp
-              args[:text] = val
-          end
-        when Array
-          args[0] = :text
-          case args[1]
-            when String
-              args[1] = /\s*#{Regexp.escape(args[1])}\s*/
-          end
-      end
-      args
-    end
-
-    private :transform_has_cell_args
-
   end
 
   class Table < HTMLElement

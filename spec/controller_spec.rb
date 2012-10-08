@@ -140,7 +140,6 @@ describe Watirmark::WebPage::Controller do
     end
     controller.view.should == MyView
     instance = controller.new :element => 'new value'
-    @@element.expects(:exists?).at_least_once.returns(true)
     @@element.expects(:value).at_least_once.returns('new value')
     instance.verify_data
   end
