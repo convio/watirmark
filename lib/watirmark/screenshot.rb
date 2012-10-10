@@ -65,7 +65,7 @@ module Watirmark
       def take_screen_shot(snapshotwidth)
         update_window_size(snapshotwidth)
         @filename = "reports/screenshots/#{UUID.new.generate(:compact)}.png"
-        Page.browser.window.use
+        focus_browser
         Page.browser.screenshot.save @filename
       end
 
@@ -85,6 +85,14 @@ module Watirmark
 
       def revert_window_size
         Page.browser.window.resize_to(@screenwidth, @screenheight)
+      end
+
+      def focus_browser
+        if Page.browser.divs.length > 0
+          Page.browser.divs[0].click
+        else
+          Page.browser.tables[0].click if Page.browser.tables.length > 0
+        end
       end
     end
 
