@@ -71,13 +71,13 @@ module Watirmark
     def openbrowser
       case config.webdriver.to_sym
         when :firefox
-          browser = Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
+          Page.browser = Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
         else
-          browser = Watir::Browser.new config.webdriver.to_sym
+          Page.browser = Watir::Browser.new config.webdriver.to_sym
       end
-      POST_WAIT_CHECKERS.each { |p| browser.add_checker p }
-      browser.screenshot.base64
-      browser
+      POST_WAIT_CHECKERS.each { |p| Page.browser.add_checker p }
+      Page.browser.screenshot.base64
+      Page.browser
     end
 
     def closebrowser
