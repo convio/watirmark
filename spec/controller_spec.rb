@@ -276,3 +276,60 @@ describe "controllers should create a default model if one exists" do
     c.model.should be_kind_of(MyModel)
   end
 end
+
+
+#Edit this to make it better
+describe "Similar Models" do
+
+  before :all do
+    class ProcessPageControllerView < Page
+
+      keyword(:a) {Element.new :a}
+      process_page('Page 1') do
+        keyword(:b) {Element.new :b}
+      end
+      process_page('Page 2') do
+        keyword(:c) { Element.new :c }
+        keyword(:d) { Element.new :d }
+      end
+      keyword(:e) { method :e }
+      keyword(:radio_map,
+              ['M'] => 'male',
+              [/f/i] => 'female'
+      ) { Page.browser.radio(:name, 'sex') }
+    end
+
+    ModelA = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      defaults do
+        radio_map { 'M' }
+      end
+    end
+    #Change from name to factory(NAME)
+    ModelB = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      controller ModelA
+      defaults do
+        radio_map { 'f' }
+      end
+    end
+
+    class TestProcessPageController < Watirmark::WebPage::Controller
+      @model = ModelB
+      @view = ProcessPageControllerView
+      public :value_for
+    end
+
+    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
+    Page.browser.goto "file://#{@html}"
+
+
+    @controller = TestProcessPageController.new(ModelB.new)
+    @controller.populate_data
+
+  end
+
+  it 'should be testing' do
+    @controller.value_for(:radio_map).should == 'f'
+  end
+end

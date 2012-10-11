@@ -111,7 +111,11 @@ module Watirmark
             end
           else
             if self.class.model
-              supermodel.find(self.class.model) || supermodel
+              if supermodel.controller == self.class.model
+                supermodel
+              else
+                supermodel.find(self.class.model) || supermodel
+              end
             else
               supermodel
             end

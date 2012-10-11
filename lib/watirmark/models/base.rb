@@ -5,41 +5,74 @@ module Watirmark
 
     DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
 
+    def self.factory(&block)
+      Factory.new &block
+    end
+
+    class Factory
+      class << self
+
+        def new(*args, &block)
+          instance_exec &block
+          Base.new(*@keywords, &block)
+        end
+
+        def keywords(*args)
+          @keywords = args
+        end
+
+        def method_missing(sym, *args, &block)
+          # ignore everything else in the block
+          # and we will pass it on to the model
+        end
+      end
+    end
+
     class Base < Class.new(Struct)
       include CucumberHelper
 
       class << self
-        attr_accessor :search
+
+        attr_accessor :search, :controller_name, :keys
 
         def default
           @default ||= Watirmark::Model::Default.new
+        end
+
+        def defaults(&block)
+          default.instance_exec &block
         end
 
         def children
           @children ||= []
         end
 
-        def model model
-          raise Watirmark::ModelCreationError unless Class === model
-          children << model
+        def model *models
+          models.each {|model| raise Watirmark::ModelCreationError unless Class === model }
+          @children = children + models
+          @children.uniq!
         end
 
         def search_term &block
           @search = block
         end
 
-        def include_defaults block
-          block.call @default
-        end
-
         def traits(*name)
           name.each {|n| instance_exec(&Watirmark::Model::Traits.instance[n])}
+        end
+
+        def controller(c_name)
+          @controller_name = c_name
+        end
+
+        def keywords(*args)
+          @keys = args
         end
       end
 
 
-
-      attr_accessor :default, :uuid, :model_name, :models, :parent, :children
+      #may change controller name
+      attr_accessor :default, :uuid, :model_name, :models, :parent, :children, :controller
 
       def initialize(params={})
         if params[:model_name]
@@ -51,6 +84,8 @@ module Watirmark
         @default = self.class.default
         @search = self.class.search || Proc.new{nil}
         @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
+        #As of right now, everything is in Watirmark::Model. Will change
+        @controller = self.class.controller_name unless self.class.controller_name.nil?
         @log = Logger.new STDOUT
         @log.formatter = proc {|severity, datetime, progname, msg| "#{msg}\n"}
         reload_settings
@@ -63,11 +98,6 @@ module Watirmark
       def search_term
         instance_eval(&@search) || (parent.search_term if parent)
       end
-
-      def kind_of
-        self.class.superclass
-      end
-
 
       def add_model(model)
         @children << model
