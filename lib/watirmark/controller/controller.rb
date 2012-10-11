@@ -39,7 +39,13 @@ module Watirmark
       end
 
       def populate_data
-        submit if populate_values
+        if populate_values
+          if respond_to? submit_process_page_method
+            submit_process_page
+          else
+            submit
+          end
+        end
       end
 
       def populate_values
@@ -86,11 +92,14 @@ module Watirmark
         end
       end
 
+      def submit_process_page_method
+        "submit_process_page_#{last_process_page_name}"
+      end
+
       def submit_process_page
         if @last_process_page
-          override_submit_method = "submit_process_page_#{last_process_page_name}"
-          if override_submit_method && self.respond_to?(override_submit_method)
-            self.send(override_submit_method)
+          if respond_to?(submit_process_page_method)
+            send(submit_process_page_method)
           else
             @view[@last_process_page].submit
           end
