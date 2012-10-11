@@ -53,7 +53,7 @@ module Watirmark
             end
             @last_process_page = process_page
             if self.respond_to?(method = "before_process_page_#{last_process_page_name}");
-              self.send(method);
+              self.send(method)
             end
           end
           next unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:populate]
@@ -135,7 +135,7 @@ module Watirmark
       end
 
       def process_page_keywords(process_page)
-        raise RuntimeError, "Process Page '#{page_name}' not found in #{@view}" unless process_page
+        raise RuntimeError, "Process Page '#{page_name}' not found in #@view" unless process_page
         process_page.keywords.each { |x| yield x }
       end
 
@@ -193,6 +193,10 @@ module Watirmark
         self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @model.send(keyword)
       end
 
+      # override this in your controller to define how a generic form submission should be done
+      def submit
+        warn "The #submit method needs to be defined in your controller to define you you submit a form"
+      end
     end
 
   end

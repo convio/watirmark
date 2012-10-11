@@ -10,7 +10,7 @@ class String
   def strip_number_formatting
     self.gsub!(/\$|,/,'')
     self.gsub!(/\.00/,'')
-    return self
+    self
   end
 end
 
@@ -47,7 +47,7 @@ end
 class Array
   def diff(a)
     ary = dup
-    a.each {|i| ary.delete_at(i) if i = ary.index(i)}
+    a.each {|i| ary.delete_at(i) if i == ary.index(i)}
     ary
   end
 end
@@ -57,8 +57,15 @@ end
 # From Why's Pognant Guide
 #############################
 class Object
-  def meta_class; class << self; self; end; end
-  def meta_eval &blk; meta_class.instance_eval &blk; end
+  def meta_class
+    class << self
+      self
+    end
+  end
+
+  def meta_eval &blk
+    meta_class.instance_eval &blk
+  end
 
   # Adds methods to a metaclass
   def meta_def name, &blk

@@ -72,7 +72,7 @@ describe Watirmark::WebPage::Controller do
     end.new
     @keyword = :text_field
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#{@html}"
+    Page.browser.goto "file://#@html"
   end
 
   it 'should supportradio maps in controllers' do
@@ -110,14 +110,21 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should support override method for verification' do
-    def @controller.verify_text_field; 'verify';  end
+    def @controller.verify_text_field
+      'verify'
+    end
     @controller.expects(:verify_text_field).returns('verify').once
     @controller.verify_data
   end
 
   it 'should support keyword before and after methods' do
-    def @controller.before_text_field; 'before'; end
-    def @controller.after_text_field; 'after';  end
+    def @controller.before_text_field
+      'before'
+    end
+
+    def @controller.after_text_field
+      'after'
+    end
     @controller.expects(:before_text_field).returns('before').once
     @controller.expects(:after_text_field).returns('after').once
     @controller.populate_data {}
@@ -146,7 +153,9 @@ describe Watirmark::WebPage::Controller do
 
   it 'should support before methods for process pages' do
     c = TestProcessPageController.new({:a=>1, :b=>1, :c=>1})
-    def c.before_process_page_page_1; true; puts '11111'; end
+    def c.before_process_page_page_1
+      true
+    end
     c.expects(:before_process_page_page_1).returns('true').once
     c.populate_data
   end
@@ -294,7 +303,7 @@ describe "Similar Models" do
       end
       keyword(:e) { method :e }
       keyword(:radio_map,
-              ['M'] => 'male',
+              %w(M) => 'male',
               [/f/i] => 'female'
       ) { Page.browser.radio(:name, 'sex') }
     end
@@ -321,7 +330,7 @@ describe "Similar Models" do
     end
 
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#{@html}"
+    Page.browser.goto "file://#@html"
 
 
     @controller = TestProcessPageController.new(ModelB.new)

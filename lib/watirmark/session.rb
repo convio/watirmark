@@ -82,11 +82,11 @@ module Watirmark
 
     def closebrowser
       begin
-        browser.close
+        Page.browser.close
       rescue Errno::ECONNREFUSED
         # browser already closed or unavailable
       ensure
-        browser = nil
+        Page.browser = nil
       end
     end
   end

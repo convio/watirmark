@@ -15,7 +15,7 @@ module Watirmark
       end
 
       def csv_file
-        @file ||= Tempfile.new(['csv_data', '.csv'])
+        @file ||= Tempfile.new(%w(csv_data .csv))
         @file.path
       end
 

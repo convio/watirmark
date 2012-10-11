@@ -54,14 +54,14 @@ module CukeHelper
   # calls the models method if of the pattern <name>.method
   def call_model_methods(hash)
     hash.each { |key, value| hash[key] = eval(value[1..value.length]) if value[0, 1].eql?("=") }
-    return hash
+    hash
   end
 
   # return {:foo=1, :bar=2} from {'foo' =>1, 'bar' =>2}
   def colonize(hash)
     newhash = {}
     hash.each { |k, v| newhash[k.to_sym] = v }
-    return newhash
+    newhash
   end
 
   # returns [{:foo=1, :bar=2}, {:foo=3, :bar=4}] list of hash records
@@ -113,9 +113,9 @@ module CukeHelper
 #  | transactiontype       | =syncmode('TeamRaiser Gift','Donation')   |
   def syncmode(expected_bus, expected_datasync)
     if ENV['SYNCMODE'] == 'DataSync'
-      return expected_datasync
+      expected_datasync
     else
-      return expected_bus
+      expected_bus
     end
   end
 

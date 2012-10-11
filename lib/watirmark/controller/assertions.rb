@@ -38,14 +38,14 @@ module Watirmark
     end
     
     def assert(result)
-      if result != true
+      unless result
         raise Watirmark::VerificationException, "Expected true got #{result}"
       end
     end
     
     def compare_values(element, expected, actual)
       @matcher ||= Watirmark::Matcher.new
-      if ! @matcher.matches(element, expected, actual)
+      unless @matcher.matches(element, expected, actual)
         error = Watirmark::VerificationException.new(@matcher.error_message)
         error.actual = actual
         error.expected = expected

@@ -13,9 +13,9 @@ module Watir
     # running the checkers on a modal dialog that has closed
     # by the time the checkers have run
     def run_checkers
-      @error_checkers.each do |e|
+      @error_checkers.each do |checker|
         begin
-          e.call(self)
+          checker.call(self)
         rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::NoSuchWindowError => e
           warn "Unable to run checker: #{e.message}"
           break

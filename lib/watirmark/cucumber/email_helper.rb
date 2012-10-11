@@ -90,7 +90,7 @@ module EmailHelper
             return link if /#{matcher}/.matches link.href
         end
       end
-      return nil
+      nil
     end
 
     def inspect

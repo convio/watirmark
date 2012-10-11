@@ -16,8 +16,8 @@ module Watirmark
     
     add_matcher('nil')      { @actual.to_s.strip == '' }
     add_matcher('!nil')     { @actual.to_s.strip != '' }
-    add_matcher('enabled')  { @element.disabled? == false }
-    add_matcher('disabled') { @element.disabled? == true }
+    add_matcher('enabled')  { !@element.disabled? }
+    add_matcher('disabled') { @element.disabled? }
     add_matcher('exist')    { @element.exists? == true && @element.visible? == true }
     add_matcher('exists')   { @element.exists? == true && @element.visible? == true}
     add_matcher('!exist')   { @element.exists? == false || @element.visible? == false}
@@ -30,7 +30,7 @@ module Watirmark
     def error_message
       kwd = @element.keyword if @element.respond_to?(:keyword)
       message = "#{ kwd || @element.name}: expected '#{@expected.to_s}' (#{@expected.class})"
-      if !matcher.has_key?(@expected.to_s)
+      unless matcher.has_key?(@expected.to_s)
         message += " got '#{@actual.to_s}' (#{@actual.class})"
       end
       message

@@ -162,10 +162,10 @@ module Watirmark
     # This is the old-style method of using a config.txt
     def parse_text_file filename
       warn("Warning: Deprecated use of config.txt. Please use config.yml instead")
-      for line in IO.readlines(filename)
-        line.strip!                             # Remove all extraneous whitespace
-        line.sub!(/#.*$/, "")                   # Remove comments
-        next unless line.length > 0             # Anything left?
+      IO.readlines(filename).each do |line|
+        line.strip! # Remove all extraneous whitespace
+        line.sub!(/#.*$/, "") # Remove comments
+        next unless line.length > 0 # Anything left?
         (key, value) = line.split(/\s*=\s*/, 2)
         update_profile key
         update_key key, value

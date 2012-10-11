@@ -13,7 +13,7 @@ end
 describe "model names" do
   before :all do
     @model = Watirmark::Model::Base.new(:middle_name) do
-      default.middle_name    {"#{@model_name} middle_name".strip}
+      default.middle_name    {"#@model_name middle_name".strip}
     end
   end
 
@@ -355,7 +355,7 @@ describe "Traits" do
   specify "should have same first names" do
       a = @model_a.new
       b = @model_b.new
-      b.first_name.should == b.first_name
+      a.first_name.should == b.first_name
   end
 
   specify "should have same last name but with different UUID" do

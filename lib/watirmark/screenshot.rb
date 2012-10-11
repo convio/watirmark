@@ -106,7 +106,7 @@ module Watirmark
         FileUtils.mkdir_p(File.dirname(@filename))
         File.unlink(@filename) if File.exists?(@filename)
         FileUtils.copy_file(screenshot.filename, @filename)
-        puts "Created new master: #{@filename}"
+        puts "Created new master: #@filename"
       end
     end
   end

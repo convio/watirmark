@@ -47,9 +47,9 @@ class CreateProjectGenerator < RubiGen::Base
 
   def create_directories(m)
     BASEDIRS.each { |path| m.directory path }
-    create_subdirectories m, File.join('features'), ['step_definitions', 'support']
-    create_subdirectories m, File.join('lib', @name), ['checkers', 'controllers', 'views', 'workflows']
-    create_subdirectories m, File.join('generators', 'mvc'), ['templates']
+    create_subdirectories m, File.join('features'), %w(step_definitions support)
+    create_subdirectories m, File.join('lib', @name), %w(checkers controllers views workflows)
+    create_subdirectories m, File.join('generators', 'mvc'), %w(templates)
   end
 
   def create_subdirectories (m, root, directories)

@@ -16,7 +16,7 @@ module Watirmark
       mod = "Watirmark::#{product}"
       each_file_in directory do |file|
         libpath = library_path(file)
-        for line in IO.readlines(file)
+        IO.readlines(file).each do |line|
           _autoload_(mod, $1, libpath) if line =~ /^\s*class\s+([^<]\S+)[\s<]/
           _autoload_(mod, $1, libpath) if line =~ /^\s+([A-Z]\S+)\s+=\s+[A-Z]\S+/
         end

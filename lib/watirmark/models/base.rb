@@ -112,12 +112,12 @@ module Watirmark
           found_model = m.find model_class
           return found_model if found_model
         end
-        return nil
+        nil
       end
 
 
       def inspect
-        model_friendly_name = @model_name ? "#{@model_name}: " : nil
+        model_friendly_name = @model_name ? "#@model_name: " : nil
         model_details = " #{to_h}" unless to_h.empty?
         included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
         "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
@@ -162,7 +162,7 @@ module Watirmark
           else
             h[name] = value unless value.nil?
           end
-          rescue NoMethodError => e
+          rescue NoMethodError
             h[name] = "[defined at runtime]"
           end
         end
@@ -186,7 +186,7 @@ module Watirmark
 
       def add_debug_overrides
         return unless @model_name && DebugModelValues != {}
-        warn "Adding DEBUG overrides for #{@model_name}"
+        warn "Adding DEBUG overrides for #@model_name"
         update DebugModelValues['*'] if DebugModelValues['*']
         update DebugModelValues[@model_name] if DebugModelValues[@model_name]
       end

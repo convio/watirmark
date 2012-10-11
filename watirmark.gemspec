@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
   s.files = Dir['lib/**/*.rb', 'app_generators/**/*', 'bin/**/*']
   s.test_files =  Dir['spec/**/*.rb']
   s.executables = "watirmark"
-  s.require_paths = ["lib"]
+  s.require_paths = %w(lib)
   s.add_dependency("watir-webdriver")
   s.add_dependency("american_date")
   s.add_dependency("logger")
