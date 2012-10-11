@@ -48,7 +48,7 @@ module Watirmark
         each_keyword do |keyword, process_page|
           if @last_process_page != process_page
             if seen_value && @view[process_page].page_name !~ /::/ #hack so we handle inherited kwds without submits
-              submit
+              submit_process_page
               seen_value = false
             end
             @last_process_page = process_page
@@ -86,7 +86,7 @@ module Watirmark
         end
       end
 
-      def submit
+      def submit_process_page
         if @last_process_page
           override_submit_method = "submit_process_page_#{last_process_page_name}"
           if override_submit_method && self.respond_to?(override_submit_method)
