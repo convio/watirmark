@@ -1,7 +1,7 @@
 module <%= name.camelize %>
 <%%= create_modules %>
     class <%%= name.camelize %>View < BaseView
-      keyword(:name)  { browser.text_field(:id, 'name') }
+      keyword(:keyword_name)  { browser.text_field(:id, 'element_id') }
 
       class << self
         def home(model)

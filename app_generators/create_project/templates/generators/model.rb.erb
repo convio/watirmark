@@ -1,11 +1,5 @@
 module <%= name.camelize %>
 <%%= create_modules %>
-    <%%= name.camelize %>Model = Watirmark::Model::Base.new(*<%%= name.camelize %>View.keywords) do
-      #search_term           {name}
-      #
-      #default.name          {"name_#{uuid}"}
-      #
-      #add_model SomeModelName.new
-    end
+    <%%= name.camelize %>Model = Watirmark::Model::Base.new(*<%%= name.camelize %>View.keywords)
 <%%= create_module_end %>
 end
