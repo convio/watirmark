@@ -15,7 +15,7 @@ class CreateProjectGenerator < RubiGen::Base
     record do |m|    
       create_directories(m)
       m.template "project/gemfile.rb.erb", "Gemfile"
-      m.template "project/config.txt.erb", "config.txt"
+      m.template "project/config.yml.erb", "config.yml"
       m.template "project/rakefile.rb.erb", "rakefile.rb"
 
       # main library
@@ -40,7 +40,9 @@ class CreateProjectGenerator < RubiGen::Base
 
       m.template "features/model_steps.rb.erb", File.join("features","step_definitions","model_steps.rb")
       m.template "features/post_error_steps.rb.erb", File.join("features","step_definitions","post_error_steps.rb")
+      m.template "features/site_steps.rb.erb", File.join("features","step_definitions","site_steps.rb")
       m.template "features/env.rb.erb", File.join("features","support","env.rb")
+      m.template "features/sample.feature.erb", File.join("features","#{@name}_home.feature")
 
     end
   end
