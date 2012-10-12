@@ -21,9 +21,9 @@ class CreateProjectGenerator < RubiGen::Base
       # main library
       m.template "library/page_load_checker.rb.erb", File.join("lib", name, "checkers", "page_load_checker.rb")
       m.template "library/post_errors_checker.rb.erb", File.join("lib", name, "checkers", "post_errors_checker.rb")
-      m.template "library/base_controller.rb.erb", File.join("lib", name, "controllers", "base_controller.rb")
-      m.template "library/search_controller.rb.erb", File.join("lib", name, "controllers", "search_controller.rb")
-      m.template "library/base_view.rb.erb", File.join("lib", name, "views", "base_view.rb")
+      m.template "library/base_controller.rb.erb", File.join("lib", name, "site", "base_controller.rb")
+      m.template "library/search_controller.rb.erb", File.join("lib", name, "site", "search_controller.rb")
+      m.template "library/base_view.rb.erb", File.join("lib", name, "site", "base_view.rb")
       m.template "library/configuration.rb.erb", File.join("lib", name, "configuration.rb")
       m.template "library/workflows.rb.erb", File.join("lib", name, "workflows.rb")
       m.template "library/core_libraries.rb.erb", File.join("lib", name, "core_libraries.rb")
@@ -50,7 +50,7 @@ class CreateProjectGenerator < RubiGen::Base
   def create_directories(m)
     BASEDIRS.each { |path| m.directory path }
     create_subdirectories m, File.join('features'), %w(step_definitions support)
-    create_subdirectories m, File.join('lib', @name), %w(checkers controllers views workflows)
+    create_subdirectories m, File.join('lib', @name), %w(checkers site workflows)
     create_subdirectories m, File.join('generators', 'mvc'), %w(templates)
   end
 
