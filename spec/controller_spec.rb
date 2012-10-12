@@ -72,7 +72,7 @@ describe Watirmark::WebPage::Controller do
     end.new
     @keyword = :text_field
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#@html"
+    Page.browser.goto "file://#{@html}"
   end
 
   it 'should supportradio maps in controllers' do
@@ -110,21 +110,14 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should support override method for verification' do
-    def @controller.verify_text_field
-      'verify'
-    end
+    def @controller.verify_text_field; 'verify';  end
     @controller.expects(:verify_text_field).returns('verify').once
     @controller.verify_data
   end
 
   it 'should support keyword before and after methods' do
-    def @controller.before_text_field
-      'before'
-    end
-
-    def @controller.after_text_field
-      'after'
-    end
+    def @controller.before_text_field; 'before'; end
+    def @controller.after_text_field; 'after';  end
     @controller.expects(:before_text_field).returns('before').once
     @controller.expects(:after_text_field).returns('after').once
     @controller.populate_data {}
@@ -153,9 +146,7 @@ describe Watirmark::WebPage::Controller do
 
   it 'should support before methods for process pages' do
     c = TestProcessPageController.new({:a=>1, :b=>1, :c=>1})
-    def c.before_process_page_page_1
-      true
-    end
+    def c.before_process_page_page_1; true; puts '11111'; end
     c.expects(:before_process_page_page_1).returns('true').once
     c.populate_data
   end
@@ -303,7 +294,7 @@ describe "Similar Models" do
       end
       keyword(:e) { method :e }
       keyword(:radio_map,
-              %w(M) => 'male',
+              ['M'] => 'male',
               [/f/i] => 'female'
       ) { Page.browser.radio(:name, 'sex') }
     end
@@ -314,31 +305,105 @@ describe "Similar Models" do
         radio_map { 'M' }
       end
     end
-    #Change from name to factory(NAME)
+
+    ModelC = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      model ModelA
+    end
+
     ModelB = Watirmark::Model.factory do
       keywords *ProcessPageControllerView.keywords
-      controller ModelA
+      model_type ModelA
       defaults do
         radio_map { 'f' }
       end
     end
 
+    ModelD = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      model ModelB
+    end
+
+    ModelE = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      model ModelD
+    end
+
+    ModelF = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      model_type ModelA
+    end
+
+    ModelG = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+      model ModelF
+    end
+
+    ModelH = Watirmark::Model.factory do
+      keywords *ProcessPageControllerView.keywords
+    end
+
     class TestProcessPageController < Watirmark::WebPage::Controller
-      @model = ModelB
+      @model = ModelA
       @view = ProcessPageControllerView
       public :value_for
     end
 
-    @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
-    Page.browser.goto "file://#@html"
+    class TestNoModelController < Watirmark::WebPage::Controller
+      @view = ProcessPageControllerView
+    end
 
 
+  end
+
+  it 'should use the similar modelA' do
+    @controller = TestProcessPageController.new(ModelD.new)
+    @controller.model.should == ModelB.new
+    @controller.supermodel.should == ModelD.new
+  end
+
+  it 'should use the top model' do
     @controller = TestProcessPageController.new(ModelB.new)
-    @controller.populate_data
+    @controller.model.should == ModelB.new
+    @controller.supermodel.should == ModelB.new
+  end
+
+  it 'should use parent model' do
+    @controller = TestProcessPageController.new(ModelC.new)
+    @controller.model.should == ModelA.new
+    @controller.supermodel.should == ModelC.new
+  end
+
+  it 'should call the smallest child similar to the model in controller' do
+    @controller = TestProcessPageController.new(ModelE.new)
+    @controller.model.should == ModelB.new
+    @controller.supermodel.should == ModelE.new
 
   end
 
-  it 'should be testing' do
-    @controller.value_for(:radio_map).should == 'f'
+  it 'should select the correct model when base model has 2 similar models' do
+    @controller = TestProcessPageController.new(ModelG.new)
+    @controller.model.should == ModelF.new
+    @controller.supermodel.should == ModelG.new
+
+    @controller = TestProcessPageController.new(ModelF.new)
+    @controller.model.should == ModelF.new
+    @controller.model.should == ModelF.new
   end
+
+  it 'should use the supermodel as a model if a controller model is not defined' do
+    @controller = TestNoModelController.new(ModelE.new)
+    @controller.model.should == ModelE.new
+    @controller.supermodel.should == ModelE.new
+  end
+
+  it 'should use passed in model as @model when model_type is not defined' do
+    @controller = TestProcessPageController.new(ModelH.new)
+    @controller.model.should == ModelH.new
+    @controller.supermodel.should == ModelH.new
+  end
+
+
+
+
 end

@@ -120,7 +120,7 @@ module Watirmark
             end
           else
             if self.class.model
-              if supermodel.controller == self.class.model
+              if supermodel.model_type == self.class.model
                 supermodel
               else
                 supermodel.find(self.class.model) || supermodel

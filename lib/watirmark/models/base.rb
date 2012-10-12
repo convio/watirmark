@@ -33,7 +33,7 @@ module Watirmark
 
       class << self
 
-        attr_accessor :search, :controller_name, :keys
+        attr_accessor :search, :model_type_name, :keys
 
         def default
           @default ||= Watirmark::Model::Default.new
@@ -61,8 +61,8 @@ module Watirmark
           name.each {|n| instance_exec(&Watirmark::Model::Traits.instance[n])}
         end
 
-        def controller(c_name)
-          @controller_name = c_name
+        def model_type(c_name)
+          @model_type_name = c_name
         end
 
         def keywords(*args)
@@ -70,9 +70,7 @@ module Watirmark
         end
       end
 
-
-      #may change controller name
-      attr_accessor :default, :uuid, :model_name, :models, :parent, :children, :controller
+      attr_accessor :default, :uuid, :model_name, :models, :parent, :children, :model_type
 
       def initialize(params={})
         if params[:model_name]
@@ -84,8 +82,7 @@ module Watirmark
         @default = self.class.default
         @search = self.class.search || Proc.new{nil}
         @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
-        #As of right now, everything is in Watirmark::Model. Will change
-        @controller = self.class.controller_name unless self.class.controller_name.nil?
+        @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
         @log = Logger.new STDOUT
         @log.formatter = proc {|severity, datetime, progname, msg| "#{msg}\n"}
         reload_settings
@@ -109,6 +106,7 @@ module Watirmark
       def find(model_class)
         return self if self.kind_of? model_class
         @children.each do |m|
+          return m if m.model_type == model_class
           found_model = m.find model_class
           return found_model if found_model
         end
