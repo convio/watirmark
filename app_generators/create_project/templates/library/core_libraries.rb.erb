@@ -1,6 +1,6 @@
-require '<%= name.downcase %>/views/base_view'
-require '<%= name.downcase %>/controllers/base_controller'
-require '<%= name.downcase %>/controllers/search_controller'
+require '<%= name.downcase %>/site/base_view'
+require '<%= name.downcase %>/site/base_controller'
+require '<%= name.downcase %>/site/search_controller'
 Watirmark.loader do
   base_directory File.dirname(__FILE__)
   product '<%= name.camelize %>'
