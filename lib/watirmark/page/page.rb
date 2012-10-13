@@ -41,106 +41,30 @@ module Watirmark
         @kwds[self].sort_by { |key| key.to_s }
       end
 
-      # Used in a view to define a keyword representing an
-      # object in the application. Keywords are then used in the
-      # rest of the app to refer to that
-      def keyword(method_sym, map=nil, &block)
-        add_to_keywords(method_sym)
-        keyed_element = get_keyed_element(method_sym, map, &block)
-        add_permission(method_sym, {:populate => true, :verify => true})
-
-        meta_def method_sym do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{method_sym}=" do |*args|
-          keyed_element.set *args
-        end
-        @current_process_page << method_sym
+      def keyword(name, map=nil, &block)
+        create_new_keyword(name, map, permissions={:populate => true, :verify => true}, &block)
+        @current_process_page << name
       end
 
-      def navigation_keyword(method_sym, map=nil, &block)
-        add_to_keywords(method_sym)
-        keyed_element = get_keyed_element(method_sym, map, &block)
-
-        meta_def method_sym do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{method_sym}=" do |*args|
-          Kernel.warn("Warning: trying to set value to navigation_keyword #{method_sym}")
-        end
+      def populate_keyword(name, map=nil, &block)
+        create_new_keyword(name, map, permissions={:populate => true}, &block)
+        @current_process_page << name
       end
 
-      def populate_keyword(method_sym, map=nil, &block)
-        add_to_keywords(method_sym)
-        keyed_element = get_keyed_element(method_sym, map, &block)
-        add_permission(method_sym, {:populate => true})
-
-        meta_def method_sym do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{method_sym}=" do |*args|
-          keyed_element.set *args
-        end
-        @current_process_page << method_sym
+      def verify_keyword(name, map=nil, &block)
+        create_new_keyword(name, map, permissions={:verify => true}, &block)
+        @current_process_page << name
       end
 
-      def private_keyword(method_sym, map=nil, &block)
-        add_to_keywords(method_sym)
-        keyed_element = get_keyed_element(method_sym, map, &block)
-
-        meta_def method_sym do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{method_sym}=" do |*args|
-          keyed_element.set *args
-        end
+      def private_keyword(name, map=nil, &block)
+        create_new_keyword(name, map, &block)
       end
-
-      def verify_keyword(method_sym, map=nil, &block)
-        add_to_keywords(method_sym)
-        keyed_element = get_keyed_element(method_sym, map, &block)
-        add_permission(method_sym, {:verify => true})
-
-        meta_def method_sym do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{method_sym}=" do |*args|
-          keyed_element.set *args
-        end
-        @current_process_page << method_sym
-      end
+      alias :navigation_keyword :private_keyword
 
       def permissions
         @perms ||= Hash.new { |h, k| h[k] = Hash.new }
         @perms.values.inject(:merge)
       end
-
-      def add_permission(kwd, hash)
-        @perms ||= Hash.new { |h, k| h[k] = Hash.new }
-        @perms[self][kwd] = hash
-      end
-
-      private :add_permission
-
-      def add_to_keywords(method_sym)
-        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
-        @kwds[self] << method_sym unless @kwds.include?(method_sym)
-      end
-      private :add_to_keywords
-
-      def get_keyed_element(method_sym, map=nil, &block)
-        if map.is_a? Hash
-          map = Watirmark::RadioMap.new map
-        end
-        Page::KeyedElement.new(
-            :key => method_sym,
-            :page => self,
-            :map => map,
-            :process_page => @current_process_page,
-            :block => block
-        )
-      end
-      private :get_keyed_element
 
       # Create an alias to an existing keyword
       def keyword_alias(keyword_alias_name, keyword_name)
@@ -180,62 +104,6 @@ module Watirmark
         @current_process_page.always_activate_parent = @current_process_page.parent.page_name
       end
 
-      def add_superclass_keywords(klass)
-        if @kwds
-          klass.kwds ||= Hash.new { |h, k| h[k] = Array.new }
-          @kwds.each_key do |k|
-            klass.kwds[k] = @kwds[k].dup
-          end
-        end
-      end
-
-      private :add_superclass_keywords
-
-      def add_superclass_process_pages(klass)
-        klass.process_pages = (@process_pages ? @process_pages.dup : klass.process_pages = [])
-      end
-
-      private :add_superclass_process_pages
-
-      def add_superclass_permissions(klass)
-        if @perms
-          klass.perms ||= Hash.new { |h, k| h[k] = Hash.new }
-          @perms.each_key do |k|
-            klass.perms[k] = @perms[k].dup
-          end
-        end
-      end
-
-      private :add_superclass_permissions
-
-      def create_default_process_page(klass)
-        klass.instance_variable_set :@current_process_page, ProcessPage.new(klass.inspect)
-        current_page = klass.instance_variable_get(:@current_process_page)
-        current_page.root = true
-        klass.process_pages << current_page
-      end
-
-      private :create_default_process_page
-
-      def find_or_create_process_page(name)
-        mypage = find_process_page(name)
-        unless mypage
-          mypage = ProcessPage.new(name, @current_process_page)
-          @process_pages ||= []
-          @process_pages << mypage
-        end
-        mypage
-      end
-
-      private :find_or_create_process_page
-
-      def find_process_page(name)
-        name = @current_process_page.name + ' > ' + name unless @current_process_page.root
-        @process_pages.find { |p| p.name == name }
-      end
-
-      private :find_process_page
-
       def [](x)
         @process_pages.each { |page| return page if page.name == x }
         raise RuntimeError, "Process Page '#{x}' not found in #{self}"
@@ -248,7 +116,91 @@ module Watirmark
       def browser=(x)
         @@browser = x
       end
+
+    private
+
+      def create_new_keyword(name, map=nil, permissions, &block)
+        add_to_keywords(name)
+        keyed_element = get_keyed_element(name, map, &block)
+        add_permission(name, permissions)
+
+        meta_def name do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{name}=" do |*args|
+          keyed_element.set *args
+        end
+      end
+
+      def add_permission(kwd, hash)
+        @perms ||= Hash.new { |h, k| h[k] = Hash.new }
+        @perms[self][kwd] = hash
+      end
+
+      def add_to_keywords(method_sym)
+        @kwds ||= Hash.new { |h, k| h[k] = Array.new }
+        @kwds[self] << method_sym unless @kwds.include?(method_sym)
+      end
+
+      def get_keyed_element(method_sym, map=nil, &block)
+        if map.is_a? Hash
+          map = Watirmark::RadioMap.new map
+        end
+        Page::KeyedElement.new(
+            :key => method_sym,
+            :page => self,
+            :map => map,
+            :process_page => @current_process_page,
+            :block => block
+        )
+      end
+
+      def add_superclass_keywords(klass)
+        if @kwds
+          klass.kwds ||= Hash.new { |h, k| h[k] = Array.new }
+          @kwds.each_key do |k|
+            klass.kwds[k] = @kwds[k].dup
+          end
+        end
+      end
+
+      def add_superclass_process_pages(klass)
+        klass.process_pages = (@process_pages ? @process_pages.dup : klass.process_pages = [])
+      end
+
+      def add_superclass_permissions(klass)
+        if @perms
+          klass.perms ||= Hash.new { |h, k| h[k] = Hash.new }
+          @perms.each_key do |k|
+            klass.perms[k] = @perms[k].dup
+          end
+        end
+      end
+
+      def create_default_process_page(klass)
+        klass.instance_variable_set :@current_process_page, ProcessPage.new(klass.inspect)
+        current_page = klass.instance_variable_get(:@current_process_page)
+        current_page.root = true
+        klass.process_pages << current_page
+      end
+
+      def find_or_create_process_page(name)
+        mypage = find_process_page(name)
+        unless mypage
+          mypage = ProcessPage.new(name, @current_process_page)
+          @process_pages ||= []
+          @process_pages << mypage
+        end
+        mypage
+      end
+
+      def find_process_page(name)
+        name = @current_process_page.name + ' > ' + name unless @current_process_page.root
+        @process_pages.find { |p| p.name == name }
+      end
+
     end
+
 
     class KeyedElement
       def initialize(args)
