@@ -69,6 +69,7 @@ module Watirmark
     end
 
     def openbrowser
+      config.webdriver ||= :firefox
       case config.webdriver.to_sym
         when :firefox
           Page.browser = Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
