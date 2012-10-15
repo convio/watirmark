@@ -114,7 +114,7 @@ module Watirmark
         case supermodel
           when Hash
             if self.class.model
-              self.class.model.new
+              self.class.model.new supermodel
             else
               hash_to_model supermodel
             end
