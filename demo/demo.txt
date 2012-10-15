@@ -5,6 +5,13 @@ Start with test cases
   Beauty is that this file is what we'll run to run our tests
 
 watirmark twitter
+  -  much like ruby on rails, creatse a scaffold of a new test project
 run sample to make sure we're connected
 copy over feature file
+
+make fail (forget /i)
+look at HTML output
+
+
+run rake task (can I save to file without having to do that?)
 
