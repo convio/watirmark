@@ -10,10 +10,6 @@ Feature: Searches using the hashtag symbol(#) should return a list of tweets con
     When I search for "#blackbaud"
     Then I should only see tweets containing the term "#blackbaud"
 
-  Scenario: The default size of the list should be 20 items
-    When I search for "#blackbaud"
-    Then the search should contain 20 results
-
   Scenario: Hashtags in tweets should show as links
     When I create a new tweet "This is a tweet with a #test hashtag"
     Then the tweet should contain "#test"
@@ -72,7 +68,11 @@ Feature: Searches using the hashtag symbol(#) should return a list of tweets con
     When I search for "#blackbaud"
     And I scroll to the bottom of the page
     Then the next 20 results should load
-    And the search should contain 40 results
+    And the search should contain more than 20 results
+
+  Scenario: The max size of the list should be 20 items
+    When I search for "#blackbaud"
+    Then the search should contain at most 20 results
 
   Scenario: Advanced searches should honor a single hashtag
 

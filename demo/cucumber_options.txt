@@ -1,1 +1,1 @@
--b --format html -o reports/-b --format html -o reports/report.html --format pretty --color -r features
+--format html -o reports/report.html --format pretty --color -r features
