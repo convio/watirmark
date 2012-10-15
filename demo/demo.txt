@@ -1,0 +1,10 @@
+Demo of watirmark framework
+Going to automate twitter here, now in 5 minutes
+Start with test cases
+  Don't need framework to start, just need to know the feature
+  Beauty is that this file is what we'll run to run our tests
+
+watirmark twitter
+run sample to make sure we're connected
+copy over feature file
+

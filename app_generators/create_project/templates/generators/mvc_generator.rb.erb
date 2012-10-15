@@ -23,6 +23,7 @@ class MvcGenerator < RubiGen::Base
         record do |m|
             create_directories(m)
             add_mvc_stubs m
+            add_loader
         end
     end
 
@@ -39,6 +40,12 @@ class MvcGenerator < RubiGen::Base
     def add_rake_task
         append_to_file "../rakefile.rb" do |f|
             f.puts "RakeHelper.cucumber_task(:#{@product}, \"features/#{@product}/**/*.feature\")"
+        end
+    end
+
+    def add_loader
+        append_to_file "../lib/<%= name.downcase %>/workflows.rb" do |f|
+          f.puts "<%= name.camelize %>::Loader.load_workflow '#{@product.downcase}/#{@name.downcase}'"
         end
     end
 
