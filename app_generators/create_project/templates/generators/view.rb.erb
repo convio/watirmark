@@ -1,5 +1,5 @@
 module <%= name.camelize %>
-<%%= create_modules %>
+  <%%= create_modules %>
     class <%%= name.camelize %>View < BaseView
       keyword(:keyword_name)  { browser.text_field(:id, 'element_id') }
 
@@ -14,5 +14,5 @@ module <%= name.camelize %>
         end
       end
     end
-<%%= create_module_end %>
+  <%%= create_module_end %>
 end

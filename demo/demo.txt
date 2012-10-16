@@ -1,24 +1,47 @@
+---------
+Setup
+---------
+
+Clear twitter from generator and remove old install
+Bring up a browser with the cucumber results
+
+---------
+Present
+---------
+
+** ALWAYS go back to running from the cucumber ***
+
 Demo of watirmark framework
 Going to automate twitter here, now in 5 minutes
 Start with test cases
   Don't need framework to start, just need to know the feature
   Beauty is that this file is what we'll run to run our tests
 
-watirmark twitter
+(1) Create a new project: watirmark twitter
   -  much like ruby on rails, create a scaffold of a new test project
-(1) run sample to make sure we're connected
-(2) copy over feature file and run with failure
-(3) get steps and create step definition file
-(4) run to see things in pending
-(5) edit query to add the
+
+(2) run sample to make sure we're connected
+  - show test case
+  - describe the feature we're going to test
+
+(3) copy over feature file
+  - run with failure
+
+(4) get steps and create step definition file
+
+This is where I need to glue the cucumber to the UI
+
+(5) run to see things in pending
+
+(6)
+  edit query to add the
     - search
     - submit
-(6) run to show query execute
-(7)
 
-make fail (forget /i)
-look at HTML output
+(7) run to show query execute
 
+(8) copy over code for the results
 
-run rake task (can I save to file without having to do that?)
+(9) run the results so we can see if pass
 
+(10) show the actual HTML outputs for a success and failure

@@ -1,1 +1,0 @@
---format html -o reports/report.html --format pretty --color -r features
