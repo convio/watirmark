@@ -13,6 +13,13 @@ Show query controller and select submit method
 Present
 ---------
 
+Show demo of watirmark
+We're going to automate a feature of Twitter. From Scratch. In five minutes.
+
+
+
+SLOW DOWN and read the test step EXACTLY
+
 *** What are we doing ***
 *** Create the project ***
 *** Describe the feature we're going to test ***

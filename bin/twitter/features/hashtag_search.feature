@@ -11,7 +11,7 @@ Feature: Searches using the hashtag symbol(#) should return a list of tweets con
   # This is the test we're going to automate
 
   Scenario: Searching for a hashtag should only return results containing that hashtag
-    When I search for "#blackbaud"
+    When I search for "#trest"
     Then I should only see tweets containing the term "#blackbaud"
 
 
