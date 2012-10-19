@@ -88,11 +88,7 @@ module Watirmark
       end
 
       def focus_browser
-        if Page.browser.divs.length > 0
-          Page.browser.divs[0].click
-        else
-          Page.browser.tables[0].click if Page.browser.tables.length > 0
-        end
+        Page.browser.element.click
       end
     end
 
