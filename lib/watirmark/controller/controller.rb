@@ -1,6 +1,5 @@
 require 'watirmark/controller/actions'
 require 'watirmark/controller/dialogs'
-require 'watirmark/controller/matcher'
 require 'watirmark/controller/assertions'
 
 module Watirmark

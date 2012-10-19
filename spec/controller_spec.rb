@@ -154,7 +154,7 @@ describe Watirmark::WebPage::Controller do
   it 'should throw a Watirmark::VerificationException when a verification fails' do
     lambda {
       VerifyController.new(:validate1 => '2').verify_data
-    }.should raise_error(Watirmark::VerificationException,"validate1: expected '2.0' (Float) got '1' (String)")
+    }.should raise_error(Watirmark::VerificationException,"validate1: expected '2' (String) got '1' (String)")
   end
 
   it 'should not throw an exception when a verification succeeds' do
