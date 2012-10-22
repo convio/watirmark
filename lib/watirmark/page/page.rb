@@ -1,63 +1,6 @@
 require 'watirmark/page/process_page'
-require 'watirmark/page/radio_maps'
 
 module Watirmark
-
-  module KeywordMethods
-    attr_accessor :keyword, :radio_map
-  end
-
-  class KeyedElement
-    def initialize(args)
-      @key = args[:key]
-      @page = args[:page]
-      @map = args[:map]
-      @map = Watirmark::RadioMap.new @map if @map.is_a? Hash
-      @process_page = args[:process_page]
-      @block = args[:block]
-      raise ArgumentError, "No process page defined! This should never happen" if @process_page.nil?
-    end
-
-    def get *args
-      activate_process_page
-      watir_object = @page.instance_exec(*args, &@block)
-      watir_object.extend(KeywordMethods)
-      watir_object.keyword = @key
-      watir_object.radio_map = @map
-      watir_object
-    end
-
-    def set val
-      return if val.nil?
-      activate_process_page
-      element = get
-      if @map
-        val = @map.lookup(val)
-      end
-      case val
-        when 'nil'
-          element.clear # workaround to empty element values
-        else
-          case element
-            when Watir::Radio
-              element.set val
-            when Watir::CheckBox
-              val ? element.set : element.clear
-            when Watir::Select
-              element.select val
-            when Watir::Button
-              element.click
-            else
-              element.value = val
-          end
-      end
-    end
-
-    def activate_process_page
-      @process_page.activate
-    end
-  end
-
 
   class Page
 
