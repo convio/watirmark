@@ -6,7 +6,7 @@ module Watirmark
 
     class << self
       @@browser = nil
-      attr_accessor :keywords, :process_pages, :kwds, :perms , :keyword_metadata
+      attr_accessor :keywords, :process_pages, :kwds, :perms , :keyword_metadata, :keyword_aliases
 
       # When a view inherits another view, we want the subclass
       # to report the keywords and process pages pulling in all
@@ -24,7 +24,6 @@ module Watirmark
         create_default_process_page(klass)
       end
 
-
       def keywords
         @kwds.values.flatten.uniq.sort_by { |key| key.to_s }
       end
@@ -35,17 +34,14 @@ module Watirmark
 
       def keyword(name, map=nil, &block)
         create_new_keyword(name, map, permissions={:populate => true, :verify => true}, &block)
-        @current_process_page << name
       end
 
       def populate_keyword(name, map=nil, &block)
         create_new_keyword(name, map, permissions={:populate => true}, &block)
-        @current_process_page << name
       end
 
       def verify_keyword(name, map=nil, &block)
         create_new_keyword(name, map, permissions={:verify => true}, &block)
-        @current_process_page << name
       end
 
       def private_keyword(name, map=nil, &block)
@@ -55,11 +51,8 @@ module Watirmark
 
       # Create an alias to an existing keyword
       def keyword_alias(keyword_alias_name, keyword_name)
-        keyword(keyword_alias_name) do
-          warn("Warning: Deprecated use of `#{__callee__}` to access "\
-              "`#{keyword_name}` with `#{keyword_alias_name}`in #{self}.")
-          send keyword_name
-        end
+        @keyword_aliases ||= Hash.new{|h,k| h[k] = Array.new}
+        @keyword_aliases[keyword_name] << keyword_alias_name
       end
 
       def process_page(name, method=nil)
@@ -104,6 +97,7 @@ module Watirmark
       def create_new_keyword(name, map=nil, permissions, &block)
         add_to_keywords(name)
         add_permission(name, permissions)
+        @current_process_page << name if permissions
         @keyword_metadata ||= Hash.new{|h,k| h[k]=Hash.new}
         @keyword_metadata[name][:key] = name
         @keyword_metadata[name][:map] = map
@@ -177,6 +171,7 @@ module Watirmark
       @kwds = self.class.kwds
       @perms = self.class.perms
       create_keyword_methods
+      create_keyword_aliases
     end
 
     def create_keyword_methods
@@ -189,6 +184,18 @@ module Watirmark
         end
         meta_def "#{key}=" do |*args|
           keyed_element.set *args
+        end
+      end
+    end
+
+    def create_keyword_aliases
+      aliases = self.class.keyword_aliases
+      return unless aliases
+      aliases.each_key do |name|
+        aliases[name].each do |an_alias|
+          warn("Warning: Deprecated use of `keyword_alias` to access "\
+              "`#{aliases[name]}` with `#{an_alias}`in #{self}.")
+          instance_eval "alias #{an_alias} #{name}"
         end
       end
     end

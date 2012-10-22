@@ -108,6 +108,7 @@ describe 'Page' do
     page1.a.should == 'a'
     page1.aliased_keyword.should == 'a'
   end
+
 end
 
 
