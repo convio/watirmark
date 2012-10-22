@@ -8,13 +8,10 @@ module Watirmark
       include PageDefinition
     end
 
-    attr_accessor :keywords, :permissions, :process_pages, :browser
+    attr_accessor :browser
 
     def initialize(browser=nil)
       @browser = browser || self.class.browser
-      @keywords = self.class.keywords
-      @permissions = self.class.permissions
-      @process_pages = self.class.process_pages
       create_keyword_methods
       create_keyword_aliases
     end
@@ -45,8 +42,20 @@ module Watirmark
       end
     end
 
+    def keywords
+      self.class.keywords
+    end
+
+    def permissions
+      self.class.permissions
+    end
+
+    def process_pages
+      self.class.process_pages
+    end
+
     def process_page(x)
-      @process_pages.each { |page| return page if page.name == x }
+      process_pages.each { |page| return page if page.name == x }
       raise RuntimeError, "Process Page '#{x}' not found in #{self}"
     end
   end
