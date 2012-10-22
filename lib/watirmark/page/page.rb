@@ -1,7 +1,6 @@
 require 'watirmark/page/page_definition'
 
 module Watirmark
-
   class Page
 
     class << self
@@ -61,6 +60,4 @@ module Watirmark
   end
 end
 
-
-# Make this class a little easier to get to
 Page = Watirmark::Page
