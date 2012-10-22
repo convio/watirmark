@@ -1,5 +1,4 @@
 require 'watirmark/page/page_definition'
-require 'watirmark/page/process_page'
 
 module Watirmark
 
@@ -9,14 +8,13 @@ module Watirmark
       include PageDefinition
     end
 
-    attr_accessor :keywords, :process_pages, :browser
+    attr_accessor :keywords, :permissions, :process_pages, :browser
 
     def initialize(browser=nil)
       @browser = browser || self.class.browser
       @keywords = self.class.keywords
+      @permissions = self.class.permissions
       @process_pages = self.class.process_pages
-      @kwds = self.class.kwds
-      @perms = self.class.perms
       create_keyword_methods
       create_keyword_aliases
     end
@@ -50,11 +48,6 @@ module Watirmark
     def process_page(x)
       @process_pages.each { |page| return page if page.name == x }
       raise RuntimeError, "Process Page '#{x}' not found in #{self}"
-    end
-
-    def permissions
-      @perms ||= Hash.new { |h, k| h[k] = Hash.new }
-      @perms.values.inject(:merge)
     end
   end
 end

@@ -1,3 +1,5 @@
+require 'watirmark/page/process_page'
+
 module Watirmark
   module PageDefinition
     attr_accessor :keywords, :process_pages, :kwds, :perms, :keyword_metadata, :keyword_aliases
@@ -79,6 +81,13 @@ module Watirmark
     def native_keywords
       @kwds[self].sort_by { |key| key.to_s }
     end
+
+
+    def permissions
+      @perms ||= Hash.new { |h, k| h[k] = Hash.new }
+      @perms.values.inject(:merge)
+    end
+
 
     private
 
