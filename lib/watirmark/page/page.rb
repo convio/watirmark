@@ -7,6 +7,8 @@ module Watirmark
     class << self
       @@browser = nil
       attr_accessor :keywords, :process_pages, :kwds, :perms , :keyword_metadata, :keyword_aliases
+      attr_accessor :process_page_navigate_method, :process_page_submit_method,
+                    :process_page_submit_method, :process_page_active_page_method
 
       # When a view inherits another view, we want the subclass
       # to report the keywords and process pages pulling in all
@@ -66,18 +68,6 @@ module Watirmark
 
       def process_page_alias(x)
         @current_process_page.alias << x
-      end
-
-      def navigate_method(x)
-        @process_page_navigate_method = x
-      end
-
-      def submit_method(x)
-        @process_page_submit_method = x
-      end
-
-      def active_page_method(x)
-        @process_page_active_page_method = x
       end
 
       def always_activate_parent
