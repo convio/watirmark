@@ -91,8 +91,8 @@ describe 'Process Page Views' do
   end
   
   it 'should show all keywords for a given process page' do
-    @processpagetest['ProcessPage 1'].keywords.should == [:b]
-    @processpagetest['ProcessPage 2'].keywords.should == [:c, :d]
+    @processpagetest.process_page('ProcessPage 1').keywords.should == [:b]
+    @processpagetest.process_page('ProcessPage 2').keywords.should == [:c, :d]
   end
   
   it 'should activate the nested process_page where appropriate' do
@@ -105,9 +105,9 @@ describe 'Process Page Views' do
   end
   
   it 'should show all keywords for a given nested rocess page' do
-    @nestedprocesspagetest['ProcessPage 1'].keywords.should == [:b]
-    @nestedprocesspagetest['ProcessPage 1 > ProcessPage 1.1'].keywords.should == [:b1, :b2]
-    @nestedprocesspagetest['ProcessPage 1 > ProcessPage 1.1 > ProcessPage 1.1.1'].keywords.should == [:b3]
+    @nestedprocesspagetest.process_page('ProcessPage 1').keywords.should == [:b]
+    @nestedprocesspagetest.process_page('ProcessPage 1 > ProcessPage 1.1').keywords.should == [:b1, :b2]
+    @nestedprocesspagetest.process_page('ProcessPage 1 > ProcessPage 1.1 > ProcessPage 1.1.1').keywords.should == [:b3]
   end
   
 
@@ -121,7 +121,7 @@ describe 'Process Page Views' do
   end
 
   it 'should support defining the process page submit method' do
-    process_page = @processpagealias['page 1']
+    process_page = @processpagealias.process_page('page 1')
     process_page.alias.should == ['page a', 'page b']
   end
   
