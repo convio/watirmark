@@ -7,15 +7,99 @@ module Watirmark
     attr_accessor :keyword, :radio_map
   end
 
+  class KeyedElement
+    def initialize(args)
+      @key = args[:key]
+      @page = args[:page]
+      @map = args[:map]
+      @map = Watirmark::RadioMap.new @map if @map.is_a? Hash
+      @process_page = args[:process_page]
+      @block = args[:block]
+      raise ArgumentError, "No process page defined! This should never happen" if @process_page.nil?
+    end
+
+    def get *args
+      activate_process_page
+      watir_object = @page.instance_exec(*args, &@block)
+      watir_object.extend(KeywordMethods)
+      watir_object.keyword = @key
+      watir_object.radio_map = @map
+      watir_object
+    end
+
+    def set val
+      return if val.nil?
+      activate_process_page
+      element = get
+      if @map
+        val = @map.lookup(val)
+      end
+      case val
+        when 'nil'
+          element.clear # workaround to empty element values
+        else
+          case element
+            when Watir::Radio
+              element.set val
+            when Watir::CheckBox
+              val ? element.set : element.clear
+            when Watir::Select
+              element.select val
+            when Watir::Button
+              element.click
+            else
+              element.value = val
+          end
+      end
+    end
+
+    def activate_process_page
+      @process_page.activate
+    end
+  end
+
+
   class Page
+
+
+    attr_accessor :keywords, :process_pages, :kwds, :perms, :browser
+    def initialize(browser=nil)
+      @browser = browser || self.class.browser
+      @keywords = self.class.keywords
+      @process_pages = self.class.process_pages
+      @kwds = self.class.kwds
+      @perms = self.class.perms
+      create_keyword_methods
+    end
+
+    def create_keyword_methods
+      keywords = self.class.keyword_metadata
+      keywords.each_key do |key|
+        keywords[key][:page] = self
+        keyed_element = KeyedElement.new keywords[key]
+        meta_def key do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{key}=" do |*args|
+          keyed_element.set *args
+        end
+      end
+    end
+
+    def [](x)
+      @process_pages.each { |page| return page if page.name == x }
+      raise RuntimeError, "Process Page '#{x}' not found in #{self}"
+    end
+
+
+    def permissions
+      @perms ||= Hash.new { |h, k| h[k] = Hash.new }
+      @perms.values.inject(:merge)
+    end
 
     class << self
       @@browser = nil
-      attr_accessor :keywords, :process_pages, :kwds, :perms
-
-      def log
-        Watirmark::Configuration.instance.logger
-      end
+      attr_accessor :keywords, :process_pages, :kwds, :perms , :keyword_metadata
 
       # When a view inherits another view, we want the subclass
       # to report the keywords and process pages pulling in all
@@ -32,6 +116,7 @@ module Watirmark
         add_superclass_process_pages(klass)
         create_default_process_page(klass)
       end
+
 
       def keywords
         @kwds.values.flatten.uniq.sort_by { |key| key.to_s }
@@ -60,11 +145,6 @@ module Watirmark
         create_new_keyword(name, map, &block)
       end
       alias :navigation_keyword :private_keyword
-
-      def permissions
-        @perms ||= Hash.new { |h, k| h[k] = Hash.new }
-        @perms.values.inject(:merge)
-      end
 
       # Create an alias to an existing keyword
       def keyword_alias(keyword_alias_name, keyword_name)
@@ -104,11 +184,6 @@ module Watirmark
         @current_process_page.always_activate_parent = @current_process_page.parent.page_name
       end
 
-      def [](x)
-        @process_pages.each { |page| return page if page.name == x }
-        raise RuntimeError, "Process Page '#{x}' not found in #{self}"
-      end
-
       def browser
         @@browser ||= Watirmark::Session.instance.openbrowser
       end
@@ -121,15 +196,13 @@ module Watirmark
 
       def create_new_keyword(name, map=nil, permissions, &block)
         add_to_keywords(name)
-        keyed_element = get_keyed_element(name, map, &block)
         add_permission(name, permissions)
-
-        meta_def name do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{name}=" do |*args|
-          keyed_element.set *args
-        end
+        @keyword_metadata ||= Hash.new{|h,k| h[k]=Hash.new}
+        @keyword_metadata[name][:key] = name
+        @keyword_metadata[name][:map] = map
+        @keyword_metadata[name][:permissions] = permissions
+        @keyword_metadata[name][:block] = block
+        @keyword_metadata[name][:process_page] = @current_process_page
       end
 
       def add_permission(kwd, hash)
@@ -140,19 +213,6 @@ module Watirmark
       def add_to_keywords(method_sym)
         @kwds ||= Hash.new { |h, k| h[k] = Array.new }
         @kwds[self] << method_sym unless @kwds.include?(method_sym)
-      end
-
-      def get_keyed_element(method_sym, map=nil, &block)
-        if map.is_a? Hash
-          map = Watirmark::RadioMap.new map
-        end
-        Page::KeyedElement.new(
-            :key => method_sym,
-            :page => self,
-            :map => map,
-            :process_page => @current_process_page,
-            :block => block
-        )
       end
 
       def add_superclass_keywords(klass)
@@ -199,57 +259,6 @@ module Watirmark
         @process_pages.find { |p| p.name == name }
       end
 
-    end
-
-
-    class KeyedElement
-      def initialize(args)
-        @key = args[:key]
-        @page = args[:page]
-        @map = args[:map]
-        @process_page = args[:process_page]
-        @block = args[:block]
-        raise ArgumentError, "No process page defined! This should never happen" if @process_page.nil?
-      end
-
-      def get *args
-        activate_process_page
-        watir_object = @page.instance_exec(*args, &@block)
-        watir_object.extend(KeywordMethods)
-        watir_object.keyword = @key
-        watir_object.radio_map = @map
-        watir_object
-      end
-
-      def set val
-        return if val.nil?
-        activate_process_page
-        element = get
-        if @map
-          val = @map.lookup(val)
-        end
-        case val
-          when 'nil'
-            element.clear # workaround to empty element values
-          else
-            case element
-              when Watir::Radio
-                element.set val
-              when Watir::CheckBox
-                val ? element.set : element.clear
-              when Watir::Select
-                element.select val
-              when Watir::Button
-                element.click
-              else
-                element.value = val
-            end
-        end
-      end
-
-      def activate_process_page
-        @process_page.activate
-      end
     end
   end
 end

@@ -25,7 +25,7 @@ module Watirmark
         @supermodel = data
         @model = locate_model @supermodel
         @records ||= []
-        @view = self.class.view
+        @view = self.class.view.new browser
         @search = self.class.search
       end
 
