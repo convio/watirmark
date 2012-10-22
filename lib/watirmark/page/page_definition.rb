@@ -1,5 +1,8 @@
 require 'watirmark/page/process_page'
 
+# These methods are used in a Page Object to define how
+# to interact with the application under test
+
 module Watirmark
   module PageDefinition
     attr_accessor :keywords, :process_pages, :kwds, :perms, :keyword_metadata, :keyword_aliases
@@ -9,15 +12,6 @@ module Watirmark
 
     @@browser = nil
 
-    # When a view inherits another view, we want the subclass
-    # to report the keywords and process pages pulling in all
-    # subclasses. That way you can use the :keywords to see *all*
-    # the available keywords and not just the ones explicitly defined
-    # in that view.
-    #
-    # Also we want to create a default process page even if there is not
-    # a process page in use. This allows us to handle each view the same way
-    # and not have to see if it's using process pages or not.
     def inherited(klass)
       add_superclass_keywords(klass)
       add_superclass_permissions(klass)
@@ -40,8 +34,8 @@ module Watirmark
     def private_keyword(name, map=nil, &block)
       create_new_keyword(name, map, &block)
     end
-
     alias :navigation_keyword :private_keyword
+
 
     # Create an alias to an existing keyword
     def keyword_alias(keyword_alias_name, keyword_name)
@@ -51,9 +45,6 @@ module Watirmark
 
     def process_page(name, method=nil)
       @current_process_page = find_or_create_process_page(name)
-      @current_process_page.navigate_method = @process_page_navigate_method
-      @current_process_page.submit_method = @process_page_submit_method
-      @current_process_page.active_page_method = @process_page_active_page_method
       yield
       @current_process_page = @current_process_page.parent
     end
@@ -90,6 +81,7 @@ module Watirmark
 
 
     private
+
 
     def create_new_keyword(name, map=nil, permissions, &block)
       add_to_keywords(name)
@@ -149,6 +141,9 @@ module Watirmark
         @process_pages ||= []
         @process_pages << mypage
       end
+      mypage.navigate_method = @process_page_navigate_method
+      mypage.submit_method = @process_page_submit_method
+      mypage.active_page_method = @process_page_active_page_method
       mypage
     end
 
