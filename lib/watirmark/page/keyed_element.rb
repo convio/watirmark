@@ -9,12 +9,14 @@ module Watirmark
   class KeyedElement
     def initialize(options)
       @options = options
+      @map = Watirmark::RadioMap.new(@options[:map]) if @options[:map]
     end
 
     def get *args
       activate_process_page
       watir_object = @options[:page].instance_exec(*args, &@options[:block])
       watir_object.extend(KeywordMethods)
+      watir_object.radio_map = @map if @map
       watir_object.keyword = @options[:key]
       watir_object
     end
@@ -23,7 +25,7 @@ module Watirmark
       return if val.nil?
       activate_process_page
       element = get
-      val = Watirmark::RadioMap.new(@options[:map]).lookup(val) if @options[:map]
+      val = @map.lookup(val) if @map
       case val
         when 'nil'
           element.clear # workaround to empty element values
