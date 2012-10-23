@@ -46,12 +46,18 @@ module Watirmark
     end
     
     def compare_values(element, expected, actual)
-      unless matches(element, expected, actual)
-        error = Watirmark::VerificationException.new(error_message(element, expected, actual))
-        error.actual = actual
-        error.expected = expected
-        raise error 
+      if expected.kind_of?(Matcher)
+        fail(element, expected, actual) unless Matcher.matches?(element, actual)
+      else
+        fail(element, expected, actual) unless matches?(expected, actual)
       end
+    end
+
+    def fail(element, expected, actual)
+      error = Watirmark::VerificationException.new(error_message(element, expected, actual))
+      error.actual = actual
+      error.expected = expected
+      raise error
     end
 
     def error_message(element, expected, actual)
@@ -65,7 +71,7 @@ module Watirmark
       true if Float(object) rescue false
     end
 
-    def matches(element, expected, actual)
+    def matches?(expected, actual)
       expected = expected.to_f if is_number?(expected)
       case expected
         when Regexp
@@ -107,7 +113,5 @@ module Watirmark
     def should_match_number(expected, actual)
       expected == actual.to_s.gsub(/[,$]/,'').to_f
     end
-
-    
   end
 end

@@ -1,6 +1,7 @@
 require 'watirmark/controller/actions'
 require 'watirmark/controller/dialogs'
 require 'watirmark/controller/assertions'
+require 'watirmark/controller/matcher'
 
 module Watirmark
   module WebPage
@@ -25,7 +26,7 @@ module Watirmark
         @supermodel = data
         @model = locate_model @supermodel
         @records ||= []
-        @view = self.class.view.new browser
+        @view = self.class.view.new browser if self.class.view
         @search = self.class.search
       end
 
