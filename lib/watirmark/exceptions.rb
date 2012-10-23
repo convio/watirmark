@@ -1,4 +1,5 @@
 module Watirmark
+  class Watirmark::MatcherNotFound < RuntimeError ;end
   class Watirmark::TestError < RuntimeError ;end
   class Watirmark::TestFailure < RuntimeError ;end
   class Watirmark::PostFailure < RuntimeError ;end
