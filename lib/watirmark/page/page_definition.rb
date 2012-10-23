@@ -5,7 +5,8 @@ require 'watirmark/page/process_page'
 
 module Watirmark
   module PageDefinition
-    attr_accessor :keywords, :process_pages, :kwds, :perms, :keyword_metadata, :keyword_aliases
+    attr_accessor :process_pages, :kwds, :perms, :keyword_metadata, :keyword_aliases
+
     attr_accessor :process_page_navigate_method, :process_page_submit_method,
                   :process_page_submit_method, :process_page_active_page_method
 
