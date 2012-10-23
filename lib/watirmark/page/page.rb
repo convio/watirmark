@@ -16,7 +16,7 @@ module Watirmark
     end
 
     def create_keyword_methods
-      keywords = self.class.keyword_metadata
+      keywords = self.class.keyword_metadata || {}
       keywords.each_key do |key|
         keywords[key][:page] = self
         keyed_element = KeyedElement.new keywords[key]
@@ -34,8 +34,6 @@ module Watirmark
       return unless aliases
       aliases.each_key do |name|
         aliases[name].each do |an_alias|
-          warn("Warning: Deprecated use of `keyword_alias` to access "\
-              "`#{aliases[name]}` with `#{an_alias}`in #{self}.")
           instance_eval "alias #{an_alias} #{name}"
         end
       end
