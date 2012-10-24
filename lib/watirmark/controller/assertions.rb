@@ -46,8 +46,8 @@ module Watirmark
     end
     
     def compare_values(element, expected, actual)
-      if expected.kind_of?(Matcher)
-        fail(element, expected, actual) unless Matcher.matches?(element, actual)
+      if Matcher.exists?(expected)
+        fail(element, expected, actual) unless Matcher.matches?(element, expected, actual)
       else
         fail(element, expected, actual) unless matches?(expected, actual)
       end

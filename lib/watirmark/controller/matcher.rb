@@ -1,19 +1,19 @@
 module Watirmark
   class Matcher
     class << self
+      @@matchers = {}
+
       def add_matcher(name, &block)
-        @@matchers ||= {}
         @@matchers[name] = block
       end
-    end
 
-    def initialize(name)
-      @name = name
-      raise Waitmark::MatcherNotFound, "Matcher not defined for '#{@name}'"
-    end
+      def exists?(name)
+        @@matchers.has_key?(name)
+      end
 
-    def matches?(element, actual)
-      instance_exec(element, actual, @@matchers[@name])
+      def matches?(element, expected, actual)
+        instance_exec(element, actual, &@@matchers[expected])
+      end
     end
   end
 end
