@@ -5,7 +5,7 @@ require 'watirmark/page/process_page'
 
 module Watirmark
   module PageDefinition
-    attr_accessor :process_pages, :kwds, :perms, :keyword_metadata, :keyword_aliases
+    attr_accessor :process_pages, :kwds, :perms, :kwd_metadata, :keyword_aliases
 
     attr_accessor :process_page_navigate_method, :process_page_submit_method,
                   :process_page_submit_method, :process_page_active_page_method
@@ -14,9 +14,10 @@ module Watirmark
     @@browser = nil
 
     def inherited(klass)
-      add_superclass_keywords(klass)
-      add_superclass_permissions(klass)
-      add_superclass_process_pages(klass)
+      add_superclass_keywords_to_subclass(klass)
+      add_superclass_permissions_to_subclass(klass)
+      add_superclass_keyword_metadata_to_subclass(klass)
+      add_superclass_process_pages_to_subclass(klass)
       create_default_process_page(klass)
     end
 
@@ -71,9 +72,13 @@ module Watirmark
     end
 
     def native_keywords
-      @kwds[self].sort_by { |key| key.to_s }
+      @kwds[self.to_sym].sort_by { |key| key.to_s }
     end
 
+    def keyword_metadata
+      @kwd_metadata ||= Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k]=Hash.new } }
+      @kwd_metadata.values.inject(:merge)
+    end
 
     def permissions
       @perms ||= Hash.new { |h, k| h[k] = Hash.new }
@@ -87,46 +92,59 @@ module Watirmark
     def create_new_keyword(name, map=nil, permissions, &block)
       add_to_keywords(name)
       add_permission(name, permissions)
-      @current_process_page << name if permissions
-      @keyword_metadata ||= Hash.new { |h, k| h[k]=Hash.new }
-      @keyword_metadata[name][:key] = name
-      @keyword_metadata[name][:map] = map
-      @keyword_metadata[name][:permissions] = permissions
-      @keyword_metadata[name][:block] = block
-      @keyword_metadata[name][:process_page] = @current_process_page
+      add_to_current_process_page(name, permissions)
+      add_keyword_metadata(name, map, permissions, block)
     end
 
-    def add_permission(kwd, hash)
+    def add_keyword_metadata(name, map, permissions, block)
+      @kwd_metadata ||= Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k]=Hash.new } }
+      @kwd_metadata[self.to_s][name][:key] = name
+      @kwd_metadata[self.to_s][name][:map] = map
+      @kwd_metadata[self.to_s][name][:permissions] = permissions
+      @kwd_metadata[self.to_s][name][:block] = block
+      @kwd_metadata[self.to_s][name][:process_page] = @current_process_page
+    end
+
+    def add_permission(name, permissions)
       @perms ||= Hash.new { |h, k| h[k] = Hash.new }
-      @perms[self][kwd] = hash
+      @perms[self.to_s][name] = permissions
+    end
+
+    def add_to_current_process_page(name, permissions)
+      @current_process_page << name if permissions
     end
 
     def add_to_keywords(method_sym)
       @kwds ||= Hash.new { |h, k| h[k] = Array.new }
-      @kwds[self] << method_sym unless @kwds.include?(method_sym)
+      @kwds[self.to_s] << method_sym unless @kwds.include?(method_sym)
     end
 
-    def add_superclass_keywords(klass)
-      if @kwds
-        klass.kwds ||= Hash.new { |h, k| h[k] = Array.new }
-        @kwds.each_key do |k|
-          klass.kwds[k] = @kwds[k].dup
+    def add_superclass_keywords_to_subclass(klass)
+      update_subclass_variables(klass, method='kwds', default=Hash.new { |h, k| h[k] = Array.new })
+    end
+
+    def add_superclass_permissions_to_subclass(klass)
+      update_subclass_variables(klass, method='perms', default=Hash.new { |h, k| h[k] = Hash.new })
+    end
+
+    def add_superclass_keyword_metadata_to_subclass(klass)
+      update_subclass_variables(klass, method='kwd_metadata', default=Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k] = Hash.new } })
+    end
+
+    def update_subclass_variables(klass, method, default)
+      var = self.send(method)
+      if var
+        klass.send("#{method}=", default) unless klass.send(method)
+        var.each_key do |k|
+          klass.send(method).store(k, var.fetch(k).dup)
         end
       end
     end
 
-    def add_superclass_process_pages(klass)
+    def add_superclass_process_pages_to_subclass(klass)
       klass.process_pages = (@process_pages ? @process_pages.dup : klass.process_pages = [])
     end
 
-    def add_superclass_permissions(klass)
-      if @perms
-        klass.perms ||= Hash.new { |h, k| h[k] = Hash.new }
-        @perms.each_key do |k|
-          klass.perms[k] = @perms[k].dup
-        end
-      end
-    end
 
     def create_default_process_page(klass)
       klass.instance_variable_set :@current_process_page, ProcessPage.new(klass.inspect)
