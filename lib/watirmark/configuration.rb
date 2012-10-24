@@ -156,7 +156,7 @@ module Watirmark
     end
 
     def update_profile_yaml
-      if self[:salesforce_sites]["active"]
+      if self[:salesforce_sites] && self[:salesforce_sites]["active"]
         site = self[:salesforce_sites]["active"]
         self[:salesforce_sites][site].each do |key, value|
           self[key.to_sym] = value
