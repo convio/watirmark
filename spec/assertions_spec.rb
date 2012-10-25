@@ -68,5 +68,28 @@ describe Watirmark::Assertions do
     element = stub(:exists? => true, :value => '37%', :name => 'unittest')
     assert_equal element, '37.00'
   end
-  
+
+end
+
+describe "normalize_values" do
+  include Watirmark::Assertions
+
+  specify 'normalize dates' do
+    normalize_value("1/1/2012").should == Date.parse('1/1/2012')
+    normalize_value("1/1/09").should == Date.parse('1/1/09')
+    normalize_value("01/1/09").should == Date.parse('1/1/09')
+    normalize_value("01/01/09").should == Date.parse('1/1/09')
+  end
+  specify 'normalize whitespace' do
+    normalize_value(" a").should == "a"
+    normalize_value("a ").should == "a"
+    normalize_value("a\n").should == "a"
+    normalize_value("\na").should == "a"
+    normalize_value(" a \nb").should == "a \nb"
+    normalize_value(" a \r\nb").should == "a \nb"
+    normalize_value(" a \nb\n").should == "a \nb"
+  end
+  specify 'do not normalize string of spaces' do
+    normalize_value('     ').should == '     '
+  end
 end

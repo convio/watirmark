@@ -1,7 +1,7 @@
 require 'watirmark/controller/actions'
 require 'watirmark/controller/dialogs'
-require 'watirmark/controller/matcher'
 require 'watirmark/controller/assertions'
+require 'watirmark/controller/matcher'
 
 module Watirmark
   module WebPage
@@ -26,7 +26,7 @@ module Watirmark
         @supermodel = data
         @model = locate_model @supermodel
         @records ||= []
-        @view = self.class.view
+        @view = self.class.view.new browser if self.class.view
         @search = self.class.search
       end
 
@@ -53,7 +53,7 @@ module Watirmark
         @last_process_page = nil
         each_keyword do |keyword, process_page|
           if @last_process_page != process_page
-            if seen_value && @view[process_page].page_name !~ /::/ #hack so we handle inherited kwds without submits
+            if seen_value && @view.process_page(process_page).page_name !~ /::/ #hack so we handle inherited kwds without submits
               submit_process_page
               seen_value = false
             end
@@ -101,10 +101,10 @@ module Watirmark
           if respond_to?(submit_process_page_method)
             send(submit_process_page_method)
           else
-            @view[@last_process_page].submit
+            @view.process_page(@last_process_page).submit
           end
         else
-          @view[@view.to_s].submit
+          @view.process_page(@view.to_s).submit
         end
       end
 

@@ -26,8 +26,10 @@ module Watirmark
 
     def _autoload_(mod, klass, path)
       return if klass =~ /\./
-      str = "module ::#{mod}; autoload :#{klass}, '#{path}'; end"
-      eval str
+      namespaces = mod.split('::')
+      m = Kernel.const_get(namespaces.shift)
+      m = namespaces.inject(m){|result, ns| result.const_get(ns)}
+      m.send(:autoload, klass.to_sym, path)
     end
     private :_autoload_
 

@@ -155,8 +155,18 @@ module Watirmark
       end
     end
 
+    def update_profile_yaml
+      if self[:salesforce_sites] && self[:salesforce_sites]["active"]
+        site = self[:salesforce_sites]["active"]
+        self[:salesforce_sites][site].each do |key, value|
+          self[key.to_sym] = value
+        end
+      end
+    end
+
     def parse_yaml_file filename
       YAML.load_file(filename).each_pair {|key, value| update_key key, value}
+      update_profile_yaml
     end
 
     # This is the old-style method of using a config.txt

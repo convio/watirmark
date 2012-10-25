@@ -1,5 +1,6 @@
 module Watirmark
   class ProcessPage
+
     attr_reader :parent, :keywords
     attr_accessor :alias, :page_name, :root, :always_activate_parent
     attr_accessor :submit_method, :active_page_method, :navigate_method
