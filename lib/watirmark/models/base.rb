@@ -57,8 +57,11 @@ module Watirmark
           @search = block
         end
 
-        def traits(*name)
-          name.each {|n| instance_exec(&Watirmark::Model::Traits.instance[n])}
+        def traits(*names)
+          names.each do |n|
+            Watirmark::Model::Traits.instance[n].defaults.each {|k, v| default.send(k, &v)}
+            Watirmark::Model::Traits.instance[n].traits.each {|t| traits(t)}
+          end
         end
 
         def model_type(c_name)

@@ -399,12 +399,12 @@ describe "Traits" do
 
     module Watirmark::Model
       trait :contact_name do
-        default.first_name { "first" }
-        default.last_name { "last_#{uuid}" }
+        first_name { "first" }
+        last_name { "last_#{uuid}" }
       end
 
       trait :credit_card do
-        default.cardnumber { 4111111111111111 }
+        cardnumber { 4111111111111111 }
       end
     end
 
@@ -454,25 +454,24 @@ describe "Traits" do
   end
 end
 
-describe "Traits within Traits" do
+describe "Nested Traits" do
 
   before :all do
     module Watirmark::Model
-
       trait :donor_address do
-        default.donor_address { "123 Sunset St" }
-        default.donor_state { "TX" }
+        donor_address { "123 Sunset St" }
+        donor_state { "TX" }
       end
 
       trait :donor_jim do
-        default.first_name { "Jim" }
-        default.last_name { "Smith" }
         traits :donor_address
+        first_name { "Jim" }
+        last_name { "Smith" }
       end
 
       trait :donor_jane do
-        default.first_name { "Jane" }
-        default.last_name { "Baker" }
+        first_name { "Jane" }
+        last_name { "Baker" }
         traits :donor_address
       end
     end
@@ -499,8 +498,44 @@ describe "Traits within Traits" do
   specify "should have same address due to same trait" do
     a = ModelA.new
     b = ModelB.new
+    a.donor_address.should == "123 Sunset St"
+    a.donor_state.should == "TX"
     a.donor_address.should == b.donor_address
     a.donor_state.should == b.donor_state
+  end
+end
+
+describe "Unpack keywords" do
+  before :all do
+    class Element
+      attr_accessor :value
+      def initialize(x)
+        @value = x
+      end
+    end
+
+    class ModelAView < Page
+      keyword(:first_name) {Element.new :a}
+      keyword(:middle_name) {Element.new :b}
+      keyword(:last_name) {Element.new :c}
+    end
+
+    ModelA = Watirmark::Model.factory do
+      keywords *ModelAView.keywords
+      defaults do
+        first_name {"First"}
+        middle_name  {"Middle"}
+        last_name {"Last #{uuid}"}
+      end
+    end
+
+  end
+
+  specify "should add unpacked keywords as keywords" do
+    a = ModelA.new
+    a.middle_name.should == "Middle"
+    a.first_name.should == "First"
+    a.last_name.should include "Last"
   end
 end
 
