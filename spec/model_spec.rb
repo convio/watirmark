@@ -325,12 +325,12 @@ describe "Traits" do
 
     module Watirmark::Model
       trait :contact_name do
-        default.first_name   {"first"}
-        default.last_name   {"last_#{uuid}"}
+        first_name   {"first"}
+        last_name   {"last_#{uuid}"}
       end
 
       trait :credit_card do
-        default.cardnumber {4111111111111111}
+        cardnumber {4111111111111111}
       end
     end
 
@@ -379,19 +379,19 @@ describe "Traits within Traits" do
     module Watirmark::Model
 
       trait :donor_address do
-        default.donor_address {"123 Sunset St"}
-        default.donor_state {"TX"}
+        donor_address {"123 Sunset St"}
+        donor_state {"TX"}
       end
 
       trait :donor_jim do
-        default.first_name {"Jim"}
-        default.last_name {"Smith"}
+        first_name {"Jim"}
+        last_name {"Smith"}
         traits :donor_address
       end
 
       trait :donor_jane do
-        default.first_name {"Jane"}
-        default.last_name {"Baker"}
+        first_name {"Jane"}
+        last_name {"Baker"}
         traits :donor_address
       end
 

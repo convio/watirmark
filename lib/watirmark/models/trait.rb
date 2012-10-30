@@ -2,7 +2,30 @@ require 'singleton'
 module Watirmark
   module Model
     def self.trait(name, &block)
-      Watirmark::Model::Traits.instance[name] = block
+      new_trait = Trait.new
+      new_trait.instance_eval(&block)
+      Watirmark::Model::Traits.instance[name] = new_trait
+    end
+
+    class Trait
+      attr_accessor :defaults
+
+      def initialize
+        @defaults = {}
+        @traits = []
+      end
+
+      def traits(name=nil)
+        if name
+          @traits << name
+        else
+          @traits
+        end
+      end
+
+      def method_missing(sym, *args, &block)
+        @defaults[sym] = block
+      end
     end
 
     class Traits < Hash
