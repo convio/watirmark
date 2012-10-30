@@ -5,7 +5,7 @@ require 'watirmark/page/process_page'
 
 module Watirmark
   module PageDefinition
-    attr_accessor :process_pages, :kwds, :perms, :kwd_metadata, :keyword_aliases
+    attr_accessor :process_pages, :kwds, :perms, :kwd_metadata
 
     attr_accessor :process_page_navigate_method, :process_page_submit_method,
                   :process_page_submit_method, :process_page_active_page_method
@@ -41,8 +41,8 @@ module Watirmark
 
     # Create an alias to an existing keyword
     def keyword_alias(keyword_alias_name, keyword_name)
-      @keyword_aliases ||= Hash.new { |h, k| h[k] = Array.new }
-      @keyword_aliases[keyword_name] << keyword_alias_name
+      keyword_data = @kwd_metadata[self.to_s][keyword_name]
+      create_new_keyword(keyword_alias_name, keyword_data[:map], keyword_data[:permissions], &keyword_data[:block])
     end
 
     def process_page(name, method=nil)

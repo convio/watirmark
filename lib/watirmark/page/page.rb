@@ -12,31 +12,6 @@ module Watirmark
     def initialize(browser=nil)
       @browser = browser || self.class.browser
       create_keyword_methods
-      create_keyword_aliases
-    end
-
-    def create_keyword_methods
-      keywords = self.class.keyword_metadata || {}
-      keywords.each_key do |key|
-        keywords[key][:page] = self
-        keyed_element = KeyedElement.new keywords[key]
-        meta_def key do |*args|
-          keyed_element.get *args
-        end
-        meta_def "#{key}=" do |*args|
-          keyed_element.set *args
-        end
-      end
-    end
-
-    def create_keyword_aliases
-      aliases = self.class.keyword_aliases
-      return unless aliases
-      aliases.each_key do |name|
-        aliases[name].each do |an_alias|
-          instance_eval "alias #{an_alias} #{name}"
-        end
-      end
     end
 
     def keywords
@@ -58,6 +33,22 @@ module Watirmark
     def process_page(x)
       process_pages.each { |page| return page if page.name == x }
       raise RuntimeError, "Process Page '#{x}' not found in #{self}"
+    end
+
+  private
+
+    def create_keyword_methods
+      keywords = self.class.keyword_metadata || {}
+      keywords.each_key do |key|
+        keywords[key][:page] = self
+        keyed_element = KeyedElement.new keywords[key]
+        meta_def key do |*args|
+          keyed_element.get *args
+        end
+        meta_def "#{key}=" do |*args|
+          keyed_element.set *args
+        end
+      end
     end
   end
 end
