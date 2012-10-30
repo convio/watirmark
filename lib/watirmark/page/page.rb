@@ -43,6 +43,10 @@ module Watirmark
       self.class.keywords
     end
 
+    def native_keywords
+      self.class.native_keywords
+    end
+
     def permissions
       self.class.permissions
     end

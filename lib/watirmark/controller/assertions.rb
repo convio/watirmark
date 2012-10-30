@@ -62,7 +62,7 @@ module Watirmark
 
     def error_message(element, expected, actual)
       kwd = element.keyword if element.respond_to?(:keyword)
-      message = "#{ kwd || element.name}: expected '#{expected.to_s}' (#{expected.class})"
+      message = "#{ kwd || element.class}: expected '#{expected.to_s}' (#{expected.class})"
       message += " got '#{actual.to_s}' (#{actual.class})"
       message
     end
