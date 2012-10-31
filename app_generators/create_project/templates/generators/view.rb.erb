@@ -3,15 +3,13 @@ module <%= name.camelize %>
     class <%%= name.camelize %>View < BaseView
       keyword(:keyword_name)  { browser.text_field(:id, 'element_id') }
 
-      class << self
-        def home(model)
-        end
+      def home(model)
+      end
 
-        def create(model)
-        end
+      def create(model)
+      end
 
-        def edit(model)
-        end
+      def edit(model)
       end
     end
   <%%= create_module_end %>
