@@ -9,8 +9,8 @@ module Watirmark
 
     attr_accessor :browser
 
-    def initialize(browser=nil)
-      @browser = browser || self.class.browser
+    def initialize(browser=self.class.browser)
+      @browser = browser
       create_keyword_methods
     end
 

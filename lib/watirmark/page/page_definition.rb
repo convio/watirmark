@@ -6,10 +6,7 @@ require 'watirmark/page/process_page'
 module Watirmark
   module PageDefinition
     attr_accessor :process_pages, :kwds, :perms, :kwd_metadata
-
-    attr_accessor :process_page_navigate_method, :process_page_submit_method,
-                  :process_page_submit_method, :process_page_active_page_method
-
+    attr_accessor :process_page_navigate_method, :process_page_active_page_method, :process_page_submit_method
 
     @@browser = nil
 
@@ -37,7 +34,6 @@ module Watirmark
       create_new_keyword(name, map, &block)
     end
     alias :navigation_keyword :private_keyword
-
 
     # Create an alias to an existing keyword
     def keyword_alias(keyword_alias_name, keyword_name)
@@ -85,8 +81,19 @@ module Watirmark
       @perms.values.inject(:merge)
     end
 
+    def process_page_navigate_method(proc=nil)
+        @process_page_navigate_method = proc
+    end
 
-    private
+    def process_page_submit_method(proc)
+      @process_page_submit_method = proc
+    end
+
+    def process_page_active_page_method(proc)
+      @process_page_active_page_method = proc
+    end
+
+  private
 
 
     def create_new_keyword(name, map=nil, permissions, &block)
@@ -156,13 +163,15 @@ module Watirmark
     def find_or_create_process_page(name)
       mypage = find_process_page(name)
       unless mypage
-        mypage = ProcessPage.new(name, @current_process_page)
+        mypage = ProcessPage.new(name,
+                                 @current_process_page,
+                                 @process_page_active_page_method,
+                                 @process_page_navigate_method,
+                                 @process_page_submit_method
+                                )
         @process_pages ||= []
         @process_pages << mypage
       end
-      mypage.navigate_method = @process_page_navigate_method
-      mypage.submit_method = @process_page_submit_method
-      mypage.active_page_method = @process_page_active_page_method
       mypage
     end
 

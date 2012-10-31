@@ -74,11 +74,21 @@ describe 'Process Page Views' do
       end
     end
 
+    class ProcessPageCustomNav < Watirmark::Page
+      process_page_navigate_method Proc.new {}
+      process_page_submit_method Proc.new {}
+      process_page_active_page_method Proc.new {}
+      process_page 'page 4' do
+        keyword(:d) {'d'}
+      end
+    end
+
     @processpagetest = ProcessPageTest.new
     @nestedprocesspagetest = NestedProcessPageTest.new
     @processpage = ProcessPageView.new
     @processpagealias = ProcessPageAliasView.new
     @processpagesubclass = ProcessPageSubclassView.new
+    @processpagecustomnav = ProcessPageCustomNav.new
   end
  
   it 'should only activate process_page when in the closure' do
@@ -140,6 +150,18 @@ describe 'Process Page Views' do
     @processpagesubclass.process_pages[4].name.should == 'page 3'
     @processpagesubclass.process_pages.size.should == 5
     @processpagesubclass.keywords.should == [:a, :b, :c]
+  end
+
+  it 'should honor overriding default process page behavior' do
+    @processpagesubclass.c.should == 'c'
+    @processpagesubclass.class.instance_variable_get(:@process_page_active_page_method).should_not be_kind_of(Proc)
+    @processpagesubclass.class.instance_variable_get(:@process_page_navigate_method).should_not be_kind_of(Proc)
+    @processpagesubclass.class.instance_variable_get(:@process_page_submit_method).should_not be_kind_of(Proc)
+
+    @processpagecustomnav.d.should == 'd'
+    @processpagecustomnav.class.instance_variable_get(:@process_page_active_page_method).should be_kind_of(Proc)
+    @processpagecustomnav.class.instance_variable_get(:@process_page_navigate_method).should be_kind_of(Proc)
+    @processpagecustomnav.class.instance_variable_get(:@process_page_submit_method).should  be_kind_of(Proc)
   end
 end
 

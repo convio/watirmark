@@ -35,13 +35,16 @@ module Watirmark
       end
     end
 
-    def initialize(page_name=nil, parent=nil)
+    def initialize(page_name=nil, parent=nil, active_page=nil, navigate_page=nil, submit_page=nil)
       @page_name = page_name
       @parent = parent
       @keywords = []
       @root = false
       @always_activate_parent = false
       @alias = []
+      @active_page_method = active_page if active_page
+      @navigate_method = navigate_page if navigate_page
+      @submit_method = submit_page if submit_page
     end
 
     # Give the full name of this process page, including the
