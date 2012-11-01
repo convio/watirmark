@@ -36,6 +36,47 @@ module Watir
   module Container
     alias :row :tr
     alias :cell :td
+
+    class DownloadLink < Anchor
+      def initialize(*args)
+        @dir = File.join(Watirmark::Configuration.instance.projectpath, "reports", "downloads")
+        super
+      end
+
+      def download(file = nil)
+        click
+        locate_file(file)
+      end
+
+      def locate_file(file = nil)
+        if file
+          new_file = "#{@dir}/#{file}"
+          File.delete(new_file) if File.file?(new_file)
+          File.rename(last_modified_file, new_file)
+          new_file
+        else
+          last_modified_file
+        end
+      end
+
+      def last_modified_file
+        Dir.new(@dir).select { |f| f!= '.' && f!='..' }.collect { |f| "#{@dir}/#{f}" }.sort { |a, b| File.mtime(b)<=>File.mtime(a) }.first
+      end
+    end
+
+    def download_link(*args)
+      DownloadLink.new(self, extract_selector(args).merge(:tag_name => "a"))
+    end
+
+    class DownloadLinkCollection < ElementCollection
+      def element_class
+        DownloadLink
+      end
+    end
+
+    def download_links(*args)
+      DownloadLinkCollection.new(self, extract_selector(args).merge(:tag_name => "a"))
+    end
   end
 
   class Table < HTMLElement

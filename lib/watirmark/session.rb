@@ -60,6 +60,13 @@ module Watirmark
         profile = Selenium::WebDriver::Firefox::Profile.new
       end
       profile.native_events = false
+      if Configuration.instance.projectpath
+        download_directory = File.join(Configuration.instance.projectpath, "reports", "downloads")
+        download_directory.gsub!("/", "\\") if Selenium::WebDriver::Platform.windows?
+        profile['browser.download.folderList'] = 2 # custom location
+        profile['browser.download.dir'] = download_directory
+        profile['browser.helperApps.neverAsk.saveToDisk'] = "text/csv,application/pdf"
+      end
       profile
     end
 

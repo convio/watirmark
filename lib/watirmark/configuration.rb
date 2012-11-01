@@ -6,7 +6,7 @@ module Watirmark
     include Singleton
 
     def initialize
-      @settings = {}
+      @settings         = {}
       @runtime_defaults = {}
       reload
     end
@@ -17,7 +17,7 @@ module Watirmark
         :hostname           => nil,
         :email              => 'devnull',
         :closebrowseronexit => false,
-        :profile            => Hash.new {|h,k| h[k] = Hash.new},
+        :profile            => Hash.new { |h, k| h[k] = Hash.new },
         :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
         :uuid               => nil,
@@ -32,6 +32,7 @@ module Watirmark
         :snapshotwidth      => 1000,
         :snapshotheight     => 1000,
         :sandbox            => false,
+        :projectpath        => nil,
       }.merge @runtime_defaults
     end
 
@@ -41,7 +42,7 @@ module Watirmark
     end
 
     def update(values)
-      values.each_pair {|k,v|
+      values.each_pair { |k, v|
         v = Logger.const_get(v.upcase) if k.to_s == "loglevel" && v.class == String
         self[k] = v
       }
@@ -52,7 +53,7 @@ module Watirmark
     end
 
     def reset
-      @settings.each_key {|key| @settings.delete key}
+      @settings.each_key { |key| @settings.delete key }
     end
 
     def [](key)
@@ -97,6 +98,7 @@ module Watirmark
           parse_text_file filename
       end
     end
+
     alias :read :read_from_file
 
     # The variable needs to be set as a default here or in the
@@ -121,13 +123,13 @@ module Watirmark
     end
 
     def initialize_logger
-      logger = WatirmarkLog::Logger.new('WatirmarkLog')
+      logger       = WatirmarkLog::Logger.new('WatirmarkLog')
       logger.level = self[:loglevel]
 
       update({:logger => logger})
     end
 
-  private
+    private
 
     def update_key key, value
       case value
@@ -165,7 +167,7 @@ module Watirmark
     end
 
     def parse_yaml_file filename
-      YAML.load_file(filename).each_pair {|key, value| update_key key, value}
+      YAML.load_file(filename).each_pair { |key, value| update_key key, value }
       update_profile_yaml
     end
 
@@ -173,8 +175,8 @@ module Watirmark
     def parse_text_file filename
       warn("Warning: Deprecated use of config.txt. Please use config.yml instead")
       IO.readlines(filename).each do |line|
-        line.strip! # Remove all extraneous whitespace
-        line.sub!(/#.*$/, "") # Remove comments
+        line.strip!                 # Remove all extraneous whitespace
+        line.sub!(/#.*$/, "")       # Remove comments
         next unless line.length > 0 # Anything left?
         (key, value) = line.split(/\s*=\s*/, 2)
         update_profile key
