@@ -51,7 +51,8 @@ module Watirmark
     # parent process pages. The argument allows us to
     # easily get the full path for alias names.
     def name(page_name=@page_name)
-      (@parent && !@parent.root) ? @parent.name + ' > ' + page_name : page_name
+      name = (@parent && !@parent.root) ? "#{@parent.name}_#{page_name}" : page_name
+      name.downcase.gsub(/\s+/, '_')
     end
 
     def activate

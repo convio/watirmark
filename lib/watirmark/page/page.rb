@@ -5,9 +5,11 @@ module Watirmark
     extend PageDefinition
 
     attr_accessor :browser
+    attr_reader   :keyed_elements
 
     def initialize(browser=self.class.browser)
       @browser = browser
+      @keyed_elements = []
       create_keyword_methods
     end
 
@@ -17,10 +19,6 @@ module Watirmark
 
     def native_keywords
       self.class.native_keywords
-    end
-
-    def permissions
-      self.class.permissions
     end
 
     def process_pages
@@ -37,8 +35,8 @@ module Watirmark
     def create_keyword_methods
       keywords = self.class.keyword_metadata || {}
       keywords.each_key do |key|
-        keywords[key][:page] = self
-        keyed_element = KeyedElement.new keywords[key]
+        keyed_element = KeyedElement.new(self, keywords[key])
+        @keyed_elements << keyed_element
         meta_def key do |*args|
           keyed_element.get *args
         end

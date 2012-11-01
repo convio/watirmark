@@ -44,38 +44,6 @@ describe 'Page' do
     @page3.keywords.should == [:d, :e]
   end
 
-  it 'should permit verify and populate on keywords' do
-    @page1.permissions[:a][:verify].should be_true
-    @page1.permissions[:a][:populate].should be_true
-    @page1.permissions[:b][:verify].should be_true
-    @page1.permissions[:b][:populate].should be_true
-    @page2.permissions[:c][:verify].should be_true
-    @page2.permissions[:c][:populate].should be_true
-    @page4.permissions[:h][:verify].should be_true
-    @page4.permissions[:h][:populate].should be_true
-  end
-
-  it 'should permit verify on verify keywords' do
-    @page3.permissions[:e][:verify].should be_true
-  end
-
-  it 'should permit populate on populate keywords' do
-    @page3.permissions[:d][:populate].should be_true
-  end
-
-  it 'should not permit populate on verify keywords' do
-    @page3.permissions[:e][:populate].should raise_error
-  end
-
-  it 'should not permit verify on populate keywords' do
-    @page3.permissions[:d][:verfiy].should raise_error
-  end
-
-  it 'should permit nothing on private and navigation keywords' do
-    @page4.permissions[:f].should raise_error
-    @page4.permissions[:g].should raise_error
-  end
-
   it 'should create a method for the keyword' do
     @page1.a.should == 'a'
     @page2.c.should == 'c'

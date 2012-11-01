@@ -7,23 +7,29 @@ module Watirmark
   end
 
   class KeyedElement
-    def initialize(options)
-      @options = options
-      @map = Watirmark::RadioMap.new(@options[:map]) if @options[:map]
+    attr_reader :keyword, :process_page, :permissions
+
+    def initialize(context, options)
+      @context      = context
+      @keyword      = options[:keyword]
+      @block        = options[:block]
+      @process_page = options[:process_page]
+      @permissions  = options[:permissions]
+      @map = Watirmark::RadioMap.new(options[:map]) if options[:map]
     end
 
     def get *args
-      activate_process_page
-      watir_object = @options[:page].instance_exec(*args, &@options[:block])
+      @process_page.activate
+      watir_object = @context.instance_exec(*args, &@block)
       watir_object.extend(KeywordMethods)
       watir_object.radio_map = @map if @map
-      watir_object.keyword = @options[:key]
+      watir_object.keyword = @keyword
       watir_object
     end
 
     def set val
       return if val.nil?
-      activate_process_page
+      @process_page.activate
       element = get
       val = @map.lookup(val) if @map
       case val
@@ -45,9 +51,13 @@ module Watirmark
       end
     end
 
-    def activate_process_page
-      raise ArgumentError, "No process page defined! This should never happen" unless @options[:process_page]
-      @options[:process_page].activate
+    def populate_allowed?
+      @permissions && @permissions[:populate]
     end
+
+    def verify_allowed?
+      @permissions && @permissions[:verify]
+    end
+
   end
 end

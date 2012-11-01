@@ -40,35 +40,38 @@ module Watirmark
 
       def populate_data
         if populate_values
-          if respond_to? submit_process_page_method
-            submit_process_page
-          else
-            submit
-          end
+          submit_process_page_override(@last_process_page) || submit
         end
       end
 
       def populate_values
         seen_value = false
         @last_process_page = nil
-        each_keyword do |keyword, process_page|
+        keyed_elements_with_values.each do |keyed_element|
+          next unless keyed_element.populate_allowed?
+          keyword = keyed_element.keyword
+          process_page = keyed_element.process_page.name
+
           if @last_process_page != process_page
-            if seen_value && @view.process_page(process_page).page_name !~ /::/ #hack so we handle inherited kwds without submits
-              submit_process_page
+            if seen_value
+              if @last_process_page
+                submit_process_page_override(@last_process_page) || @view.process_page(@last_process_page).submit
+              else
+                @view.process_page(@view.to_s).submit
+              end
               seen_value = false
             end
             @last_process_page = process_page
-            if self.respond_to?(method = "before_process_page_#{last_process_page_name}");
-              self.send(method)
-            end
+            before_process_page_override(@last_process_page)
           end
-          next unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:populate]
+
           begin
-            value = value_for(keyword)
-            value.nil? ? next : seen_value = true
-            set(keyword, value)
+            seen_value = true
+            before_keyword_override(keyword)
+            populate_keyword_override(keyword) || @view.send("#{keyword}=", value(keyed_element))
+            after_keyword_override(keyword)
           rescue => e
-            puts "Got #{e.class} when attempting to populate '#{keyword}' on page '#{process_page}'"
+            puts "Got #{e.class} when attempting to populate '#{keyed_element.keyword}'"
             raise e
           end
         end
@@ -77,12 +80,10 @@ module Watirmark
 
       def verify_data
         verification_errors = []
-        each_keyword do |keyword, process_page_name|
-          next unless @view.permissions[keyword.to_sym] and @view.permissions[keyword.to_sym][:verify]
-          value = value_for(keyword)
-          next if value.nil?
+        keyed_elements_with_values.each do |keyed_element|
+          next unless keyed_element.verify_allowed?
           begin
-            check(keyword, value)
+            verify_keyword_override(keyed_element.keyword) || assert_equal(keyed_element.get, value(keyed_element))
           rescue Watirmark::VerificationException => e
             verification_errors.push e.to_s
           end
@@ -92,23 +93,49 @@ module Watirmark
         end
       end
 
-      def submit_process_page_method
-        "submit_process_page_#{last_process_page_name}"
-      end
-
-      def submit_process_page
-        if @last_process_page
-          if respond_to?(submit_process_page_method)
-            send(submit_process_page_method)
-          else
-            @view.process_page(@last_process_page).submit
-          end
-        else
-          @view.process_page(@view.to_s).submit
-        end
-      end
 
     private
+
+      def call_method(method)
+        send(method) if respond_to?(method)
+      end
+
+      def before_keyword_override(keyword)
+        call_method "before_#{keyword}"
+      end
+
+      def after_keyword_override(keyword)
+        call_method "after_#{keyword}"
+      end
+
+      def populate_keyword_override(keyword)
+        call_method "populate_#{keyword}"
+      end
+
+      def verify_keyword_override(keyword)
+        call_method "verify_#{keyword}"
+      end
+
+      def keyword_value_override(keyed_element)
+        call_method "#{keyed_element.keyword}_value"
+      end
+
+      def before_process_page_override(name)
+        call_method "before_process_page_#{name}"
+      end
+
+      def submit_process_page_override(name)
+        call_method "submit_process_page_#{name}"
+      end
+
+      def value(keyed_element)
+        @cache ||= {}
+        @cache[keyed_element] ||= (keyword_value_override(keyed_element) || @model.send(keyed_element.keyword))
+      end
+
+      def keyed_elements_with_values
+        @view.keyed_elements.select{|e| value(e)}
+      end
 
       def locate_model(supermodel)
         case supermodel
@@ -139,68 +166,6 @@ module Watirmark
         model
       end
 
-      def each_keyword
-        @view.process_pages.each { |page| process_page_keywords(page) { |x| yield x, page.name } }
-      end
-
-      def process_page_keywords(process_page)
-        raise RuntimeError, "Process Page '#{page_name}' not found in #@view" unless process_page
-        process_page.keywords.each { |x| yield x }
-      end
-
-      def view_keywords
-        @view.keywords.each { |x| yield x }
-      end
-
-      def last_process_page_name
-        @last_process_page.gsub(' ', '_').gsub('>', '').downcase
-      end
-
-      # Set a single keyword to it's corresponding value
-      def set(keyword, value)
-        # before hooks
-        if self.respond_to?("before_#{keyword}")
-          self.send("before_#{keyword}")
-        elsif self.respond_to?("before_each_keyword")
-          self.send("before_each_keyword", @view.send(keyword))
-        end
-
-        # populate
-        if self.respond_to?("populate_#{keyword}")
-          self.send("populate_#{keyword}")
-        else
-          @view.send "#{keyword}=", value
-        end
-
-        # after hooks
-        if self.respond_to?("after_#{keyword}")
-          self.send("after_#{keyword}")
-        elsif self.respond_to?("after_each_keyword");
-          self.send("after_each_keyword", @view.send(keyword))
-        end
-      end
-
-      # Verify the value from a keyword matches the given value
-      def check(keyword, value)
-        if self.respond_to?(method = "verify_#{keyword}")
-          self.send(method)
-        else
-          actual_value = @view.send(keyword)
-          case actual_value
-            when Array
-              # If the value retrieved is an array convert the value ot an array so single strings match too
-              assert_equal actual_value, value.to_a
-            else
-              assert_equal actual_value, value
-          end
-        end
-      end
-
-      # if a method exists that changes how the value of the keyword
-      # is determined then call it, otherwise, just use the model value
-      def value_for(keyword)
-        self.respond_to?(method = "#{keyword}_value") ? self.send(method) : @model.send(keyword)
-      end
 
       # override this in your controller to define how a generic form submission should be done
       def submit

@@ -68,9 +68,10 @@ describe Watirmark::WebPage::Controller do
 
   before :all do
     @controller = Class.new(TestController) do
-     public :set, :value_for
+      public :value
     end.new
     @keyword = :text_field
+    @keyed_element = Watirmark::KeyedElement.new(@controller, :keyword => @keyword)
     @html = File.expand_path(File.dirname(__FILE__) + '/html/controller.html')
     Page.browser.goto "file://#{@html}"
   end
@@ -92,21 +93,21 @@ describe Watirmark::WebPage::Controller do
 
   it 'should be able to create and use a new keyword' do
     @keyword.should == :text_field
-    @controller.set @keyword, 'test'
+    TestView.new.send("#{@keyword}=", 'test')
     lambda{ @controller.check(@keyword, 'test')}.should_not raise_error(Watirmark::VerificationException)
   end
 
-  it 'should be be able to interpret use value_for' do
-    @controller.value_for(@keyword).should == 'foobar'
+  it 'should be be able to interpret use value' do
+    @controller.value(@keyed_element).should == 'foobar'
   end
 
-  it 'should support override method to value_for' do
+  it 'should support override method to value' do
     class TestController
       def text_field_value
         'override'
       end
     end
-    @controller.value_for(@keyword).should == 'override'
+    @controller.value(Watirmark::KeyedElement.new(TestController.new, :keyword => @keyword)).should == 'override'
   end
 
   it 'should support override method for verification' do
@@ -345,7 +346,7 @@ describe "Similar Models" do
     class TestProcessPageController < Watirmark::WebPage::Controller
       @model = ModelA
       @view = ProcessPageControllerView
-      public :value_for
+      public :value
     end
 
     class TestNoModelController < Watirmark::WebPage::Controller
