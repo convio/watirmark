@@ -2,10 +2,7 @@ require 'watirmark/page/page_definition'
 
 module Watirmark
   class Page
-
-    class << self
-      include PageDefinition
-    end
+    extend PageDefinition
 
     attr_accessor :browser
 
