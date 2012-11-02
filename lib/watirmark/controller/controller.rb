@@ -39,93 +39,92 @@ module Watirmark
       end
 
       def populate_data
-        if populate_values
-          submit_process_page_override(@last_process_page) || submit
-        end
+        (submit_process_page_override(@last_process_page) || submit) if populate_values
       end
 
       def populate_values
-        seen_value = false
+        @seen_value = false
         @last_process_page = nil
-        keyed_elements_with_values.each do |keyed_element|
-          next unless keyed_element.populate_allowed?
-          keyword = keyed_element.keyword
-          process_page = keyed_element.process_page.name
-
-          if @last_process_page != process_page
-            if seen_value
-              if @last_process_page
-                submit_process_page_override(@last_process_page) || @view.process_page(@last_process_page).submit
-              else
-                @view.process_page(@view.to_s).submit
-              end
-              seen_value = false
-            end
-            @last_process_page = process_page
-            before_process_page_override(@last_process_page)
-          end
-
-          begin
-            seen_value = true
-            before_keyword_override(keyword)
-            populate_keyword_override(keyword) || @view.send("#{keyword}=", value(keyed_element))
-            after_keyword_override(keyword)
-          rescue => e
-            puts "Got #{e.class} when attempting to populate '#{keyed_element.keyword}'"
-            raise e
-          end
-        end
-        seen_value
+        keyed_elements.each { |k| populate_keyword(k) }
+        @seen_value
       end
 
       def verify_data
-        verification_errors = []
-        keyed_elements_with_values.each do |keyed_element|
-          next unless keyed_element.verify_allowed?
-          begin
-            verify_keyword_override(keyed_element.keyword) || assert_equal(keyed_element.get, value(keyed_element))
-          rescue Watirmark::VerificationException => e
-            verification_errors.push e.to_s
-          end
-        end
-        unless verification_errors.empty?
-          raise Watirmark::VerificationException, verification_errors.join("\n  ")
-        end
+        @verification_errors = []
+        keyed_elements.each { |k| verify_keyword(k) }
+        raise Watirmark::VerificationException, @verification_errors.join("\n  ") unless @verification_errors.empty?
       end
-
 
     private
 
-      def call_method(method)
+      def populate_keyword(keyed_element)
+        return unless keyed_element.populate_allowed?
+        submit_process_page_when_page_changes(keyed_element.process_page.name)
+        begin
+          @seen_value = true
+          before_keyword_override(keyed_element.keyword)
+          populate_keyword_override(keyed_element.keyword) || @view.send("#{keyed_element.keyword}=", value(keyed_element))
+          after_keyword_override(keyed_element.keyword)
+        rescue => e
+          puts "Unable to populate '#{keyed_element.keyword}'"
+          raise e
+        end
+      end
+
+      def verify_keyword(keyed_element)
+        return unless keyed_element.verify_allowed?
+        begin
+          verify_keyword_override(keyed_element.keyword) || assert_equal(keyed_element.get, value(keyed_element))
+        rescue Watirmark::VerificationException => e
+          @verification_errors.push e.to_s
+        end
+      end
+
+      def submit_process_page_when_page_changes(process_page)
+        if @last_process_page != process_page
+          if @seen_value
+            if @last_process_page
+              submit_process_page_override(@last_process_page) || @view.process_page(@last_process_page).submit
+            else
+              @view.process_page(@view.to_s).submit
+            end
+            @seen_value = false
+          end
+          @last_process_page = process_page
+          before_process_page_override(@last_process_page)
+        end
+      end
+
+      def call_method_if_exists(method)
         send(method) if respond_to?(method)
       end
 
       def before_keyword_override(keyword)
-        call_method "before_#{keyword}"
+        call_method_if_exists "before_#{keyword}"
       end
 
       def after_keyword_override(keyword)
-        call_method "after_#{keyword}"
+        call_method_if_exists "after_#{keyword}"
       end
 
       def populate_keyword_override(keyword)
-        call_method "populate_#{keyword}"
+        call_method_if_exists "populate_#{keyword}"
       end
 
       def verify_keyword_override(keyword)
-        call_method "verify_#{keyword}"
+        call_method_if_exists "verify_#{keyword}"
       end
 
       def keyword_value_override(keyed_element)
-        call_method "#{keyed_element.keyword}_value"
+        call_method_if_exists "#{keyed_element.keyword}_value"
       end
 
       def before_process_page_override(name)
-        call_method "before_process_page_#{name}"
+        call_method_if_exists "before_process_page_#{name}"
       end
 
       def submit_process_page_override(name)
-        call_method "submit_process_page_#{name}"
+        call_method_if_exists "submit_process_page_#{name}"
       end
 
       def value(keyed_element)
@@ -133,7 +132,7 @@ module Watirmark
         @cache[keyed_element] ||= (keyword_value_override(keyed_element) || @model.send(keyed_element.keyword))
       end
 
-      def keyed_elements_with_values
+      def keyed_elements
         @view.keyed_elements.select{|e| value(e)}
       end
 
@@ -166,10 +165,8 @@ module Watirmark
         model
       end
 
-
-      # override this in your controller to define how a generic form submission should be done
       def submit
-        warn "The #submit method needs to be defined in your controller to define you you submit a form"
+        warn "Unable to automatically post form. Please defined a submit method in your controller"
       end
     end
 
