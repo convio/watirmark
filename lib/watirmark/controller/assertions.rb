@@ -10,7 +10,7 @@ module Watirmark
       if map = element.radio_map
         expected = map.lookup(expected)
       end
-      
+
       actual = actual_value element, expected
       compare_values(element, expected, actual)
     end
@@ -64,7 +64,6 @@ module Watirmark
       kwd = element.keyword if element.respond_to?(:keyword)
       message = "#{ kwd || element.class}: expected '#{expected.to_s}' (#{expected.class})"
       message += " got '#{actual.to_s}' (#{actual.class})"
-      message
     end
 
     def is_number?(object)
