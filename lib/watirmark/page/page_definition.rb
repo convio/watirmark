@@ -63,7 +63,11 @@ module Watirmark
     end
 
     def find_process_page(name)
-      underscored_name = (@current_process_page.underscored_name + '_' + name).gsub!(/\s+/, '_').downcase unless @current_process_page.root
+      if @current_process_page.root
+        underscored_name = name
+      else
+        underscored_name = (@current_process_page.underscored_name + '_' + name).downcase.gsub!(/\s+/, '_')
+      end
       @process_pages.find { |p| p.underscored_name == underscored_name }
     end
   end
