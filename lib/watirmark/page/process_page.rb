@@ -2,7 +2,7 @@ module Watirmark
   class ProcessPage
 
     attr_reader :parent, :keywords
-    attr_accessor :alias, :page_name, :root, :always_activate_parent
+    attr_accessor :alias, :name, :root, :always_activate_parent
     attr_accessor :submit_method, :active_page_method, :navigate_method
 
     @@navigate_method_default ||= Proc.new {}
@@ -35,8 +35,8 @@ module Watirmark
       end
     end
 
-    def initialize(page_name=nil, parent=nil, active_page=nil, navigate_page=nil, submit_page=nil)
-      @page_name = page_name
+    def initialize(name='', parent=nil, active_page=nil, navigate_page=nil, submit_page=nil)
+      @name = name
       @parent = parent
       @keywords = []
       @root = false
@@ -50,9 +50,9 @@ module Watirmark
     # Give the full name of this process page, including the
     # parent process pages. The argument allows us to
     # easily get the full path for alias names.
-    def name(page_name=@page_name)
-      name = (@parent && !@parent.root) ? "#{@parent.name}_#{page_name}" : page_name
-      name.downcase.gsub(/\s+/, '_')
+    def underscored_name(name=@name)
+      u_name = (@parent && !@parent.root) ? "#{@parent.underscored_name}_#{name}" : name
+      u_name.downcase.gsub(/\s+/, '_') if u_name
     end
 
     def activate
@@ -75,7 +75,7 @@ module Watirmark
         @alias.each do |alias_name|
           alias_process_page = self.dup
           alias_process_page.alias = []
-          alias_process_page.page_name = alias_name
+          alias_process_page.name = alias_name
           alias_process_page.alias = nil
           alias_process_page.goto_process_page
         end
@@ -96,8 +96,8 @@ module Watirmark
 
     def active?
       page = active_page
-      return true if in_submenu(page, name)
-      @alias.each { |a| return true if in_submenu(page, name(a)) } unless @alias.empty?
+      return true if in_submenu(page, underscored_name)
+      @alias.each { |a| return true if in_submenu(page, underscored_name(a)) } unless @alias.empty?
       false
     end
 

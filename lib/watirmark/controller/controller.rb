@@ -39,7 +39,7 @@ module Watirmark
       end
 
       def populate_data
-        (submit_process_page_override(@last_process_page) || submit) if populate_values
+        (submit_process_page_override(@last_process_page.underscored_name) || submit) if populate_values
       end
 
       def populate_values
@@ -59,7 +59,7 @@ module Watirmark
 
       def populate_keyword(keyed_element)
         return unless keyed_element.populate_allowed?
-        submit_process_page_when_page_changes(keyed_element.process_page.name)
+        submit_process_page_when_page_changes(keyed_element.process_page)
         begin
           @seen_value = true
           before_keyword_override(keyed_element.keyword)
@@ -84,14 +84,14 @@ module Watirmark
         if @last_process_page != process_page
           if @seen_value
             if @last_process_page
-              submit_process_page_override(@last_process_page) || @view.process_page(@last_process_page).submit
+              submit_process_page_override(@last_process_page.underscored_name) || @view.process_page(@last_process_page.name).submit
             else
               @view.process_page(@view.to_s).submit
             end
             @seen_value = false
           end
           @last_process_page = process_page
-          before_process_page_override(@last_process_page)
+          before_process_page_override(@last_process_page.underscored_name)
         end
       end
 
@@ -120,11 +120,11 @@ module Watirmark
       end
 
       def before_process_page_override(name)
-        call_method_if_exists "before_process_page_#{name}"
+        call_method_if_exists "before_process_page_#{name}" if name
       end
 
       def submit_process_page_override(name)
-        call_method_if_exists "submit_process_page_#{name}"
+        call_method_if_exists "submit_process_page_#{name}" if name
       end
 
       def value(keyed_element)

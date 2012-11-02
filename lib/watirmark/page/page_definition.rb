@@ -18,7 +18,7 @@ module Watirmark
     end
 
     def always_activate_parent
-      @current_process_page.always_activate_parent = @current_process_page.parent.page_name
+      @current_process_page.always_activate_parent = @current_process_page.parent.name
     end
 
     def process_page_navigate_method(proc=nil)
@@ -41,7 +41,7 @@ module Watirmark
 
 
     def create_default_process_page(klass)
-      klass.instance_variable_set :@current_process_page, ProcessPage.new(klass.inspect)
+      klass.instance_variable_set :@current_process_page, ProcessPage.new
       current_page = klass.instance_variable_get(:@current_process_page)
       current_page.root = true
       klass.process_pages << current_page
@@ -63,8 +63,8 @@ module Watirmark
     end
 
     def find_process_page(name)
-      name = (@current_process_page.name + '_' + name).gsub!(/\s+/, '_').downcase unless @current_process_page.root
-      @process_pages.find { |p| p.name == name }
+      underscored_name = (@current_process_page.underscored_name + '_' + name).gsub!(/\s+/, '_').downcase unless @current_process_page.root
+      @process_pages.find { |p| p.underscored_name == underscored_name }
     end
   end
 

@@ -114,13 +114,6 @@ describe 'Process Page Views' do
     @nestedprocesspagetest.c.should == 'c'
   end
   
-  it 'should show all keywords for a given nested rocess page' do
-    @nestedprocesspagetest.process_page('ProcessPage 1').keywords.should == [:b]
-    @nestedprocesspagetest.process_page('ProcessPage 1 > ProcessPage 1.1').keywords.should == [:b1, :b2]
-    @nestedprocesspagetest.process_page('ProcessPage 1 > ProcessPage 1.1 > ProcessPage 1.1.1').keywords.should == [:b3]
-  end
-  
-
   it 'should support defining the process page navigate method' do
     custom_method_called = false
     Watirmark::ProcessPage.navigate_method_default = Proc.new { custom_method_called = true }
@@ -136,17 +129,17 @@ describe 'Process Page Views' do
   end
   
   it 'should be able to report all process pages' do
-    @processpage.process_pages[0].name.should == 'ProcessPageView'
+    @processpage.process_pages[0].name.should == ''
     @processpage.process_pages[1].name.should == 'page 1'
     @processpage.process_pages[2].name.should == 'page 2'
     @processpage.process_pages.size.should == 3
   end
   
   it 'should include process page keywords in subclasses' do
-    @processpagesubclass.process_pages[0].name.should == 'ProcessPageView'
+    @processpagesubclass.process_pages[0].name.should == ''
     @processpagesubclass.process_pages[1].name.should == 'page 1'
     @processpagesubclass.process_pages[2].name.should == 'page 2'
-    @processpagesubclass.process_pages[3].name.should == 'ProcessPageSubclassView'
+    @processpagesubclass.process_pages[3].name.should == ''
     @processpagesubclass.process_pages[4].name.should == 'page 3'
     @processpagesubclass.process_pages.size.should == 5
     @processpagesubclass.keywords.should == [:a, :b, :c]
