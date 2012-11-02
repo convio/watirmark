@@ -105,7 +105,7 @@ module Watirmark
     end
 
     def in_submenu(active_page, requested_page)
-      !!(active_page.downcase.delete('>').gsub(/\s+/, '_') =~ /^#{requested_page}/)
+      !!(active_page.to_s.downcase.delete('>').gsub(/\s+/, '_') =~ /^#{requested_page}/)
     end
 
   end

@@ -39,7 +39,7 @@ module Watirmark
       end
 
       def populate_data
-        (submit_process_page_override(@last_process_page.underscored_name) || submit) if populate_values
+        submit_process_page(@last_process_page.underscored_name) {submit} if populate_values
       end
 
       def populate_values
@@ -55,16 +55,16 @@ module Watirmark
         raise Watirmark::VerificationException, @verification_errors.join("\n  ") unless @verification_errors.empty?
       end
 
-    private
+      private
 
       def populate_keyword(keyed_element)
         return unless keyed_element.populate_allowed?
         submit_process_page_when_page_changes(keyed_element.process_page)
         begin
           @seen_value = true
-          before_keyword_override(keyed_element.keyword)
-          populate_keyword_override(keyed_element.keyword) || @view.send("#{keyed_element.keyword}=", value(keyed_element))
-          after_keyword_override(keyed_element.keyword)
+          before_keyword(keyed_element)
+          populate_keyword_value(keyed_element)
+          after_keyword(keyed_element)
         rescue => e
           puts "Unable to populate '#{keyed_element.keyword}'"
           raise e
@@ -74,7 +74,7 @@ module Watirmark
       def verify_keyword(keyed_element)
         return unless keyed_element.verify_allowed?
         begin
-          verify_keyword_override(keyed_element.keyword) || assert_equal(keyed_element.get, value(keyed_element))
+          verify_keyword_value(keyed_element)
         rescue Watirmark::VerificationException => e
           @verification_errors.push e.to_s
         end
@@ -84,56 +84,56 @@ module Watirmark
         if @last_process_page != process_page
           if @seen_value
             if @last_process_page
-              submit_process_page_override(@last_process_page.underscored_name) || @view.process_page(@last_process_page.name).submit
+              submit_process_page(@last_process_page.underscored_name) {@view.process_page(@last_process_page.name).submit}
             else
               @view.process_page(@view.to_s).submit
             end
             @seen_value = false
           end
           @last_process_page = process_page
-          before_process_page_override(@last_process_page.underscored_name)
+          before_process_page(@last_process_page.underscored_name)
         end
       end
 
-      def call_method_if_exists(method)
-        if respond_to?(method)
-          send(method) || true
+      def call_method_if_exists(override, &block)
+        if respond_to?(override)
+          send(override)
         else
-          false
+          block.call if block
         end
       end
 
-      def before_keyword_override(keyword)
-        call_method_if_exists "before_#{keyword}"
+      def before_keyword(keyed_element)
+        call_method_if_exists("before_#{keyed_element.keyword}")
       end
 
-      def after_keyword_override(keyword)
-        call_method_if_exists "after_#{keyword}"
+      def after_keyword(keyed_element)
+        call_method_if_exists("after_#{keyed_element.keyword}")
       end
 
-      def populate_keyword_override(keyword)
-        call_method_if_exists "populate_#{keyword}"
+      def populate_keyword_value(keyed_element)
+        call_method_if_exists("populate_#{keyed_element.keyword}") {@view.send("#{keyed_element.keyword}=", value(keyed_element))}
       end
 
-      def verify_keyword_override(keyword)
-        call_method_if_exists "verify_#{keyword}"
+      def verify_keyword_value(keyed_element)
+        call_method_if_exists("verify_#{keyed_element.keyword}") {assert_equal(keyed_element.get, value(keyed_element))}
       end
 
-      def keyword_value_override(keyed_element)
-        call_method_if_exists "#{keyed_element.keyword}_value"
+      def keyword_value(keyed_element)
+        call_method_if_exists("#{keyed_element.keyword}_value") {@model.send(keyed_element.keyword)}
       end
 
-      def before_process_page_override(name)
-        call_method_if_exists "before_process_page_#{name}" if name
+      def before_process_page(name)
+        call_method_if_exists("before_process_page_#{name}")
       end
 
-      def submit_process_page_override(name)
-        call_method_if_exists "submit_process_page_#{name}" if name
+      def submit_process_page(name, &block)
+        call_method_if_exists("submit_process_page_#{name}", &block)
       end
 
       def value(keyed_element)
         @cache ||= {}
-        @cache[keyed_element] ||= (keyword_value_override(keyed_element) || @model.send(keyed_element.keyword))
+        @cache[keyed_element] ||= keyword_value(keyed_element)
       end
 
       def keyed_elements
