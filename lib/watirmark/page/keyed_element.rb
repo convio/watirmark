@@ -14,7 +14,7 @@ module Watirmark
       @keyword      = options[:keyword]
       @block        = options[:block]
       @process_page = options[:process_page]
-      @permissions  = options[:permissions]
+      @permissions  = options[:permissions] || {}
       @map = Watirmark::RadioMap.new(options[:map]) if options[:map]
     end
 
@@ -52,11 +52,11 @@ module Watirmark
     end
 
     def populate_allowed?
-      @permissions && @permissions[:populate]
+      @permissions[:populate]
     end
 
     def verify_allowed?
-      @permissions && @permissions[:verify]
+      @permissions[:verify]
     end
 
   end
