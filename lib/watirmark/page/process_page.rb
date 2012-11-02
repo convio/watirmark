@@ -71,8 +71,7 @@ module Watirmark
 
     def goto_process_page
       unless navigate
-        @alias ||= []
-        @alias.each do |alias_name|
+        aliases.each do |alias_name|
           alias_process_page = self.dup
           alias_process_page.alias = []
           alias_process_page.name = alias_name
@@ -94,10 +93,14 @@ module Watirmark
       instance_eval &(@active_page_method || @@active_page_method_default)
     end
 
+    def aliases
+      @alias ||= []
+    end
+
     def active?
       page = active_page
       return true if in_submenu(page, underscored_name)
-      @alias.each { |a| return true if in_submenu(page, underscored_name(a)) } unless @alias.empty?
+      aliases.each { |a| return true if in_submenu(page, underscored_name(a)) } if aliases.empty?
       false
     end
 
