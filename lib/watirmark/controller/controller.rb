@@ -96,7 +96,11 @@ module Watirmark
       end
 
       def call_method_if_exists(method)
-        send(method) if respond_to?(method)
+        if respond_to?(method)
+          send(method) || true
+        else
+          false
+        end
       end
 
       def before_keyword_override(keyword)
