@@ -2,6 +2,7 @@ lib_dir = File.join(File.dirname(__FILE__), '..', 'lib')
 $: << File.expand_path(lib_dir)
 
 ENV['WEBDRIVER'] = 'firefox'
+ENV['DISPLAY'] = ":99.0"
 
 require 'rspec/autorun'
 require 'watirmark'
