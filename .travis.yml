@@ -2,4 +2,4 @@ language: ruby
 rvm:
   - "1.9.3"
 before_script:
-  - support/travis.sh
+  - "sh -e /etc/init.d/xvfb start"
