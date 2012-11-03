@@ -170,7 +170,7 @@ module Watirmark
       end
 
       def submit
-        warn "Unable to automatically post form. Please defined a submit method in your controller"
+        Watirmark.logger.warn "Unable to automatically post form. Please defined a submit method in your controller"
       end
     end
 

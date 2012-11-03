@@ -185,7 +185,7 @@ module Watirmark
 
       def add_debug_overrides
         return unless @model_name && DebugModelValues != {}
-        warn "Adding DEBUG overrides for #@model_name"
+        Watirmark.logger.warn "Adding DEBUG overrides for #@model_name"
         update DebugModelValues['*'] if DebugModelValues['*']
         update DebugModelValues[@model_name] if DebugModelValues[@model_name]
       end

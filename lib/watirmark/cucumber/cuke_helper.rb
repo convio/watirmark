@@ -136,7 +136,7 @@ module CukeHelper
       begin
         yield
       rescue Watirmark::VerificationException => e
-        Kernel.warn "*** reverifying failure: #{e}"
+        Watirmark.logger.warn "*** reverifying failure: #{e}"
         raise e if counter >= tries_count
         sleep seconds_between_tries
       else

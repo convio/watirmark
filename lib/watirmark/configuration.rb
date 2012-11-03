@@ -95,7 +95,7 @@ module Watirmark
         when ".yml"
           parse_yaml_file filename
         else
-          warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
+          Watirmark.logger.warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
           parse_text_file filename
       end
     end
@@ -179,7 +179,7 @@ module Watirmark
 
     # This is the old-style method of using a config.txt
     def parse_text_file filename
-      warn("Warning: Deprecated use of config.txt. Please use config.yml instead")
+      Watirmark.logger.warn "Warning: Deprecated use of config.txt. Please use config.yml instead"
       IO.readlines(filename).each do |line|
         line.strip!                 # Remove all extraneous whitespace
         line.sub!(/#.*$/, "")       # Remove comments

@@ -17,7 +17,7 @@ module Watir
         begin
           checker.call(self)
         rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::NoSuchWindowError => e
-          warn "Unable to run checker: #{e.message}"
+          Watirmark.logger.warn "Unable to run checker: #{e.message}"
           break
         end
       end
