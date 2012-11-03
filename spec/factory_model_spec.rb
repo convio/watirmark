@@ -2,11 +2,11 @@ require_relative 'spec_helper'
 
 describe "model declaration" do
   specify "set a value on instantiation" do
-    Login = Watirmark::Model.factory do
+    FactoryLogin = Watirmark::Model.factory do
       keywords :username, :password
     end
 
-    login = Login.new(:username => 'username', :password => 'password')
+    login = FactoryLogin.new(:username => 'username', :password => 'password')
     login.username.should == 'username'
     login.password.should == 'password'
   end
@@ -43,7 +43,7 @@ end
 describe "parents" do
   before :all do
 
-    SDP = Watirmark::Model.factory do
+    FactorySDP = Watirmark::Model.factory do
       keywords :name, :value
       defaults do
         name { parent.name }
@@ -52,7 +52,7 @@ describe "parents" do
 
     Config = Watirmark::Model.factory do
       keywords :name
-      model SDP
+      model FactorySDP
       defaults do
         name { 'a' }
       end
@@ -62,9 +62,9 @@ describe "parents" do
   end
 
   specify "ask for a parent" do
-    @model.sdp.parent.should == @model
-    @model.sdp.parent.name.should == 'a'
-    @model.sdp.name.should == 'a'
+    @model.factory_sdp.parent.should == @model
+    @model.factory_sdp.parent.name.should == 'a'
+    @model.factory_sdp.name.should == 'a'
   end
 end
 
@@ -102,14 +102,14 @@ describe "defaults" do
   end
 
   specify "should be able to override default settings on initialization" do
-    ModelWithDefaults = Watirmark::Model.factory do
+    FactoryModelWithDefaults = Watirmark::Model.factory do
       keywords :foo, :bar
       defaults do
         foo { "hello from proc" }
       end
     end
 
-    m = ModelWithDefaults.new :foo => 'hello init'
+    m = FactoryModelWithDefaults.new :foo => 'hello init'
     m.foo.should == 'hello init'
   end
 
@@ -121,7 +121,7 @@ describe "defaults" do
   end
 
   specify "containing proc pointing to another default" do
-    SDP = Watirmark::Model.factory do
+    FactorySDP2 = Watirmark::Model.factory do
       keywords :name, :sort_name
       defaults do
         name { "name" }
@@ -129,7 +129,7 @@ describe "defaults" do
       end
     end
 
-    model = SDP.new
+    model = FactorySDP2.new
     model.name.should == 'name'
     model.sort_name.should == 'name'
   end
@@ -146,7 +146,7 @@ describe "children" do
       keywords :first_name, :last_name
     end
 
-    Login = Watirmark::Model.factory do
+    FactoryLogin2 = Watirmark::Model.factory do
       keywords :username, :password
       defaults do
         username { 'username' }
@@ -154,61 +154,61 @@ describe "children" do
       end
     end
 
-    User = Watirmark::Model.factory do
+    FactoryUser = Watirmark::Model.factory do
       keywords :first_name, :last_name
-      model Login, Camelize
+      model FactoryLogin2, Camelize
       defaults do
         first_name { 'my_first_name' }
         last_name { 'my_last_name' }
       end
     end
 
-    Donor = Watirmark::Model.factory do
+    FactoryDonor = Watirmark::Model.factory do
       keywords :credit_card
-      model User
+      model FactoryUser
     end
 
-    SDP = Watirmark::Model.factory do
+    FactorySDP3 = Watirmark::Model.factory do
       keywords :name, :value
     end
 
-    Config = Watirmark::Model.factory do
+    FactoryConfig = Watirmark::Model.factory do
       keywords :name
     end
 
   end
 
   specify "should be able to see the models" do
-    model = User.new
-    model.login.should be_kind_of Struct
-    model.login.username.should == 'username'
+    model = FactoryUser.new
+    model.factory_login2.should be_kind_of Struct
+    model.factory_login2.username.should == 'username'
     model.should be_kind_of Struct
   end
 
   specify "should be able to see nested models" do
-    model = Donor.new
-    model.user.login.should be_kind_of Struct
-    model.user.login.username.should == 'username'
-    model.users.first.login.should be_kind_of Struct
-    model.users.first.login.username.should == 'username'
+    model = FactoryDonor.new
+    model.factory_user.factory_login2.should be_kind_of Struct
+    model.factory_user.factory_login2.username.should == 'username'
+    model.factory_users.first.factory_login2.should be_kind_of Struct
+    model.factory_users.first.factory_login2.username.should == 'username'
   end
 
   specify "multiple models of the same class should form a collection" do
-    model = Config.new
-    model.add_model SDP.new(:name => 'a', :value => 1)
-    model.add_model SDP.new(:name => 'b', :value => 2)
-    model.sdp.should be_kind_of Struct
-    model.sdp.name.should == 'a'
-    model.sdps.size.should == 2
-    model.sdps.first.name.should == 'a'
-    model.sdps.last.name.should == 'b'
+    model = FactoryConfig.new
+    model.add_model FactorySDP3.new(:name => 'a', :value => 1)
+    model.add_model FactorySDP3.new(:name => 'b', :value => 2)
+    model.factory_sdp3.should be_kind_of Struct
+    model.factory_sdp3.name.should == 'a'
+    model.factory_sdp3s.size.should == 2
+    model.factory_sdp3s.first.name.should == 'a'
+    model.factory_sdp3s.last.name.should == 'b'
   end
 
   specify "should raise an exception if the model is not a constant" do
     lambda {
       Config = Watirmark::Model.factory do
         keywords :name
-        model :SDP.new
+        model :FactorySDP.new
       end
     }.should raise_error
   end
@@ -220,7 +220,7 @@ describe "children" do
       end
     end
 
-    Item = Watirmark::Model.factory do
+    FactoryItem = Watirmark::Model.factory do
       keywords :name, :sort_name
       defaults do
         name { "name" }
@@ -229,21 +229,21 @@ describe "children" do
     Container = Watirmark::Model.factory do
       keywords :name, :sort_name
       search_term { name }
-      model Item
+      model FactoryItem
     end
 
     c = Container.new
-    c.item.name.should == 'name'
-    c.item.name = 'foo'
-    c.item.name.should == 'foo'
+    c.factory_item.name.should == 'name'
+    c.factory_item.name = 'foo'
+    c.factory_item.name.should == 'foo'
     d = Container.new
-    d.item.name.should_not == 'foo'
+    d.factory_item.name.should_not == 'foo'
   end
 
   specify "models containing models in modules should not break model_class_name" do
     module Foo
       module Bar
-        Login = Watirmark::Model::factory do
+        FactoryLogin = Watirmark::Model::factory do
           keywords :username, :password
           defaults do
             username { 'username' }
@@ -251,9 +251,9 @@ describe "children" do
           end
         end
 
-        User = Watirmark::Model.factory do
+        FactoryUser = Watirmark::Model.factory do
           keywords :first_name, :last_name
-          model Login
+          model FactoryLogin
           defaults do
             first_name { 'my_first_name' }
             last_name { 'my_last_name' }
@@ -262,63 +262,61 @@ describe "children" do
       end
     end
 
-    model = Foo::Bar::User.new
-    model.login.should be_kind_of Struct
-    model.login.username.should == 'username'
+    model = Foo::Bar::FactoryUser.new
+    model.factory_login.should be_kind_of Struct
+    model.factory_login.username.should == 'username'
   end
 end
 
 
 describe "search_term" do
   specify "is a string" do
-
-
-    Item = Watirmark::Model.factory do
+    FactoryItem3 = Watirmark::Model.factory do
       keywords :name, :sort_name
       search_term { "name" }
       defaults do
         name { "name" }
       end
     end
-    model = Item.new
+    model = FactoryItem3.new
     model.search_term.should == 'name'
   end
 
   specify "matches another default" do
 
-    Item = Watirmark::Model.factory do
+    FactoryItem4 = Watirmark::Model.factory do
       keywords :name, :sort_name
       search_term { name }
       defaults do
         name { "name" }
       end
     end
-    model = Item.new
+    model = FactoryItem4.new
     model.search_term.should == 'name'
   end
 
   specify "is found in a parent" do
 
 
-    Item = Watirmark::Model.factory do
+    FactoryItem5 = Watirmark::Model.factory do
       keywords :name, :sort_name
     end
 
-    Container = Watirmark::Model.factory do
+    FactoryContainer = Watirmark::Model.factory do
       keywords :name, :sort_name
       search_term { name }
-      model Item
+      model FactoryItem
       defaults do
         name { "name" }
       end
     end
 
 
-    item = Item.new
+    item = FactoryItem5.new
     item.search_term.should be_nil
-    container = Container.new
+    container = FactoryContainer.new
     container.search_term.should == 'name'
-    container.item.search_term.should == 'name'
+    container.factory_item.search_term.should == 'name'
   end
 end
 
@@ -408,7 +406,7 @@ describe "Traits" do
       end
     end
 
-    ModelA = Watirmark::Model::factory do
+    FactoryModelA = Watirmark::Model::factory do
       keywords :first_name, :last_name, :middle_name, :cardnumber
       traits :contact_name, :credit_card
       defaults do
@@ -416,7 +414,7 @@ describe "Traits" do
       end
     end
 
-    ModelB = Watirmark::Model::factory do
+    FactoryModelB = Watirmark::Model::factory do
       keywords :first_name, :last_name, :middle_name, :cardnumber
       traits :contact_name, :credit_card
       defaults do
@@ -428,28 +426,28 @@ describe "Traits" do
   end
 
   specify "should have different last names" do
-    a = ModelA.new
-    b = ModelB.new
+    a = FactoryModelA.new
+    b = FactoryModelB.new
     a.middle_name.should_not == b.middle_name
   end
 
   specify "should have same first names" do
-    a = ModelA.new
-    b = ModelB.new
+    a = FactoryModelA.new
+    b = FactoryModelB.new
     a.first_name.should == b.first_name
   end
 
   specify "should have same last name but with different UUID" do
-    a = ModelA.new
-    b = ModelB.new
+    a = FactoryModelA.new
+    b = FactoryModelB.new
     a.last_name.should include "last"
     b.last_name.should include "last"
     a.last_name.should_not == b.last_name
   end
 
   specify "should have same credit card number" do
-    a = ModelA.new
-    b = ModelB.new
+    a = FactoryModelA.new
+    b = FactoryModelB.new
     a.cardnumber.should == b.cardnumber
   end
 end
@@ -476,12 +474,12 @@ describe "Nested Traits" do
       end
     end
 
-    ModelA = Watirmark::Model.factory do
+    FactoryModelA2 = Watirmark::Model.factory do
       keywords :first_name, :last_name, :donor_address, :donor_state
       traits :donor_jim
     end
 
-    ModelB = Watirmark::Model.factory do
+    FactoryModelB2 = Watirmark::Model.factory do
       keywords :first_name, :last_name, :donor_address, :donor_state
       traits :donor_jane
     end
@@ -489,15 +487,15 @@ describe "Nested Traits" do
   end
 
   specify "should have different first and last name" do
-    a = ModelA.new
-    b = ModelB.new
+    a = FactoryModelA2.new
+    b = FactoryModelB2.new
     a.first_name.should_not == b.first_name
     a.last_name.should_not == b.last_name
   end
 
   specify "should have same address due to same trait" do
-    a = ModelA.new
-    b = ModelB.new
+    a = FactoryModelA2.new
+    b = FactoryModelB2.new
     a.donor_address.should == "123 Sunset St"
     a.donor_state.should == "TX"
     a.donor_address.should == b.donor_address
@@ -520,7 +518,7 @@ describe "Unpack keywords" do
       keyword(:last_name) {Element.new :c}
     end
 
-    ModelA = Watirmark::Model.factory do
+    FactoryModelA3 = Watirmark::Model.factory do
       keywords *ModelAView.keywords
       defaults do
         first_name {"First"}
@@ -532,7 +530,7 @@ describe "Unpack keywords" do
   end
 
   specify "should add unpacked keywords as keywords" do
-    a = ModelA.new
+    a = FactoryModelA3.new
     a.middle_name.should == "Middle"
     a.first_name.should == "First"
     a.last_name.should include "Last"

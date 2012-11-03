@@ -6,19 +6,19 @@ describe "controllers should be able to detect and use embedded models" do
     class MyView < Page
       keyword(:element) {}
     end
-    User = Watirmark::Model::Base.new(:first_name)
-    Login = Watirmark::Model::Base.new(:username)
-    Password = Watirmark::Model::Base.new(:password)
-    @password = Password.new
-    @login = Login.new
+    CMUser = Watirmark::Model::Base.new(:first_name)
+    CMLogin = Watirmark::Model::Base.new(:username)
+    CMPassword = Watirmark::Model::Base.new(:password)
+    @password = CMPassword.new
+    @login = CMLogin.new
     @login.add_model @password
-    @user = User.new
+    @user = CMUser.new
     @user.add_model @login
   end
 
   it 'should be able to see itself' do
     controller = Class.new Watirmark::WebPage::Controller do
-      @model = User
+      @model = CMUser
       @view = MyView
     end
     controller.new(@user).model.should == @user
@@ -27,7 +27,7 @@ describe "controllers should be able to detect and use embedded models" do
 
   it 'should be able to find a nested model on initialization' do
     controller = Class.new Watirmark::WebPage::Controller do
-      @model = Login
+      @model = CMLogin
       @view = MyView
     end
     controller.new(@user).model.should_not == @user
@@ -36,7 +36,7 @@ describe "controllers should be able to detect and use embedded models" do
 
   it 'should be able to find a deeply nested model on initialization' do
     controller = Class.new Watirmark::WebPage::Controller do
-      @model = Password
+      @model = CMPassword
       @view = MyView
     end
     controller.new(@user).model.should_not == @user

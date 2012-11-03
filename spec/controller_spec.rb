@@ -85,7 +85,7 @@ describe Watirmark::WebPage::Controller do
   # We need to rethink radio maps. Currently this will only work properly if populate_data calls it.
   # If you override the populate_[radio_keyword] method then it stops working.
   it 'should supportradio maps in controllers in views' do
-    pending 'this needs to be fixed'
+    pending "Radio maps need a redesign"
     lambda{
       ProcessPageControllerView.radio_map.value = 'f'
     }.should_not raise_error
@@ -126,23 +126,6 @@ describe Watirmark::WebPage::Controller do
 
   it 'should propogate page declaration to subclasses' do
     TestControllerSubclass.view.should == TestView
-  end
-
-  it 'works for simply happy path scenario' do
-    @@element = mock()
-    class MyView < Page
-      keyword(:element) {@@element}
-    end
-    controller = Class.new Watirmark::WebPage::Controller do
-      @view = MyView
-      class << self
-        attr_accessor :view
-      end
-    end
-    controller.view.should == MyView
-    instance = controller.new :element => 'new value'
-    @@element.expects(:value).at_least_once.returns('new value')
-    instance.verify_data
   end
 
   it 'should support before methods for process pages' do

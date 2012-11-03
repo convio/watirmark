@@ -4,7 +4,6 @@ source "http://gemserver.qa.convioanalyticstest.net:8808"
 gem 'watir-webdriver', '0.6.1.2'
 gem 'american_date'
 gem 'logger'
-gem 'watirmark-log'
 gem 'nokogiri'
 gem 'uuid'
 gem 'rubigen'
@@ -17,5 +16,6 @@ group :development do
   gem 'bundler'
   gem 'mocha'
   gem 'cucumber'
+  gem 'gherkin'
   gem 'rspec-mocks'
 end

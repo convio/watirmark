@@ -2,8 +2,8 @@ require_relative 'spec_helper'
 
 describe "model declaration" do
   specify "set a value on instantiation" do
-    Login = Watirmark::Model::Base.new(:username, :password)
-    login = Login.new(:username => 'username', :password => 'password' )
+    LoginInit = Watirmark::Model::Base.new(:username, :password)
+    login = LoginInit.new(:username => 'username', :password => 'password' )
     login.username.should == 'username'
     login.password.should == 'password'
   end
@@ -40,12 +40,12 @@ describe "parents" do
       default.name {parent.name}
     end
 
-    Config = Watirmark::Model::Base.new(:name) do
+    ConfigParent = Watirmark::Model::Base.new(:name) do
       default.name {'a'}
 
       model SDP
     end
-    @model = Config.new
+    @model = ConfigParent.new
   end
 
   specify "ask for a parent" do
@@ -99,12 +99,12 @@ describe "defaults" do
   end
 
   specify "containing proc pointing to another default" do
-    SDP = Watirmark::Model::Base.new(:name, :sort_name) do
+    SDPProc = Watirmark::Model::Base.new(:name, :sort_name) do
       default.name      {"name"}
       default.sort_name {name}
     end
 
-    model = SDP.new
+    model = SDPProc.new
     model.name.should == 'name'
     model.sort_name.should == 'name'
   end
@@ -119,60 +119,60 @@ describe "children" do
   before :all do
     camelize = Watirmark::Model::Base.new(:first_name, :last_name)
 
-    Login = Watirmark::Model::Base.new(:username, :password) do
+    Login2 = Watirmark::Model::Base.new(:username, :password) do
       default.username  {'username'}
       default.password  {'password'}
     end
 
-    User = Watirmark::Model::Base.new(:first_name, :last_name) do
+    User2 = Watirmark::Model::Base.new(:first_name, :last_name) do
       default.first_name  {'my_first_name'}
       default.last_name   {'my_last_name'}
 
-      model Login
+      model Login2
       model camelize
     end
 
-    Donor = Watirmark::Model::Base.new(:credit_card) do
-      model User
+    Donor2 = Watirmark::Model::Base.new(:credit_card) do
+      model User2
     end
 
-    SDP = Watirmark::Model::Base.new(:name, :value)
+    SDP2 = Watirmark::Model::Base.new(:name, :value)
 
-    Config = Watirmark::Model::Base.new(:name)
+    Config2 = Watirmark::Model::Base.new(:name)
   end
 
   specify "should be able to see the models" do
-    model = User.new
-    model.login.should be_kind_of Struct
-    model.login.username.should == 'username'
+    model = User2.new
+    model.login2.should be_kind_of Struct
+    model.login2.username.should == 'username'
     model.should be_kind_of Struct
   end
 
   specify "should be able to see nested models" do
-    model = Donor.new
-    model.user.login.should be_kind_of Struct
-    model.user.login.username.should == 'username'
-    model.users.first.login.should be_kind_of Struct
-    model.users.first.login.username.should == 'username'
+    model = Donor2.new
+    model.user2.login2.should be_kind_of Struct
+    model.user2.login2.username.should == 'username'
+    model.user2s.first.login2.should be_kind_of Struct
+    model.user2s.first.login2.username.should == 'username'
   end
 
   specify "multiple models of the same class should form a collection" do
-    model = Config.new
-    model.add_model SDP.new(:name=>'a', :value=>1)
-    model.add_model SDP.new(:name=>'b', :value=>2)
-    model.sdp.should be_kind_of Struct
-    model.sdp.name.should == 'a'
-    model.sdps.size.should == 2
-    model.sdps.first.name.should == 'a'
-    model.sdps.last.name.should == 'b'
+    model = Config2.new
+    model.add_model SDP2.new(:name=>'a', :value=>1)
+    model.add_model SDP2.new(:name=>'b', :value=>2)
+    model.sdp2.should be_kind_of Struct
+    model.sdp2.name.should == 'a'
+    model.sdp2s.size.should == 2
+    model.sdp2s.first.name.should == 'a'
+    model.sdp2s.last.name.should == 'b'
   end
 
   specify "should raise an exception if the model is not a constant" do
-    SDP = Watirmark::Model::Base.new(:name, :value)
+    SDP3 = Watirmark::Model::Base.new(:name, :value)
 
     lambda{
-      Config = Watirmark::Model::Base.new(:name) do
-        model SDP.new
+      Watirmark::Model::Base.new(:name) do
+        model SDP3.new
       end
     }.should raise_error
   end
@@ -183,44 +183,44 @@ describe "children" do
         self
       end
     end
-    Item = Watirmark::Model::Base.new(:name, :sort_name) do
+    Item2 = Watirmark::Model::Base.new(:name, :sort_name) do
       default.name {"name"}
     end
 
-    Container = Watirmark::Model::Base.new(:name, :sort_name) do
+    Container2 = Watirmark::Model::Base.new(:name, :sort_name) do
       search_term       {name}
       default.name      {"name_container"}
-      model Item
+      model Item2
     end
 
-    c = Container.new
-    c.item.name.should == 'name'
-    c.item.name = 'foo'
-    c.item.name.should == 'foo'
-    d = Container.new
-    d.item.name.should_not == 'foo'
+    c = Container2.new
+    c.item2.name.should == 'name'
+    c.item2.name = 'foo'
+    c.item2.name.should == 'foo'
+    d = Container2.new
+    d.item2.name.should_not == 'foo'
   end
 
   specify "models containing models in modules should not break model_class_name" do
     module Foo
       module Bar
-        Login = Watirmark::Model::Base.new(:username, :password) do
+        Login4 = Watirmark::Model::Base.new(:username, :password) do
           default.username  {'username'}
           default.password  {'password'}
         end
 
-        User = Watirmark::Model::Base.new(:first_name, :last_name) do
+        User4 = Watirmark::Model::Base.new(:first_name, :last_name) do
           default.first_name  {'my_first_name'}
           default.last_name   {'my_last_name'}
 
-          model Login
+          model Login4
         end
       end
     end
 
-    model = Foo::Bar::User.new
-    model.login.should be_kind_of Struct
-    model.login.username.should == 'username'
+    model = Foo::Bar::User4.new
+    model.login4.should be_kind_of Struct
+    model.login4.username.should == 'username'
   end
 end
 
@@ -236,28 +236,28 @@ describe "search_term" do
   end
 
   specify "matches another default" do
-    Item = Watirmark::Model::Base.new(:name, :sort_name) do
+    Item3 = Watirmark::Model::Base.new(:name, :sort_name) do
       search_term       {name}
       default.name      {"name"}
     end
-    model = Item.new
+    model = Item3.new
     model.search_term.should == 'name'
   end
 
   specify "is found in a parent" do
-    Item = Watirmark::Model::Base.new(:name, :sort_name)
+    Item4 = Watirmark::Model::Base.new(:name, :sort_name)
 
-    Container = Watirmark::Model::Base.new(:name, :sort_name) do
+    Container4 = Watirmark::Model::Base.new(:name, :sort_name) do
       search_term       {name}
       default.name      {"name"}
-      model Item
+      model Item4
     end
 
-    item = Item.new
+    item = Item4.new
     item.search_term.should be_nil
-    container = Container.new
+    container = Container4.new
     container.search_term.should == 'name'
-    container.item.search_term.should == 'name'
+    container.item4.search_term.should == 'name'
   end
 end
 
@@ -265,41 +265,41 @@ end
 describe "find" do
 
   before :all do
-    FirstModel =  Watirmark::Model::Base.new(:x)
-    SecondModel =  Watirmark::Model::Base.new(:x)
-    NoAddedModels =  Watirmark::Model::Base.new(:x)
-    SingleModel = Watirmark::Model::Base.new(:x)
-    MultipleModels =  Watirmark::Model::Base.new(:x)
+    FirstModel2 =  Watirmark::Model::Base.new(:x)
+    SecondModel2 =  Watirmark::Model::Base.new(:x)
+    NoAddedModels2 =  Watirmark::Model::Base.new(:x)
+    SingleModel2 = Watirmark::Model::Base.new(:x)
+    MultipleModels2 =  Watirmark::Model::Base.new(:x)
 
-    @first_model = FirstModel.new
-    @second_model = SecondModel.new
+    @first_model = FirstModel2.new
+    @second_model = SecondModel2.new
 
-    @no_added_models =  NoAddedModels.new
+    @no_added_models =  NoAddedModels2.new
 
-    @single_model = SingleModel.new
+    @single_model = SingleModel2.new
     @single_model.add_model @first_model
 
-    @multiple_models = MultipleModels.new
+    @multiple_models = MultipleModels2.new
     @multiple_models.add_model @first_model
     @multiple_models.add_model @second_model
   end
 
   specify 'should find itself' do
-    @no_added_models.find(NoAddedModels).should == @no_added_models
-    @single_model.find(SingleModel).should == @single_model
-    @multiple_models.find(MultipleModels).should == @multiple_models
+    @no_added_models.find(NoAddedModels2).should == @no_added_models
+    @single_model.find(SingleModel2).should == @single_model
+    @multiple_models.find(MultipleModels2).should == @multiple_models
   end
 
   specify 'should be able to see a sub_model' do
-    @single_model.find(FirstModel).should == @first_model
-    @multiple_models.find(FirstModel).should == @first_model
-    @multiple_models.find(SecondModel).should == @second_model
+    @single_model.find(FirstModel2).should == @first_model
+    @multiple_models.find(FirstModel2).should == @first_model
+    @multiple_models.find(SecondModel2).should == @second_model
   end
 
   specify 'should be return nil when no model is found' do
-    @no_added_models.find(FirstModel).should be_nil
-    @single_model.find(NoAddedModels).should be_nil
-    @multiple_models.find(NoAddedModels).should be_nil
+    @no_added_models.find(FirstModel2).should be_nil
+    @single_model.find(NoAddedModels2).should be_nil
+    @multiple_models.find(NoAddedModels2).should be_nil
   end
 end
 
