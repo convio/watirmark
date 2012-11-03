@@ -75,7 +75,7 @@ describe "normalize_values" do
   include Watirmark::Assertions
 
   specify 'normalize dates' do
-    normalize_value("1/1/2012").should == Date.parse('1/1/2012')
+    normalize_value("1/1/2012").should != Date.parse('1/1/2012')
     normalize_value("1/1/09").should == Date.parse('1/1/09')
     normalize_value("01/1/09").should == Date.parse('1/1/09')
     normalize_value("01/01/09").should == Date.parse('1/1/09')

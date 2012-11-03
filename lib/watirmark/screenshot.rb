@@ -12,11 +12,11 @@ module Watirmark
       raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenShots
 
       if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
-        puts "Checking Snapshot:\n   master: #{masters.album.filename}\n   screenshot: #{currents.screenshots.filename}"
+        Watirmark.logger.info "Checking Snapshot:\n   master: #{masters.album.filename}\n   screenshot: #{currents.screenshots.filename}"
         raise ArgumentError, "Master snapshot: #{File.expand_path(masters.album.filename)} does not match current snapshot: #{File.expand_path(currents.screenshots.filename)}" unless masters.album.md5 == currents.screenshots.md5
       else
         masters.album.each_with_index do |master, index|
-          puts "Checking Snapshot:\n   master: #{master.filename}\n   screenshot: #{currents.screenshots[index].filename}"
+          Watirmark.logger.info  "Checking Snapshot:\n   master: #{master.filename}\n   screenshot: #{currents.screenshots[index].filename}"
           raise ArgumentError, "Master snapshot: #{File.expand_path(master.filename)} does not match current snapshot: #{File.expand_path(currents.screenshots[index].filename)}" unless master.md5 == currents.screenshots[index].md5
         end
       end
@@ -102,7 +102,7 @@ module Watirmark
         FileUtils.mkdir_p(File.dirname(@filename))
         File.unlink(@filename) if File.exists?(@filename)
         FileUtils.copy_file(screenshot.filename, @filename)
-        puts "Created new master: #@filename"
+        Watirmark.logger.info "Created new master: #@filename"
       end
     end
   end

@@ -33,8 +33,8 @@ module EmailHelper
       end
 
       def log_email(model)
-        puts "Email Received"
-        puts email[model.model_name].body.inspect
+        Watirmark.logger.info "Email Received"
+        Watirmark.logger.info email[model.model_name].body.inspect
       end
 
       # Access a cached copy of an email

@@ -66,7 +66,7 @@ module Watirmark
           populate_keyword_value(keyed_element)
           after_keyword(keyed_element)
         rescue => e
-          puts "Unable to populate '#{keyed_element.keyword}'"
+          Watirmark.logger.warn "Unable to populate '#{keyed_element.keyword}'"
           raise e
         end
       end

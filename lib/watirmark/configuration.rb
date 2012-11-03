@@ -1,7 +1,8 @@
 require 'singleton'
 require 'logger'
-require 'watirmark-log'
+
 module Watirmark
+
   class Configuration
     include Singleton
 
@@ -122,11 +123,16 @@ module Watirmark
       initialize_logger
     end
 
-    def initialize_logger
-      logger       = WatirmarkLog::Logger.new('WatirmarkLog')
-      logger.level = self[:loglevel]
+    def logger
+      @logger ||= begin
+        log = Logger.new STDOUT
+        log.formatter = proc {|severity, datetime, progname, msg| "[#{datetime}] #{msg}\n"}
+        log
+      end
+    end
 
-      update({:logger => logger})
+    def loglevel=(x)
+      logger.level = x
     end
 
     private
@@ -184,4 +190,14 @@ module Watirmark
       end
     end
   end
+
+  def self.logger
+    if Configuration.instance.logger
+      Configuration.instance.logger
+    else
+      puts 'huh'
+      Logger.new(STDOUT)
+    end
+  end
+
 end

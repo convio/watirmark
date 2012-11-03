@@ -6,6 +6,9 @@ ENV['DISPLAY'] = ":99.0"
 
 require 'rspec/autorun'
 require 'watirmark'
+require 'watirmark/configuration'
+
+Watirmark.logger.level = Logger::FATAL
 
 RSpec.configure do |config|
   config.mock_with :mocha

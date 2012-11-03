@@ -122,7 +122,7 @@ class ModelOpenStruct < OpenStruct
   end
 
   def inspect
-    puts "ModelOpenStruct #{to_h}"
+    Watirmark.logger.info "ModelOpenStruct #{to_h}"
   end
 
 

@@ -41,7 +41,7 @@ module Watirmark
           method = method_chain.pop
           method_chain.inject(self) { |obj, m| obj.send m}.send "#{method}=", format_value(value)
         end
-        @log.info "Updated #{inspect}"
+        Watirmark.logger.info "Updated #{inspect}"
         self
       end
     end

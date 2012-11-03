@@ -86,10 +86,8 @@ module Watirmark
         @search = self.class.search || Proc.new{nil}
         @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
         @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
-        @log = Logger.new STDOUT
-        @log.formatter = proc {|severity, datetime, progname, msg| "#{msg}\n"}
         reload_settings
-        @log.info inspect
+        Watirmark.logger.info inspect
       end
 
 
@@ -102,7 +100,7 @@ module Watirmark
       def add_model(model)
         @children << model
         create_model_methods
-        @log.info "Added Model #{model.inspect} to #{model_name || model_class_name}"
+        Watirmark.logger.info "Added Model #{model.inspect} to #{model_name || model_class_name}"
       end
 
 
