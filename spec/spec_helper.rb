@@ -24,9 +24,8 @@ module Setup
   # Start invisible browser. Make sure browser is closed when tests complete.
   def self.start_browser
     browser = Watir::Browser.new Watirmark::Configuration.instance.webdriver.to_sym
-    at_exit{browser.close}
     browser
   end
 end
 
-at_exit { Page.browser.close }
+Watirmark.add_exit_task  { Page.browser.close }
