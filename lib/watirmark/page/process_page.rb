@@ -17,8 +17,7 @@ module Watirmark
       def submit_method_default=(proc)
         @@submit_method_default = proc
       end
-
-      def active_page_method_default=(proc)
+def active_page_method_default=(proc)
         @@active_page_method_default = proc
       end
 
@@ -100,7 +99,7 @@ module Watirmark
     def active?
       page = active_page
       return true if in_submenu(page, underscored_name)
-      aliases.each { |a| return true if in_submenu(page, underscored_name(a)) } if aliases.empty?
+      aliases.each { |a| return true if in_submenu(page, underscored_name(a)) } unless aliases.empty?
       false
     end
 
