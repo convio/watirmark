@@ -54,7 +54,7 @@ end
 
 
 #############################
-# From Why's Pognant Guide
+# From Why's Poignant Guide
 #############################
 class Object
   def meta_class
