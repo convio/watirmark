@@ -118,6 +118,10 @@ module Watirmark
       @@browser = x
     end
 
+    def browser_exists?
+      !! @@browser
+    end
+
     def keywords
       @kwds.values.flatten.uniq.sort_by { |key| key.to_s }
     end
