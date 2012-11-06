@@ -82,15 +82,6 @@ describe Watirmark::WebPage::Controller do
     }.should_not raise_error
   end
 
-  # We need to rethink radio maps. Currently this will only work properly if populate_data calls it.
-  # If you override the populate_[radio_keyword] method then it stops working.
-  it 'should supportradio maps in controllers in views' do
-    pending "Radio maps need a redesign"
-    lambda{
-      ProcessPageControllerView.radio_map.value = 'f'
-    }.should_not raise_error
-  end
-
   it 'should be able to create and use a new keyword' do
     @keyword.should == :text_field
     TestView.new.send("#{@keyword}=", 'test')
