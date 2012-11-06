@@ -77,9 +77,9 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should supportradio maps in controllers' do
-#    lambda{
+    lambda{
       @controller = TestProcessPageController.new(:radio_map => 'f').populate_data
-#    }.should_not raise_error
+    }.should_not raise_error
   end
 
   # We need to rethink radio maps. Currently this will only work properly if populate_data calls it.

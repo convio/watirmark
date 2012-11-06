@@ -86,7 +86,7 @@ module Watirmark
       end
 
       def submit_process_page_when_page_changes(process_page)
-        if @last_process_page && @last_process_page.name != process_page.name
+        if @last_process_page && @last_process_page.underscored_name != process_page.underscored_name
           if @seen_value
             if @last_process_page
               submit_process_page(@last_process_page.underscored_name) {@view.process_page(@last_process_page.name).submit}
@@ -95,9 +95,9 @@ module Watirmark
             end
             @seen_value = false
           end
-          @last_process_page = process_page
           before_process_page(@last_process_page.underscored_name)
         end
+        @last_process_page = process_page
       end
 
       def call_method_if_exists(override, &block)
