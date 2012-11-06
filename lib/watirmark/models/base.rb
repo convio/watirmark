@@ -14,7 +14,7 @@ module Watirmark
 
         def new(*args, &block)
           instance_exec &block
-          Base.new(*@keywords, &block)
+          FactoryModel.new(*@keywords, &block)
         end
 
         def keywords(*args)
@@ -28,7 +28,7 @@ module Watirmark
       end
     end
 
-    class Base < Class.new(Struct)
+    class FactoryModel < Class.new(Struct)
       include CucumberHelper
 
       class << self
@@ -241,6 +241,13 @@ module Watirmark
             model
           end
         end
+      end
+    end
+
+    class Base < FactoryModel
+      def initialize(*args)
+        warn "Watirmark::Model::Base is deprecated. Please use Watirmark::Model.factory"
+        super
       end
     end
   end
