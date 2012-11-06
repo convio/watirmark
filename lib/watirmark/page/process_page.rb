@@ -17,7 +17,8 @@ module Watirmark
       def submit_method_default=(proc)
         @@submit_method_default = proc
       end
-def active_page_method_default=(proc)
+
+      def active_page_method_default=(proc)
         @@active_page_method_default = proc
       end
 
