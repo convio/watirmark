@@ -1,5 +1,7 @@
 module <%= name.camelize %>
   <%%= create_modules %>
-    <%%= name.camelize %>Model = Watirmark::Model::Base.new(*<%%= name.camelize %>View.keywords)
+    <%%= name.camelize %>Model = Watirmark::Model.factory do
+      keywords <%%= name.camelize %>View.keywords
+    end
   <%%= create_module_end %>
 end
