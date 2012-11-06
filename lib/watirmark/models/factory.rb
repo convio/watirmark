@@ -18,7 +18,13 @@ module Watirmark
         end
 
         def keywords(*args)
-          @keywords = args
+          # this is temporary. Remove once a few releases are out
+          if args.size == 1 && args.flatten != args # passed as an array
+            @keywords = *(args.flatten)
+          else                                      # passed as a list of arguments
+            warn "Deprecated use of *keywords in model keyword definition. Please remove the asterisk"
+            @keywords = args
+          end
         end
 
         def method_missing(sym, *args, &block)

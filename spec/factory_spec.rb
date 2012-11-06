@@ -152,8 +152,6 @@ describe "parents" do
   end
 end
 
-
-
 describe "children" do
   before :all do
     module FactoryTest
@@ -278,7 +276,6 @@ describe "children" do
     model.login.username.should == 'username'
   end
 end
-
 
 describe "search_term" do
   specify "is a string" do
@@ -509,8 +506,8 @@ describe "Nested Traits" do
   end
 end
 
-describe "Unpack keywords" do
-  specify "should add unpacked keywords as keywords" do
+describe "keywords" do
+  before :all do
     module FactoryTest
       class Element
         attr_accessor :value
@@ -533,12 +530,31 @@ describe "Unpack keywords" do
           last_name {"Last #{uuid}"}
         end
       end
+      SomeOtherModel = Watirmark::Model.factory do
+        keywords *SomeView.keywords
+        defaults do
+          first_name {"First"}
+          middle_name  {"Middle"}
+          last_name {"Last #{uuid}"}
+        end
+      end
     end
+  end
+
+  specify "should add unpacked keywords as keywords" do
     a = FactoryTest::SomeModel.new
     a.middle_name.should == "Middle"
     a.first_name.should == "First"
     a.last_name.should include "Last"
   end
+
+  specify "keywords can be specified without the asterisk" do
+    a = FactoryTest::SomeOtherModel.new
+    a.middle_name.should == "Middle"
+    a.first_name.should == "First"
+    a.last_name.should include "Last"
+  end
+
 end
 
 
