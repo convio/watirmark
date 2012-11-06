@@ -23,8 +23,7 @@ module Watirmark
       end
 
       def initialize(data = {})
-        @supermodel = data
-        @model = locate_model @supermodel
+        initialize_model(data)
         @records ||= []
         @view = self.class.view.new browser if self.class.view
         @search = self.class.search
@@ -34,8 +33,8 @@ module Watirmark
         Page.browser
       end
 
-      def model=(x)
-        @model = (x.kind_of?(Hash) ? hash_to_model(x) : x)
+      def model=(data)
+        initialize_model(data)
       end
 
       def populate_data
@@ -56,6 +55,12 @@ module Watirmark
       end
 
       private
+
+      def initialize_model(x)
+        @cache = {}
+        @supermodel = x
+        @model = locate_model @supermodel
+      end
 
       def populate_keyword(keyed_element)
         return unless keyed_element.populate_allowed?
@@ -132,7 +137,6 @@ module Watirmark
       end
 
       def value(keyed_element)
-        @cache ||= {}
         @cache[keyed_element] ||= keyword_value(keyed_element)
       end
 
