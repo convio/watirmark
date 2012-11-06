@@ -18,11 +18,11 @@ module Watirmark
         end
 
         def keywords(*args)
-          # this is temporary. Remove once a few releases are out
+          # this is temporar
           if args.size == 1 && args.flatten != args # passed as an array
             @keywords = *(args.flatten)
           else                                      # passed as a list of arguments
-            warn "Deprecated use of *keywords in model keyword definition. Please remove the asterisk"
+            Watirmark.logger.warn "Deprecated use of *keywords in model keyword definition. Please remove the asterisk"
             @keywords = args
           end
         end
@@ -252,7 +252,7 @@ module Watirmark
 
     class Base < FactoryModel
       def initialize(*args)
-        warn "Watirmark::Model::Base is deprecated. Please use Watirmark::Model.factory"
+        Watirmark.logger.warn "Watirmark::Model::Base is deprecated. Please use Watirmark::Model.factory"
         super
       end
     end
