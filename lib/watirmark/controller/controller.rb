@@ -44,17 +44,22 @@ module Watirmark
       def populate_values
         @seen_value = false
         @last_process_page = nil
-        keyed_elements.each { |k| populate_keyword(k) }
+        keyed_elements.each do |k|
+          next unless k.populate_allowed?
+          submit_process_page_when_page_changes(k)
+          before_process_page(k)
+          populate_keyword(k)
+        end
         @seen_value
       end
 
       def verify_data
         @verification_errors = []
-        keyed_elements.each { |k| verify_keyword(k) }
+        keyed_elements.each { |k| verify_keyword(k) if k.verify_allowed? }
         raise Watirmark::VerificationException, @verification_errors.join("\n  ") unless @verification_errors.empty?
       end
 
-      private
+    private
 
       def initialize_model(x)
         @cache = {}
@@ -63,8 +68,6 @@ module Watirmark
       end
 
       def populate_keyword(keyed_element)
-        return unless keyed_element.populate_allowed?
-        submit_process_page_when_page_changes(keyed_element.process_page)
         begin
           @seen_value = true
           before_keyword(keyed_element)
@@ -77,7 +80,6 @@ module Watirmark
       end
 
       def verify_keyword(keyed_element)
-        return unless keyed_element.verify_allowed?
         begin
           verify_keyword_value(keyed_element)
         rescue Watirmark::VerificationException => e
@@ -85,19 +87,14 @@ module Watirmark
         end
       end
 
-      def submit_process_page_when_page_changes(process_page)
-        if @last_process_page && @last_process_page.underscored_name != process_page.underscored_name
-          if @seen_value
-            if @last_process_page
-              submit_process_page(@last_process_page.underscored_name) {@view.process_page(@last_process_page.name).submit}
-            else
-              @view.process_page(@view.to_s).submit
-            end
-            @seen_value = false
-          end
-          before_process_page(process_page.underscored_name)
+      def submit_process_page_when_page_changes(keyed_element)
+        return unless process_page_changed?(keyed_element) && @seen_value
+        if @last_process_page
+          submit_process_page(@last_process_page.underscored_name) {@view.process_page(@last_process_page.name).submit}
+        else
+          @view.process_page(@view.to_s).submit
         end
-        @last_process_page = process_page
+        @seen_value = false
       end
 
       def call_method_if_exists(override, &block)
@@ -106,6 +103,14 @@ module Watirmark
         else
           block.call if block
         end
+      end
+
+      def process_page_defined?(keyed_element)
+        !keyed_element.process_page.underscored_name.empty?
+      end
+
+      def process_page_changed?(keyed_element)
+        !!(@last_process_page && @last_process_page.underscored_name != keyed_element.process_page.underscored_name)
       end
 
       def before_keyword(keyed_element)
@@ -128,8 +133,11 @@ module Watirmark
         call_method_if_exists("#{keyed_element.keyword}_value") {@model.send(keyed_element.keyword)}
       end
 
-      def before_process_page(name)
-        call_method_if_exists("before_process_page_#{name}")
+      def before_process_page(keyed_element)
+        if process_page_defined?(keyed_element) && (@last_process_page.nil? || process_page_changed?(keyed_element))
+          call_method_if_exists("before_process_page_#{keyed_element.process_page.underscored_name}")
+        end
+        @last_process_page = keyed_element.process_page
       end
 
       def submit_process_page(name, &block)

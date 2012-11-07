@@ -120,7 +120,7 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should support before methods for process pages' do
-    c = TestProcessPageController.new({:a=>1, :b=>1, :c=>1})
+    c = TestProcessPageController.new({:a=>1, :b=>1, :c=>1, :d=>1})
     def c.before_process_page_page_1; true; end
     c.expects(:before_process_page_page_1).returns('true').once
     c.populate_data
