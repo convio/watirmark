@@ -15,11 +15,11 @@ module Watirmark
         @traits = []
       end
 
-      def traits(name=nil)
-        if name
-          @traits << name
-        else
+      def traits(*names)
+        if names.empty?
           @traits
+        else
+          @traits += names
         end
       end
 
