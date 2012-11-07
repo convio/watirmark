@@ -202,7 +202,7 @@ describe Watirmark::WebPage::Controller do
     c.verify_data
   end
 
-  it 'should be able to unset a checkbox (false should be a valid keyword value)' do
+  it 'false should be a valid keyword value' do
     c = VerifyController.new(:checkbox => true)
     c.populate_data
     VerifyView.new.checkbox.set?.should be_true
