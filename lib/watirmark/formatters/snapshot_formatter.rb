@@ -11,15 +11,10 @@ module RSpec
         end
 
         def example_failed(example)
-          begin
-            browser = Page.browser
+          if Page.browser_exists?
             append_text = example.description.gsub(/([^\w-])/, "_")
-            snapshot = "#{Time.now.to_i} - #{append_text}.html"
-            f = File.open(File.join(@path, snapshot), 'w')
-            f.puts browser.html
-            f.close
-          rescue NameError
-            # Page.browser not defined
+            snapshot = "#{Time.now.to_i} - #{append_text}.png"
+            Page.browser.screenshot.save "#{@path}/#{snapshot}"
           end
         end
       end
