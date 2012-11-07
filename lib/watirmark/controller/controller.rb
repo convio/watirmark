@@ -25,6 +25,7 @@ module Watirmark
       def initialize(data = {})
         initialize_model(data)
         @records ||= []
+        @cache = {}
         @view = self.class.view.new browser if self.class.view
         @search = self.class.search
       end
@@ -62,7 +63,6 @@ module Watirmark
     private
 
       def initialize_model(x)
-        @cache = {}
         @supermodel = x
         @model = locate_model @supermodel
       end
@@ -149,7 +149,8 @@ module Watirmark
       end
 
       def keyed_elements
-        @view.keyed_elements.select{|e| value(e)}
+        @cache = {}
+        @view.keyed_elements.select{|e| !value(e).nil?}
       end
 
       def locate_model(supermodel)

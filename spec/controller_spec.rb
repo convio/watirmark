@@ -21,6 +21,7 @@ describe Watirmark::WebPage::Controller do
     keyword(:validate2)   {browser.text_field(:id, 'validate2')}
     keyword(:validate3)   {browser.text_field(:id, 'validate3')}
     keyword(:validate4)   {browser.select_list(:id, 'validate3')}
+    keyword(:checkbox)    {browser.checkbox(:id, 'checkbox')}
 
     verify_keyword(:label1)      {browser.td(:id, 'label1')}
     verify_keyword(:value1)      {browser.td(:id, 'value1')}
@@ -199,6 +200,15 @@ describe Watirmark::WebPage::Controller do
     c.populate_data
     c.model.update(:button1 => 'Submit')
     c.verify_data
+  end
+
+  it 'should be able to unset a checkbox (false should be a valid keyword value)' do
+    c = VerifyController.new(:checkbox => true)
+    c.populate_data
+    VerifyView.new.checkbox.set?.should be_true
+    c.model.update(:checkbox => false)
+    c.populate_data
+    VerifyView.new.checkbox.set?.should be_false
   end
 end
 
