@@ -22,7 +22,8 @@ module Watirmark
           if args.size == 1 && args.flatten != args # passed as an array
             @keywords = *(args.flatten)
           else                                      # passed as a list of arguments
-            Watirmark.logger.warn "Deprecated use of *keywords in model keyword definition. Please remove the asterisk: #{caller[0]}"
+            # will remove this in a few weeks
+            #Watirmark.logger.warn "Deprecated use of *keywords in model keyword definition. Please remove the asterisk: #{caller[0]}"
             @keywords = args
           end
         end
