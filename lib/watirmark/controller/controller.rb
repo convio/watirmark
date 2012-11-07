@@ -95,7 +95,7 @@ module Watirmark
             end
             @seen_value = false
           end
-          before_process_page(@last_process_page.underscored_name)
+          before_process_page(process_page.underscored_name)
         end
         @last_process_page = process_page
       end
