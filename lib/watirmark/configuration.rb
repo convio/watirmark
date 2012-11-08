@@ -79,9 +79,14 @@ module Watirmark
     end
 
     # Use a common db connection
-    def db
-      @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
-      @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
+    begin
+      if Watirmark.const_get("WatirmarkDB")
+        def db
+          @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
+          @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
+        end
+      end
+    rescue NameError
     end
 
 
@@ -95,8 +100,7 @@ module Watirmark
         when ".yml"
           parse_yaml_file filename
         else
-          Watirmark.logger.warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
-          parse_text_file filename
+          raise Watirmark::InvalidConfigurationFile,"Expected .yml but using '#{configfile}'"
       end
     end
 
@@ -192,12 +196,7 @@ module Watirmark
   end
 
   def self.logger
-    if Configuration.instance.logger
-      Configuration.instance.logger
-    else
-      puts 'huh'
-      Logger.new(STDOUT)
-    end
+    Configuration.instance.logger ||= Logger.new(STDOUT)
   end
 
 end

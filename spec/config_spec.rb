@@ -1,23 +1,23 @@
 require_relative 'spec_helper'
 
 shared_examples_for "configuration_file" do
-  it 'string' do
+  specify 'string' do
     @config.string.should == "foo"
   end
 
-  it 'boolean' do
+  specify 'boolean' do
     @config.boolean.should be_true
   end
 
-  it 'symbol' do
+  specify 'symbol' do
     @config.symbol.should == :foo
   end
 
-  it 'integer' do
+  specify 'integer' do
     @config.integer.should == 3
   end
 
-  it 'float' do
+  specify 'float' do
     @config.float.should == 1.2
   end
 end
@@ -42,4 +42,44 @@ describe "yaml file" do
     @config.configfile = File.dirname(__FILE__) + '/configurations/config.yml'
     @config.read_from_file
   end
+end
+
+describe "configuration" do
+  before :all do
+    @config = Watirmark::Configuration.instance
+    @config.reset
+    @config.reload
+  end
+
+  specify 'add defaults' do
+    @config.email.should == 'devnull'
+    @config.webdriver.should == 'firefox'
+    @config.defaults = {:email => 'email-changed'}
+    @config.email.should == 'email-changed'
+    @config.webdriver.should == 'firefox'
+  end
+
+  specify 'inspect' do
+    @config.inspect.should =~ /^{.+}/
+  end
+  
+  specify 'override how a setting is set' do
+    module Watirmark
+      class Configuration
+        def hostname_value(hostname)
+          hostname + '/test'
+        end
+      end
+    end
+    Watirmark::Configuration.instance.hostname = 'www.convio.com'
+    Watirmark::Configuration.instance.hostname.should == 'www.convio.com/test'
+  end
+
+  specify 'bad config file' do
+    lambda {
+      @config.configfile = File.dirname(__FILE__) + '/configurations/config.bad'
+      @config.read_from_file
+    }.should raise_error
+  end
+
 end

@@ -8,6 +8,7 @@ module Watirmark
   class Watirmark::WebPageElementNotFound < RuntimeError ;end
   class Watirmark::ModelNotFound < RuntimeError ;end
   class Watirmark::ModelCreationError < RuntimeError ;end
+  class Watirmark::InvalidConfigurationFile < RuntimeError ;end
   class Watirmark::VerificationException < RuntimeError
     attr_accessor :actual, :expected
   end
