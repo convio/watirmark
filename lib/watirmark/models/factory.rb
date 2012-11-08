@@ -83,6 +83,11 @@ module Watirmark
       attr_accessor :default, :uuid, :model_name, :models, :parent, :children, :model_type
 
       def initialize(params={})
+        # :zip is a method in Enumerable and if not stubbed out will
+        # cause an issue when we have a model with an address
+        # (this is in an instance_eval to quiet a rubymine warning)
+        instance_eval "undef :zip"
+
         if params[:model_name]
           @model_name = params[:model_name]
           params.delete(:model_name)

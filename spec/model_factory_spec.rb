@@ -391,6 +391,18 @@ describe "methods in Enumerable should not collide with model defaults" do
     end
     FactoryTest::ZipModel.new.zip.should == 78732
   end
+
+  it "#zip not in model" do
+    module FactoryTest
+      NoZipModel = Watirmark::Model.factory do
+        keywords :foo
+        defaults do
+        end
+      end
+    end
+    FactoryTest::NoZipModel.new.respond_to?(:zip).should_not be_true
+  end
+
 end
 
 describe "keywords" do
