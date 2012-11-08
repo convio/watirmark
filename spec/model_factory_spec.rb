@@ -3,20 +3,20 @@ require_relative 'spec_helper'
 describe "factory" do
   before :all do
     module FactoryTest
-      Login = Watirmark::Model.factory do
+      InitializeModel = Watirmark::Model.factory do
         keywords :username, :password
       end
     end
   end
 
   specify "set a value on instantiation" do
-    login = FactoryTest::Login.new(:username => 'username', :password => 'password')
+    login = FactoryTest::InitializeModel.new(:username => 'username', :password => 'password')
     login.username.should == 'username'
     login.password.should == 'password'
   end
 
   specify "set a value after initialized" do
-    login = FactoryTest::Login.new
+    login = FactoryTest::InitializeModel.new
     login.username.should be_nil
     login.password.should be_nil
     login.username = 'username'
