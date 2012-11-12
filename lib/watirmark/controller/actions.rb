@@ -29,7 +29,6 @@ module Watirmark
         end
         search_controller.create
       end
-      @view.edit @model
     end
 
     # Navigate to the View's edit page and for every value in
@@ -37,6 +36,7 @@ module Watirmark
     # the proper value for each keyword
     def verify
       search_for_record
+      @view.edit @model
       verify_data
     end
 
@@ -44,6 +44,7 @@ module Watirmark
     # verify all values in the models hash
     def edit
       search_for_record
+      @view.edit @model
       populate_data
     end
 
