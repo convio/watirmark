@@ -11,6 +11,7 @@ module Watirmark
       # running from rake and the model has default.desc set.
       # If we don't have it here it thinks we're trying to call rakes' #desc
       def desc(&block)
+        @members << :desc unless @members.include? :desc
         meta_def :desc do
           block
         end

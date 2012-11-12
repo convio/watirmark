@@ -29,12 +29,13 @@ end
 describe "defaults" do
   before :all do
     @model = Watirmark::Model.factory do
-      keywords :first_name, :last_name, :middle_name, :nickname, :id
+      keywords :first_name, :last_name, :middle_name, :nickname, :id, :desc
       defaults do
         first_name { 'my_first_name' }
         last_name { 'my_last_name' }
         middle_name { "#{model_name} middle_name".strip }
         id { uuid }
+        desc {'some description'}
       end
     end
   end
@@ -55,6 +56,10 @@ describe "defaults" do
 
   specify "retrieve a default setting" do
     @model.new.first_name.should == 'my_first_name'
+  end
+
+  specify "workaround for desc as a default when run from rake" do
+    @model.new.desc.should == 'some description'
   end
 
   specify "override default settings on instantiation" do
@@ -429,8 +434,9 @@ describe "keywords" do
           last_name {"Last #{uuid}"}
         end
       end
+
       SomeOtherModel = Watirmark::Model.factory do
-        keywords *SomeView.keywords
+        keywords SomeView.keywords
         defaults do
           first_name {"First"}
           middle_name  {"Middle"}
