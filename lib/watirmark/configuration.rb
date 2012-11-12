@@ -32,6 +32,11 @@ module Watirmark
         :snapshotheight     => 1000,
         :sandbox            => false,
         :projectpath        => nil,
+
+        #to deprecate
+        :profile            => Hash.new { |h, k| h[k] = Hash.new },
+        :profile_name       => :undefined,
+
       }.merge @runtime_defaults
     end
 
@@ -153,6 +158,16 @@ module Watirmark
           update key.to_sym => value.to_f
         else
           update key.to_sym => value
+      end
+    end
+
+    def update_profile key
+      logger.warn "profiles are going to be deprecated. Please use YAML and salesforce_sites"
+      return unless key =~ /^profile\[:(.+)\]\[:(.+)\]/
+      if self[:profile][$1.to_sym] == nil
+        self[:profile] = ({$1.to_sym => {$2.to_sym => value.to_s}})
+      else
+        self[:profile][$1.to_sym].merge!({$2.to_sym => value.to_s})
       end
     end
 
