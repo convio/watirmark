@@ -162,8 +162,8 @@ module Watirmark
     end
 
     def update_profile key
-      logger.warn "profiles are going to be deprecated. Please use YAML and salesforce_sites"
       return unless key =~ /^profile\[:(.+)\]\[:(.+)\]/
+      logger.warn "profiles are going to be deprecated. Please use YAML and salesforce_sites"
       if self[:profile][$1.to_sym] == nil
         self[:profile] = ({$1.to_sym => {$2.to_sym => value.to_s}})
       else
