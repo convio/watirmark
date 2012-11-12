@@ -8,9 +8,8 @@ describe Watirmark::WebPage::Controller do
   end
 
   class TestController < Watirmark::WebPage::Controller
-    attr_accessor :model
     @view = TestView
-    def initialize
+    def initialize(*args)
       super
       @model.text_field = 'foobar'
     end
@@ -63,7 +62,6 @@ describe Watirmark::WebPage::Controller do
   end
 
   class TestProcessPageController < Watirmark::WebPage::Controller
-    attr_accessor :model
     @view = ProcessPageControllerView
   end
 
@@ -79,7 +77,7 @@ describe Watirmark::WebPage::Controller do
 
   it 'should supportradio maps in controllers' do
     lambda{
-      @controller = TestProcessPageController.new(:radio_map => 'f').populate_data
+      TestProcessPageController.new(:radio_map => 'f').populate_data
     }.should_not raise_error
   end
 
@@ -87,6 +85,10 @@ describe Watirmark::WebPage::Controller do
     @keyword.should == :text_field
     TestView.new.send("#{@keyword}=", 'test')
     lambda{ @controller.check(@keyword, 'test')}.should_not raise_error(Watirmark::VerificationException)
+  end
+
+  it 'should be able to populate' do
+    TestController.new(:text_field=>'test').populate_data
   end
 
   it 'should be be able to interpret use value' do
@@ -262,7 +264,6 @@ describe "controllers should create a default model if one exists" do
 end
 
 
-#Edit this to make it better
 describe "Similar Models" do
 
   before :all do
@@ -387,7 +388,11 @@ describe "Similar Models" do
     @controller.supermodel.should == ModelH.new
   end
 
-
-
+  it 'should allow us to override the default model' do
+    @controller = TestProcessPageController.new(ModelH.new)
+    @controller.model.should == ModelH.new
+    @controller.model = ModelA.new
+    @controller.model.should == ModelA.new
+  end
 
 end
