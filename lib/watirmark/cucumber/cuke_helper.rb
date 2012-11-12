@@ -30,7 +30,7 @@ module CukeHelper
         elsif value == "false"
           false
         elsif value.strip == ''
-          nil
+          'nil'
         else
           value
         end
