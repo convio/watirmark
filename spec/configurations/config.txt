@@ -1,5 +1,6 @@
 string=foo
-boolean = true
+true_boolean = true
+false_boolean = false
 integer=3
 float=1.2
 symbol=:foo

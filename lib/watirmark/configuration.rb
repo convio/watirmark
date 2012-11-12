@@ -18,8 +18,6 @@ module Watirmark
         :hostname           => nil,
         :email              => 'devnull',
         :closebrowseronexit => false,
-        :profile            => Hash.new { |h, k| h[k] = Hash.new },
-        :profile_name       => :undefined,
         :loglevel           => Logger::INFO,
         :uuid               => nil,
         :webdriver          => :firefox,
@@ -155,15 +153,6 @@ module Watirmark
           update key.to_sym => value.to_f
         else
           update key.to_sym => value
-      end
-    end
-
-    def update_profile key
-      return unless key =~ /^profile\[:(.+)\]\[:(.+)\]/
-      if self[:profile][$1.to_sym] == nil
-        self[:profile] = ({$1.to_sym => {$2.to_sym => value.to_s}})
-      else
-        self[:profile][$1.to_sym].merge!({$2.to_sym => value.to_s})
       end
     end
 

@@ -5,8 +5,12 @@ shared_examples_for "configuration_file" do
     @config.string.should == "foo"
   end
 
-  specify 'boolean' do
-    @config.boolean.should be_true
+  specify 'true_boolean' do
+    @config.true_boolean.should be_true
+  end
+
+  specify 'false_boolean' do
+    @config.false_boolean.should be_false
   end
 
   specify 'symbol' do

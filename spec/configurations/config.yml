@@ -1,5 +1,10 @@
 string:  foo
-boolean: true
+true_boolean: true
+false_boolean: false
 integer: 3
 float:   1.2
 symbol:  :foo
+salesforce_sites:
+  active: qa310
+  qa310:
+    hostname: qa320.bvt3.corp.convio.com

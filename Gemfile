@@ -19,4 +19,5 @@ group :development do
   gem 'cucumber'
   gem 'gherkin'
   gem 'rspec-mocks'
+  gem 'simplecov'
 end
