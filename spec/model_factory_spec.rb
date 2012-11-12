@@ -124,6 +124,11 @@ describe "model name" do
     m.model_name.should == 'my_model'
   end
 
+  specify "can set the models at initialize (used by transforms)" do
+    m = @model.new(:model_name => 'my_model')
+    m.model_name.should == 'my_model'
+  end
+
   specify "setting the models name changes the defaults" do
     m = @model.new
     m.model_name = 'my_model'
