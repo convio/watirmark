@@ -17,15 +17,11 @@ module Watirmark
   end
 
   class RadioMap
-    def initialize hash={}, &block
+    def initialize hash={}
       @maps = []
       hash.each_pair do |key, val|
         values(key).maps_to(val)
       end
-      if block_given?
-        instance_eval &block
-      end
-
     end
 
     def values(*args)
