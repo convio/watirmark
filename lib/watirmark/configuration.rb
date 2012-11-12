@@ -81,15 +81,9 @@ module Watirmark
       end
     end
 
-    # Use a common db connection
-    begin
-      if Watirmark.const_get("WatirmarkDB")
-        def db
-          @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
-          @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
-        end
-      end
-    rescue NameError
+    def db
+      @db = nil if (@db && @db.respond_to?(:dbh) && @db.dbh.handle == nil)
+      @db ||= WatirmarkDB::DB.new(self.hostname, self.dbhostname, self.dbusername, self.dbpassword, self.dbsid, self.dbport)
     end
 
 
