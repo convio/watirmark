@@ -5,6 +5,7 @@ describe Watirmark::WebPage::Controller do
   class TestView < Page
     keyword(:text_field)  {browser.text_field(:name, 'text_field')}
     keyword(:select_list) {browser.select_list(:name, 'select_list')}
+    keyword(:another_text_field)   {browser.text_field(:id, 'validate1')}
   end
 
   class TestController < Watirmark::WebPage::Controller
@@ -75,6 +76,10 @@ describe Watirmark::WebPage::Controller do
     Page.browser.goto "file://#{@html}"
   end
 
+  before :each do
+    Page.browser.refresh #reset page before each test
+  end
+
   it 'should supportradio maps in controllers' do
     lambda{
       TestProcessPageController.new(:radio_map => 'f').populate_data
@@ -88,7 +93,20 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should be able to populate' do
-    TestController.new(:text_field=>'test').populate_data
+    module ControllerTest
+      class PopulateController < Watirmark::WebPage::Controller
+        @view = TestView
+      end
+    end
+    ControllerTest::PopulateController.new(
+        :text_field=>'test',
+        :select_list=>'b',
+        :another_text_field => 'nil'
+    ).populate_data
+    v = TestView.new
+    v.text_field.value.should == 'test'
+    v.select_list.value.should == 'b'
+    v.another_text_field.value.should == ''
   end
 
   it 'should be be able to interpret use value' do
