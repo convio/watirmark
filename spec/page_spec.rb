@@ -40,6 +40,11 @@ describe 'Page' do
   end
 
 
+  it "should list its own keywords" do
+    @page5.native_keywords.should == [:i]
+  end
+
+
   it "should list populate and verify keywords" do
     @page3.keywords.should == [:d, :e]
   end

@@ -27,7 +27,6 @@ module Watirmark
 
     def process_page(x)
       process_pages.each { |page| return page if page.name == x }
-      raise RuntimeError, "Process Page '#{x}' not found in #{self}"
     end
 
   private
