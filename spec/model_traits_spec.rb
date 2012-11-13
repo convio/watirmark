@@ -30,6 +30,22 @@ describe "Traits" do
           middle_name { "B" }
         end
       end
+
+      TraitsC = Watirmark::Model::factory do
+        keywords :first_name
+        defaults do
+          first_name { "C" }
+        end
+        traits :contact_name, :credit_card
+      end
+
+      TraitsD = Watirmark::Model::factory do
+        keywords :first_name
+        traits :contact_name, :credit_card
+        defaults do
+          first_name { "D" }
+        end
+      end
     end
   end
 
@@ -57,6 +73,11 @@ describe "Traits" do
     a = FactoryTest::TraitsA.new
     b = FactoryTest::TraitsB.new
     a.cardnumber.should == b.cardnumber
+  end
+
+  specify "defaults should take precedence over traits" do
+    FactoryTest::TraitsC.new.first_name.should == "C"
+    FactoryTest::TraitsD.new.first_name.should == "D"
   end
 end
 

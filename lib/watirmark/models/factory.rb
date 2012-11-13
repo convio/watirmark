@@ -5,37 +5,7 @@ module Watirmark
 
     DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
 
-    def self.factory(&block)
-      Factory.new &block
-    end
-
     class Factory
-      class << self
-
-        def new(*args, &block)
-          instance_exec &block
-          FactoryModel.new(*@keywords, &block)
-        end
-
-        def keywords(*args)
-          # this is temporar
-          if args.size == 1 && args.flatten != args # passed as an array
-            @keywords = *(args.flatten)
-          else                                      # passed as a list of arguments
-            # will remove this in a few weeks
-            #Watirmark.logger.warn "Deprecated use of *keywords in model keyword definition. Please remove the asterisk: #{caller[0]}"
-            @keywords = args
-          end
-        end
-
-        def method_missing(sym, *args, &block)
-          # ignore everything else in the block
-          # and we will pass it on to the model
-        end
-      end
-    end
-
-    class FactoryModel < Class.new(Struct)
       include CucumberHelper
 
       class << self
@@ -83,11 +53,8 @@ module Watirmark
       attr_accessor :default, :uuid, :model_name, :models, :parent, :children, :model_type
 
       def initialize(params={})
-        # :zip is a method in Enumerable and if not stubbed out will
-        # cause an issue when we have a model with an address
-        # (this is in an instance_eval to quiet a rubymine warning)
-        instance_eval "undef :zip"
 
+        @keywords = self.class.keys || []
         if params[:model_name]
           @model_name = params[:model_name]
           params.delete(:model_name)
@@ -101,7 +68,6 @@ module Watirmark
         reload_settings
         Watirmark.logger.info inspect
       end
-
 
       # The search_term, used for a controller's search can be defined in this model
       # or will look in a parent's model. This allows us to define it once for a composed model
@@ -128,10 +94,10 @@ module Watirmark
 
 
       def inspect
-        model_friendly_name = @model_name ? "#@model_name: " : nil
-        model_details = " #{to_h}" unless to_h.empty?
-        included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
-        "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
+      #  model_friendly_name = @model_name ? "#@model_name: " : nil
+      #  model_details = " #{to_h}" unless to_h.empty?
+      #  included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
+      #  "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
       end
 
 
@@ -166,7 +132,9 @@ module Watirmark
 
       def to_h
         h = {}
-        each_pair do |name, value|
+        @keywords.each do |key|
+          name = key
+          value = send(key)
           begin
           if value.kind_of?(Proc)
             h[name] = instance_eval(&value) unless value.nil?
@@ -189,7 +157,7 @@ module Watirmark
     private
 
       def reload_settings
-        create_default_methods
+        create_keyword_methods
         create_model_methods
         update @params
         add_debug_overrides
@@ -203,12 +171,20 @@ module Watirmark
       end
 
 
-      def create_default_methods
-        @default.each do |name|
-          meta_def name do
-            normalize self[name.to_sym]
+      def create_keyword_methods
+        [*@keywords].each do |key|
+          meta_def key do
+            value = instance_variable_get("@#{key}")
+            if value
+              value
+            elsif @default.include?(key)
+              value = @default.send(key)
+              instance_eval &value
+            end
           end
-          send "#{name}=", @default.send(name) if respond_to? "#{name}="
+          meta_def "#{key}=" do |value|
+            instance_variable_set "@#{key}", value
+          end
         end
       end
 
@@ -253,13 +229,6 @@ module Watirmark
             model
           end
         end
-      end
-    end
-
-    class Base < FactoryModel
-      def initialize(*args)
-        Watirmark.logger.warn "Watirmark::Model::Base is deprecated. Please use Watirmark::Model.factory: #{caller[0]}"
-        super
       end
     end
   end

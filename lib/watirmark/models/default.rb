@@ -1,6 +1,8 @@
 module Watirmark
   module Model
     class Default
+      include Enumerable
+
       attr_accessor :model
 
       def initialize()

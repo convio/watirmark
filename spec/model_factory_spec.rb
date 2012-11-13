@@ -3,7 +3,7 @@ require_relative 'spec_helper'
 describe "factory" do
   before :all do
     module FactoryTest
-      InitializeModel = Watirmark::Model.factory do
+      class InitializeModel < Watirmark::Model::Factory
         keywords :username, :password
       end
     end
@@ -28,16 +28,19 @@ end
 
 describe "defaults" do
   before :all do
-    @model = Watirmark::Model.factory do
-      keywords :first_name, :last_name, :middle_name, :nickname, :id, :desc
-      defaults do
-        first_name { 'my_first_name' }
-        last_name { 'my_last_name' }
-        middle_name { "#{model_name} middle_name".strip }
-        id { uuid }
-        desc {'some description'}
+    module FactoryTest
+      class DefaultModel < Watirmark::Model::Factory
+        keywords :first_name, :last_name, :middle_name, :nickname, :id, :desc
+        defaults do
+          first_name { 'my_first_name' }
+          last_name { 'my_last_name' }
+          middle_name { "#{model_name} middle_name".strip }
+          id { uuid }
+          desc {'some description'}
+        end
       end
     end
+    @model = FactoryTest::DefaultModel
   end
 
   specify "retrieve a default proc setting" do

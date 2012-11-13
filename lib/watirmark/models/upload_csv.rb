@@ -1,6 +1,6 @@
 module Watirmark
   module Model
-    class UploadCSV < Base
+    class UploadCSV < Factory
       require 'csv'
       require 'tempfile'
 
