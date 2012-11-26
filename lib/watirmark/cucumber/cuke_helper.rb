@@ -1,4 +1,5 @@
 module CukeHelper
+  include 'watirmark/models/cucumber_helper'
 
   def log
     Watirmark::Configuration.instance.logger
@@ -17,38 +18,6 @@ module CukeHelper
       row[col] = format_value(row[col])
     end
     row
-  end
-
-  def format_value(value)
-    value = model_gsub(value)
-    case value
-      when String
-        if value[0, 1].eql?("=") #straight eval
-          eval(value[1..value.length])
-        elsif value == "true"
-          true
-        elsif value == "false"
-          false
-        elsif value.strip == ''
-          'nil'
-        else
-          value
-        end
-      else
-        value
-    end
-  end
-
-  def model_gsub(text)
-    result = text
-    regexp = /\[([^\]]+)\]\.(\w+)/
-    while result =~ regexp #get value from models
-      model_name = $1
-      method     = $2
-      value = DataModels[model_name].send method.to_sym
-      result.sub!(regexp, value.to_s)
-    end
-    result
   end
 
   # calls the models method if of the pattern <name>.method
