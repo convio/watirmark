@@ -123,11 +123,11 @@ module Watirmark
     end
 
     def keywords
-      @kwds.values.flatten.uniq
+      @kwds.values.flatten.uniq.sort_by { |key| key.to_s }
     end
 
     def native_keywords
-      @kwds[self.to_s]
+      @kwds[self.to_s].sort_by { |key| key.to_s }
     end
 
     def keyword_metadata
