@@ -5,7 +5,7 @@ module Watirmark
 
     DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
 
-    class DefaultHash < Hash
+    class DefaultValues < Hash
       undef :zip
 
       # This works around an issue that gets hit when
@@ -28,7 +28,7 @@ module Watirmark
         attr_accessor :search, :model_type_name, :keys, :included_traits, :default
 
         def default
-          @default ||= DefaultHash.new
+          @default ||= DefaultValues.new
         end
 
         def defaults(&block)
@@ -82,11 +82,13 @@ module Watirmark
         Watirmark.logger.info inspect
       end
 
+
       # The search_term, used for a controller's search can be defined in this model
       # or will look in a parent's model. This allows us to define it once for a composed model
       def search_term
         instance_eval(&@search) || (parent.search_term if parent)
       end
+
 
       def add_model(model)
         @children << model
@@ -142,6 +144,11 @@ module Watirmark
         self
       end
 
+      def model_name=(name)
+        @model_name = name
+        add_debug_overrides
+      end
+
 
       def to_h
         h = {}
@@ -161,11 +168,6 @@ module Watirmark
         h
       end
 
-      def model_name=(name)
-        @model_name = name
-        add_debug_overrides
-      end
-
 
     private
 
@@ -177,6 +179,7 @@ module Watirmark
         add_debug_overrides
       end
 
+
       def include_defaults_from_traits(traits)
         traits.each do |trait_name|
           trait = Watirmark::Model::Traits.instance[trait_name]
@@ -184,6 +187,7 @@ module Watirmark
           trait.traits.each {|t| include_defaults_from_traits([t])}
         end
       end
+
 
       def create_keyword_methods
         @keywords.each do |key|
@@ -201,12 +205,14 @@ module Watirmark
         end
       end
 
+
       def add_debug_overrides
         return unless @model_name && DebugModelValues != {}
         Watirmark.logger.warn "Adding DEBUG overrides for #@model_name"
         update DebugModelValues['*'] if DebugModelValues['*']
         update DebugModelValues[@model_name] if DebugModelValues[@model_name]
       end
+
 
       # if the value is a proc, evaluate it, otherwise just return
       def normalize(val)
