@@ -109,14 +109,14 @@ describe "keyword metadata inheritance" do
 
   it 'should allow child to override superclass' do
     child = Child.new
-    child.keywords.should == [:a, :b, :c, :same]
+    child.keywords.sort_by{|k| k.to_s}.should == [:a, :b, :c, :same]
     child.a.should == "a"
     child.same.should == 'c1-child'
   end
 
   it 'should not bleed settings between children' do
     child2 = Child2.new
-    child2.keywords.should == [:a, :b, :g, :same]
+    child2.keywords.sort_by{|k| k.to_s}.should == [:a, :b, :g, :same]
     child2.g.should == 'g'
     child2.same.should == 'c1'
   end

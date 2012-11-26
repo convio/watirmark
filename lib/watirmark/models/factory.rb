@@ -3,32 +3,22 @@ require_relative 'cucumber_helper'
 module Watirmark
   module Model
 
+    DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
+
     class DefaultHash < Hash
       undef :zip
-
-      attr_accessor :model
-
-      #def initialize()
-      #  @members = []
-      #end
 
       # This works around an issue that gets hit when
       # running from rake and the model has default.desc set.
       # If we don't have it here it thinks we're trying to call rakes' #desc
-      #def desc(&block)
-      #  @members << :desc unless @members.include? :desc
-      #  meta_def :desc do
-      #    block
-      #  end
-      #end
+      def desc(&block)
+        self[:desc] = block
+      end
 
       def method_missing(name, &block)
         self[name] = block
       end
     end
-
-
-      DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
 
     class Factory
       include CucumberHelper
@@ -88,7 +78,7 @@ module Watirmark
         @search = self.class.search || Proc.new{nil}
         @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
         @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
-        reload_settings
+        initialize_model_values
         Watirmark.logger.info inspect
       end
 
@@ -117,10 +107,10 @@ module Watirmark
 
 
       def inspect
-      #  model_friendly_name = @model_name ? "#@model_name: " : nil
-      #  model_details = " #{to_h}" unless to_h.empty?
-      #  included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
-      #  "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
+        model_friendly_name = @model_name ? "#@model_name: " : nil
+        model_details = " #{to_h}" unless to_h.empty?
+        included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
+        "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
       end
 
 
@@ -156,14 +146,14 @@ module Watirmark
       def to_h
         h = {}
         @keywords.each do |key|
-          name = key
-          value = send(key)
           begin
-          if value.kind_of?(Proc)
-            h[name] = instance_eval(&value) unless value.nil?
-          else
-            h[name] = value unless value.nil?
-          end
+            name = key
+            value = send(key)
+            if value.kind_of?(Proc)
+              h[name] = instance_eval(&value) unless value.nil?
+            else
+              h[name] = value unless value.nil?
+            end
           rescue NoMethodError
             h[name] = "[defined at runtime]"
           end
@@ -179,28 +169,21 @@ module Watirmark
 
     private
 
-      def reload_settings
-        update_defaults_with_traits @traits
+      def initialize_model_values
+        include_defaults_from_traits @traits
         create_keyword_methods
         create_model_methods
         update @params
         add_debug_overrides
       end
 
-      def update_defaults_with_traits(traits)
-        traits.each do |n|
-          Watirmark::Model::Traits.instance[n].defaults.each {|k, v| @defaults[k] = v unless @defaults.key?(k)}
-          Watirmark::Model::Traits.instance[n].traits.each {|t| update_defaults_with_traits([t])}
+      def include_defaults_from_traits(traits)
+        traits.each do |trait_name|
+          trait = Watirmark::Model::Traits.instance[trait_name]
+          trait.defaults.each {|k, v| @defaults[k] = v unless @defaults.key?(k)}
+          trait.traits.each {|t| include_defaults_from_traits([t])}
         end
       end
-
-      def add_debug_overrides
-        return unless @model_name && DebugModelValues != {}
-        Watirmark.logger.warn "Adding DEBUG overrides for #@model_name"
-        update DebugModelValues['*'] if DebugModelValues['*']
-        update DebugModelValues[@model_name] if DebugModelValues[@model_name]
-      end
-
 
       def create_keyword_methods
         @keywords.each do |key|
@@ -218,6 +201,12 @@ module Watirmark
         end
       end
 
+      def add_debug_overrides
+        return unless @model_name && DebugModelValues != {}
+        Watirmark.logger.warn "Adding DEBUG overrides for #@model_name"
+        update DebugModelValues['*'] if DebugModelValues['*']
+        update DebugModelValues[@model_name] if DebugModelValues[@model_name]
+      end
 
       # if the value is a proc, evaluate it, otherwise just return
       def normalize(val)
