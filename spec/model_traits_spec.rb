@@ -15,7 +15,7 @@ describe "Traits" do
     end
 
     module FactoryTest
-      TraitsA = Watirmark::Model.factory do
+      class TraitsA < Watirmark::Model::Factory
         keywords :first_name, :last_name, :middle_name, :cardnumber
         traits :contact_name, :credit_card
         defaults do
@@ -23,7 +23,7 @@ describe "Traits" do
         end
       end
 
-      TraitsB = Watirmark::Model::factory do
+      class TraitsB < Watirmark::Model::Factory
         keywords :first_name, :last_name, :middle_name, :cardnumber
         traits :contact_name, :credit_card
         defaults do
@@ -31,7 +31,7 @@ describe "Traits" do
         end
       end
 
-      TraitsC = Watirmark::Model::factory do
+      class TraitsC < Watirmark::Model::Factory
         keywords :first_name
         defaults do
           first_name { "C" }
@@ -39,7 +39,7 @@ describe "Traits" do
         traits :contact_name, :credit_card
       end
 
-      TraitsD = Watirmark::Model::factory do
+      class TraitsD < Watirmark::Model::Factory
         keywords :first_name
         traits :contact_name, :credit_card
         defaults do
@@ -108,12 +108,12 @@ describe "Nested Traits" do
     end
 
     module FactoryTest
-      Jim = Watirmark::Model.factory do
+      class Jim < Watirmark::Model::Factory
         keywords :first_name, :last_name, :donor_address, :donor_state, :credit_card
         traits :donor_jim
       end
 
-      Jane = Watirmark::Model.factory do
+      class Jane < Watirmark::Model::Factory
         keywords :first_name, :last_name, :donor_address, :donor_state, :credit_card
         traits :donor_jane
       end

@@ -6,9 +6,15 @@ describe "controllers should be able to detect and use embedded models" do
     class MyView < Page
       keyword(:element) {}
     end
-    CMUser = Watirmark::Model::Base.new(:first_name)
-    CMLogin = Watirmark::Model::Base.new(:username)
-    CMPassword = Watirmark::Model::Base.new(:password)
+    class CMUser < Watirmark::Model::Factory
+      keywords :first_name
+    end
+    class CMLogin < Watirmark::Model::Factory
+      keywords :username
+    end
+    class CMPassword < Watirmark::Model::Factory
+      keywords :password
+    end
     @password = CMPassword.new
     @login = CMLogin.new
     @login.add_model @password

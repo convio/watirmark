@@ -2,6 +2,7 @@ module Watirmark
   module Model
     class Default
       include Enumerable
+      undef :zip
 
       attr_accessor :model
 
@@ -21,8 +22,12 @@ module Watirmark
 
       def method_missing(name, &block)
         @members << name unless @members.include? name
-        meta_def name do
-          block
+        meta_def name do |args|
+          if arity == 1
+            args
+          else
+            block
+          end
         end
       end
 

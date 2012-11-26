@@ -3,17 +3,42 @@ require_relative 'cucumber_helper'
 module Watirmark
   module Model
 
-    DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
+    class DefaultHash < Hash
+      undef :zip
+
+      attr_accessor :model
+
+      #def initialize()
+      #  @members = []
+      #end
+
+      # This works around an issue that gets hit when
+      # running from rake and the model has default.desc set.
+      # If we don't have it here it thinks we're trying to call rakes' #desc
+      #def desc(&block)
+      #  @members << :desc unless @members.include? :desc
+      #  meta_def :desc do
+      #    block
+      #  end
+      #end
+
+      def method_missing(name, &block)
+        self[name] = block
+      end
+    end
+
+
+      DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
 
     class Factory
       include CucumberHelper
 
       class << self
 
-        attr_accessor :search, :model_type_name, :keys
+        attr_accessor :search, :model_type_name, :keys, :included_traits, :default
 
         def default
-          @default ||= Watirmark::Model::Default.new
+          @default ||= DefaultHash.new
         end
 
         def defaults(&block)
@@ -30,30 +55,27 @@ module Watirmark
           @children.uniq!
         end
 
+        def model_type(c_name)
+          @model_type_name = c_name
+        end
+
+
         def search_term &block
           @search = block
         end
 
         def traits(*names)
-          names.each do |n|
-            Watirmark::Model::Traits.instance[n].defaults.each {|k, v| default.send(k, &v)}
-            Watirmark::Model::Traits.instance[n].traits.each {|t| traits(t)}
-          end
-        end
-
-        def model_type(c_name)
-          @model_type_name = c_name
+          @included_traits = [*names].flatten
         end
 
         def keywords(*args)
-          @keys = args
+          @keys = [*args].flatten
         end
       end
 
-      attr_accessor :default, :uuid, :model_name, :models, :parent, :children, :model_type
+      attr_accessor :defaults, :uuid, :model_name, :models, :parent, :children, :model_type
 
       def initialize(params={})
-
         @keywords = self.class.keys || []
         if params[:model_name]
           @model_name = params[:model_name]
@@ -61,7 +83,8 @@ module Watirmark
         end
         @params = params
         @children = self.class.children.map(&:new)
-        @default = self.class.default
+        @defaults = self.class.default
+        @traits = self.class.included_traits || []
         @search = self.class.search || Proc.new{nil}
         @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
         @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
@@ -157,10 +180,18 @@ module Watirmark
     private
 
       def reload_settings
+        update_defaults_with_traits @traits
         create_keyword_methods
         create_model_methods
         update @params
         add_debug_overrides
+      end
+
+      def update_defaults_with_traits(traits)
+        traits.each do |n|
+          Watirmark::Model::Traits.instance[n].defaults.each {|k, v| @defaults[k] = v unless @defaults.key?(k)}
+          Watirmark::Model::Traits.instance[n].traits.each {|t| update_defaults_with_traits([t])}
+        end
       end
 
       def add_debug_overrides
@@ -172,14 +203,13 @@ module Watirmark
 
 
       def create_keyword_methods
-        [*@keywords].each do |key|
+        @keywords.each do |key|
           meta_def key do
             value = instance_variable_get("@#{key}")
             if value
               value
-            elsif @default.include?(key)
-              value = @default.send(key)
-              instance_eval &value
+            elsif @defaults.key?(key)
+              instance_eval &@defaults[key]
             end
           end
           meta_def "#{key}=" do |value|

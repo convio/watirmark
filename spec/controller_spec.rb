@@ -240,9 +240,17 @@ describe "controllers should be able to detect and use embedded models" do
     @controller = Class.new Watirmark::WebPage::Controller do
       @view = MyView
     end
-    User = Watirmark::Model::Base.new(:first_name)
-    Login = Watirmark::Model::Base.new(:username)
-    Password = Watirmark::Model::Base.new(:password)
+    class User < Watirmark::Model::Factory
+      keywords :first_name
+    end
+
+    class Login < Watirmark::Model::Factory
+      keywords :first_name
+    end
+
+    class Password < Watirmark::Model::Factory
+      keywords :password
+    end
     @password = Password.new
     @login = Login.new
     @login.add_model @password
@@ -268,7 +276,9 @@ describe "controllers should create a default model if one exists" do
     class MyView < Page
       private_keyword(:element)
     end
-    MyModel = Watirmark::Model::Base.new(:element)
+    class MyModel < Watirmark::Model::Factory
+      keywords :element
+    end
     @controller = Class.new Watirmark::WebPage::Controller do
       @view = MyView
       @model = MyModel
@@ -302,48 +312,48 @@ describe "Similar Models" do
       ) { Page.browser.radio(:name, 'sex') }
     end
 
-    ModelA = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelA < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       defaults do
         radio_map { 'M' }
       end
     end
 
-    ModelC = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelC < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       model ModelA
     end
 
-    ModelB = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelB < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       model_type ModelA
       defaults do
         radio_map { 'f' }
       end
     end
 
-    ModelD = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelD < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       model ModelB
     end
 
-    ModelE = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelE < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       model ModelD
     end
 
-    ModelF = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelF < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       model_type ModelA
     end
 
-    ModelG = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelG < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
       model ModelF
     end
 
-    ModelH = Watirmark::Model.factory do
-      keywords *ProcessPageControllerView.keywords
+    class ModelH < Watirmark::Model::Factory
+      keywords ProcessPageControllerView.keywords
     end
 
     class TestProcessPageController < Watirmark::WebPage::Controller
@@ -361,56 +371,56 @@ describe "Similar Models" do
 
   it 'should use the similar modelA' do
     @controller = TestProcessPageController.new(ModelD.new)
-    @controller.model.should == ModelB.new
-    @controller.supermodel.should == ModelD.new
+    @controller.model.should be_kind_of ModelB
+    @controller.supermodel.should be_kind_of ModelD
   end
 
   it 'should use the top model' do
     @controller = TestProcessPageController.new(ModelB.new)
-    @controller.model.should == ModelB.new
-    @controller.supermodel.should == ModelB.new
+    @controller.model.should be_kind_of ModelB
+    @controller.supermodel.should be_kind_of ModelB
   end
 
   it 'should use parent model' do
     @controller = TestProcessPageController.new(ModelC.new)
-    @controller.model.should == ModelA.new
-    @controller.supermodel.should == ModelC.new
+    @controller.model.should be_kind_of ModelA
+    @controller.supermodel.should be_kind_of ModelC
   end
 
   it 'should call the smallest child similar to the model in controller' do
     @controller = TestProcessPageController.new(ModelE.new)
-    @controller.model.should == ModelB.new
-    @controller.supermodel.should == ModelE.new
+    @controller.model.should be_kind_of ModelB
+    @controller.supermodel.should be_kind_of ModelE
 
   end
 
   it 'should select the correct model when base model has 2 similar models' do
     @controller = TestProcessPageController.new(ModelG.new)
-    @controller.model.should == ModelF.new
-    @controller.supermodel.should == ModelG.new
+    @controller.model.should be_kind_of ModelF
+    @controller.supermodel.should be_kind_of ModelG
 
     @controller = TestProcessPageController.new(ModelF.new)
-    @controller.model.should == ModelF.new
-    @controller.model.should == ModelF.new
+    @controller.model.should be_kind_of ModelF
+    @controller.supermodel.should be_kind_of ModelF
   end
 
   it 'should use the supermodel as a model if a controller model is not defined' do
     @controller = TestNoModelController.new(ModelE.new)
-    @controller.model.should == ModelE.new
-    @controller.supermodel.should == ModelE.new
+    @controller.model.should be_kind_of ModelE
+    @controller.supermodel.should be_kind_of ModelE
   end
 
   it 'should use passed in model as @model when model_type is not defined' do
     @controller = TestProcessPageController.new(ModelH.new)
-    @controller.model.should == ModelH.new
-    @controller.supermodel.should == ModelH.new
+    @controller.model.should be_kind_of ModelH
+    @controller.supermodel.should be_kind_of ModelH
   end
 
   it 'should allow us to override the default model' do
     @controller = TestProcessPageController.new(ModelH.new)
-    @controller.model.should == ModelH.new
+    @controller.model.should be_kind_of ModelH
     @controller.model = ModelA.new
-    @controller.model.should == ModelA.new
+    @controller.model.should be_kind_of ModelA
   end
 
 end
