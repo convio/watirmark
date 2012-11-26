@@ -3,15 +3,13 @@ module Twitter
     class QueryView < BaseView
       keyword(:search_term)  { browser.text_field(:id, 'search-query') }
 
-      class << self
-        def home(model)
-        end
+      def home(model)
+      end
 
-        def create(model)
-        end
+      def create(model)
+      end
 
-        def edit(model)
-        end
+      def edit(model)
       end
     end
   end

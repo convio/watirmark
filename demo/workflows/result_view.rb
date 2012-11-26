@@ -4,15 +4,13 @@ module Twitter
       private_keyword(:result_container)  { browser.div(:id => 'stream-items-id')}
       private_keyword(:results)           { result_container.divs(:class, 'content').map(&:text)}
 
-      class << self
-        def home(model)
-        end
+      def home(model)
+      end
 
-        def create(model)
-        end
+      def create(model)
+      end
 
-        def edit(model)
-        end
+      def edit(model)
       end
     end
   end
