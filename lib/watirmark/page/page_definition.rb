@@ -131,11 +131,14 @@ module Watirmark
     end
 
     def keyword_metadata
-      @kwd_metadata ||= Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k]=Hash.new } }
+      @kwd_metadata ||= nested_hash
       @kwd_metadata.values.inject(:merge)
     end
 
   private
+    def nested_hash
+      Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k]=Hash.new } }
+    end
 
     def create_new_keyword(name, map=nil, permissions, &block)
       keyword_name = name.to_sym
@@ -145,7 +148,7 @@ module Watirmark
     end
 
     def add_keyword_metadata(name, map, permissions, block)
-      @kwd_metadata ||= Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k]=Hash.new } }
+      @kwd_metadata ||= nested_hash
       @kwd_metadata[self.to_s][name][:keyword] = name
       @kwd_metadata[self.to_s][name][:map] = map
       @kwd_metadata[self.to_s][name][:permissions] = permissions
