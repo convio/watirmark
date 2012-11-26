@@ -63,25 +63,25 @@ module Watirmark
         end
       end
 
-      attr_accessor :defaults, :uuid, :model_name, :models, :parent, :children, :model_type
+      attr_accessor :defaults, :model_name, :models, :parent, :children, :model_type
 
       def initialize(params={})
-        @keywords = self.class.keys || []
-        if params[:model_name]
-          @model_name = params[:model_name]
-          params.delete(:model_name)
-        end
-        @params = params
-        @children = self.class.children.map(&:new)
-        @defaults = self.class.default
-        @traits = self.class.included_traits || []
-        @search = self.class.search || Proc.new{nil}
-        @uuid = (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
+        @params     = params
+        @children   = self.class.children.map(&:new)
+        @defaults   = self.class.default
+        @keywords   = self.class.keys || []
+        @traits     = self.class.included_traits || []
+        @search     = self.class.search || Proc.new{nil}
         @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
+        extract_model_name_from_params
         initialize_model_values
         Watirmark.logger.info inspect
       end
 
+
+      def uuid
+        @uuid ||= (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
+      end
 
       # The search_term, used for a controller's search can be defined in this model
       # or will look in a parent's model. This allows us to define it once for a composed model
@@ -170,6 +170,13 @@ module Watirmark
 
 
     private
+
+      def extract_model_name_from_params
+        if @params[:model_name]
+          @model_name = @params[:model_name]
+          @params.delete(:model_name)
+        end
+      end
 
       def initialize_model_values
         include_defaults_from_traits @traits
