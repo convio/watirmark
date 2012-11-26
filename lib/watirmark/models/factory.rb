@@ -1,24 +1,10 @@
 require_relative 'cucumber_helper'
+require_relative 'default_values'
 
 module Watirmark
   module Model
 
     DebugModelValues = Hash.new{|h,k| h[k]=Hash.new}
-
-    class DefaultValues < Hash
-      undef :zip
-
-      # This works around an issue that gets hit when
-      # running from rake and the model has default.desc set.
-      # If we don't have it here it thinks we're trying to call rakes' #desc
-      def desc(&block)
-        self[:desc] = block
-      end
-
-      def method_missing(name, &block)
-        self[name] = block
-      end
-    end
 
     class Factory
       include CucumberHelper
