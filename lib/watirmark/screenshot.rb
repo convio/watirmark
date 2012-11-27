@@ -10,13 +10,25 @@ module Watirmark
       end
 
       def compare_screenshots(masters, currents)
-        raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenShots
+        raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.kind_of?(MasterAlbum) && currents.kind_of?(CurrentScreenShots)
 
         if Watirmark::Configuration.instance.snapshotwidth.kind_of?(Fixnum)
-          report_failure(currents.screenshots.filename, masters.album.filename) unless currents.screenshots.md5 == masters.album.md5
+          compare_specific_screenshot_size(currents, masters)
         else
-          masters.album.each_with_index do |master, index|
-            report_failure(currents.screenshots[index].filename, masters.filename) unless currents.screenshots[index].md5  == master.md5
+          compare_standard_screenshot_sizes(currents, masters)
+        end
+      end
+
+      def compare_specific_screenshot_size(currents, masters)
+         unless currents.screenshots.md5 == masters.album.md5
+           report_failure(currents.screenshots.filename, masters.album.filename)
+         end
+      end
+
+      def compare_standard_screenshot_sizes(currents, masters)
+        masters.album.each_with_index do |master, index|
+          unless currents.screenshots[index].md5  == master.md5
+            report_failure(currents.screenshots[index].filename, masters.filename)
           end
         end
       end
