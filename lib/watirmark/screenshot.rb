@@ -12,7 +12,7 @@ module Watirmark
       def compare_screenshots(masters, currents)
         raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenShots
 
-        if Watirmark::Configuration.instance.snapshotwidth.class.kind_of?(Fixnum)
+        if Watirmark::Configuration.instance.snapshotwidth.kind_of?(Fixnum)
           report_failure(currents.screenshots.filename, masters.album.filename) unless currents.screenshots.md5 == masters.album.md5
         else
           masters.album.each_with_index do |master, index|
