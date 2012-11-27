@@ -12,39 +12,50 @@ class CreateProjectGenerator < RubiGen::Base
   end
 
   def manifest
-    record do |m|    
+    record do |m|
       create_directories(m)
-      m.template "project/gemfile.rb.erb", "Gemfile"
-      m.template "project/config.yml.erb", "config.yml"
-      m.template "project/rakefile.rb.erb", "rakefile.rb"
-
-      # main library
-      m.template "library/page_load_checker.rb.erb", File.join("lib", name, "checkers", "page_load_checker.rb")
-      m.template "library/post_errors_checker.rb.erb", File.join("lib", name, "checkers", "post_errors_checker.rb")
-      m.template "library/base_controller.rb.erb", File.join("lib", name, "site", "base_controller.rb")
-      m.template "library/search_controller.rb.erb", File.join("lib", name, "site", "search_controller.rb")
-      m.template "library/base_view.rb.erb", File.join("lib", name, "site", "base_view.rb")
-      m.template "library/configuration.rb.erb", File.join("lib", name, "configuration.rb")
-      m.template "library/workflows.rb.erb", File.join("lib", name, "workflows.rb")
-      m.template "library/core_libraries.rb.erb", File.join("lib", name, "core_libraries.rb")
-      m.template "library/loader.rb.erb", File.join("lib", name, "loader.rb")
-      m.template "library/project_require_file.rb.erb", File.join("lib","#{name}.rb")
-
-      m.template "generators/generate.rb.erb", File.join("script","generate.rb")
-      m.template "generators/mvc_generator.rb.erb", File.join("generators","mvc","mvc_generator.rb")
-      m.template "generators/rbeautify.rb.erb", File.join("generators", "mvc", "rbeautify.rb")
-      m.template "generators/controller.rb.erb", File.join("generators","mvc","templates","controller.rb.erb")
-      m.template "generators/model.rb.erb", File.join("generators","mvc","templates","model.rb.erb")
-      m.template "generators/view.rb.erb", File.join("generators","mvc","templates","view.rb.erb")
-      m.template "generators/workflow_loader.rb.erb", File.join("generators","mvc","templates","workflow_loader.rb.erb")
-
-      m.template "features/model_steps.rb.erb", File.join("features","step_definitions","model_steps.rb")
-      m.template "features/post_error_steps.rb.erb", File.join("features","step_definitions","post_error_steps.rb")
-      m.template "features/site_steps.rb.erb", File.join("features","step_definitions","site_steps.rb")
-      m.template "features/env.rb.erb", File.join("features","support","env.rb")
-      m.template "features/sample.feature.erb", File.join("features","#{@name}_home.feature")
-
+      create_project_files(m)
+      create_library_files(m)
+      create_mvc_generators(m)
+      create_test_files(m)
     end
+  end
+
+  def create_project_files(manifest)
+    manifest.template "project/gemfile.rb.erb", "Gemfile"
+    manifest.template "project/config.yml.erb", "config.yml"
+    manifest.template "project/rakefile.rb.erb", "rakefile.rb"
+  end
+
+  def create_library_files(manifest)
+    manifest.template "library/page_load_checker.rb.erb", File.join("lib", name, "checkers", "page_load_checker.rb")
+    manifest.template "library/post_errors_checker.rb.erb", File.join("lib", name, "checkers", "post_errors_checker.rb")
+    manifest.template "library/base_controller.rb.erb", File.join("lib", name, "site", "base_controller.rb")
+    manifest.template "library/search_controller.rb.erb", File.join("lib", name, "site", "search_controller.rb")
+    manifest.template "library/base_view.rb.erb", File.join("lib", name, "site", "base_view.rb")
+    manifest.template "library/configuration.rb.erb", File.join("lib", name, "configuration.rb")
+    manifest.template "library/workflows.rb.erb", File.join("lib", name, "workflows.rb")
+    manifest.template "library/core_libraries.rb.erb", File.join("lib", name, "core_libraries.rb")
+    manifest.template "library/loader.rb.erb", File.join("lib", name, "loader.rb")
+    manifest.template "library/project_require_file.rb.erb", File.join("lib","#{name}.rb")
+  end
+
+  def create_mvc_generators(manifest)
+    manifest.template "generators/generate.rb.erb", File.join("script","generate.rb")
+    manifest.template "generators/mvc_generator.rb.erb", File.join("generators","mvc","mvc_generator.rb")
+    manifest.template "generators/rbeautify.rb.erb", File.join("generators", "mvc", "rbeautify.rb")
+    manifest.template "generators/controller.rb.erb", File.join("generators","mvc","templates","controller.rb.erb")
+    manifest.template "generators/model.rb.erb", File.join("generators","mvc","templates","model.rb.erb")
+    manifest.template "generators/view.rb.erb", File.join("generators","mvc","templates","view.rb.erb")
+    manifest.template "generators/workflow_loader.rb.erb", File.join("generators","mvc","templates","workflow_loader.rb.erb")
+  end
+
+  def create_test_files(manifest)
+    manifest.template "features/model_steps.rb.erb", File.join("features","step_definitions","model_steps.rb")
+    manifest.template "features/post_error_steps.rb.erb", File.join("features","step_definitions","post_error_steps.rb")
+    manifest.template "features/site_steps.rb.erb", File.join("features","step_definitions","site_steps.rb")
+    manifest.template "features/env.rb.erb", File.join("features","support","env.rb")
+    manifest.template "features/sample.feature.erb", File.join("features","#{@name}_home.feature")
   end
 
   def create_directories(m)
