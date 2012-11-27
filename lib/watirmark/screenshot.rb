@@ -4,21 +4,26 @@ Watirmark::Configuration.instance.defaults = {:create_master_snapshots => false}
 module Watirmark
   module Screenshot
 
-    def self.take
-      CurrentScreenShots.new
-    end
+    class << self
+      def take
+        CurrentScreenShots.new
+      end
 
-    def self.compare_screenshots(masters, currents)
-      raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenShots
+      def compare_screenshots(masters, currents)
+        raise ArgumentError, "Passed invalid arguments to compare_screenshots" unless masters.class == MasterAlbum && currents.class == CurrentScreenShots
 
-      if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
-        Watirmark.logger.info "Checking Snapshot:\n   master: #{masters.album.filename}\n   screenshot: #{currents.screenshots.filename}"
-        raise ArgumentError, "Master snapshot: #{File.expand_path(masters.album.filename)} does not match current snapshot: #{File.expand_path(currents.screenshots.filename)}" unless masters.album.md5 == currents.screenshots.md5
-      else
-        masters.album.each_with_index do |master, index|
-          Watirmark.logger.info  "Checking Snapshot:\n   master: #{master.filename}\n   screenshot: #{currents.screenshots[index].filename}"
-          raise ArgumentError, "Master snapshot: #{File.expand_path(master.filename)} does not match current snapshot: #{File.expand_path(currents.screenshots[index].filename)}" unless master.md5 == currents.screenshots[index].md5
+        if Watirmark::Configuration.instance.snapshotwidth.class == Fixnum
+          report_failure(currents.screenshots.filename, masters.album.filename) unless currents.screenshots.md5 == masters.album.md5
+        else
+          masters.album.each_with_index do |master, index|
+            report_failure(currents.screenshots[index].filename, masters.filename) unless currents.screenshots[index].md5  == master.md5
+          end
         end
+      end
+
+      def report_failure(current, master)
+        Watirmark.logger.info "Checking Snapshot:\n   master: #{master}\n   screenshot: #{current}"
+        raise ArgumentError, "Master snapshot: #{File.expand_path(master)} does not match current snapshot: #{File.expand_path(current)}"
       end
     end
 
