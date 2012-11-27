@@ -1,7 +1,7 @@
 require_relative '../models/cucumber_helper'
 
 module CukeHelper
-  include Watirmark::Models::CucumberHelper
+  include Watirmark::Model::CucumberHelper
 
   def log
     Watirmark::Configuration.instance.logger
