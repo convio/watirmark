@@ -53,15 +53,19 @@ module Watirmark
 
       def initialize(params={})
         @params     = params
+        set_instance_variables_from_factory_definition
+        extract_model_name_from_params
+        initialize_model_values
+        Watirmark.logger.info inspect
+      end
+
+      def set_instance_variables_from_factory_definition
         @children   = self.class.children.map(&:new)
         @defaults   = self.class.default
         @keywords   = self.class.keys || []
         @traits     = self.class.included_traits || []
         @search     = self.class.search || Proc.new{nil}
         @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
-        extract_model_name_from_params
-        initialize_model_values
-        Watirmark.logger.info inspect
       end
 
 
@@ -184,17 +188,29 @@ module Watirmark
 
       def create_keyword_methods
         @keywords.each do |key|
-          meta_def key do
-            value = instance_variable_get("@#{key}")
-            if value
-              value
-            elsif @defaults.key?(key)
+          create_getter_method key
+          create_setter_method key
+        end
+      end
+
+      def create_getter_method(key)
+        meta_def key do
+          value = instance_variable_get("@#{key}")
+          if value
+            value
+          else
+            if @defaults.key?(key)
               instance_eval &@defaults[key]
+            else
+              nil
             end
           end
-          meta_def "#{key}=" do |value|
-            instance_variable_set "@#{key}", value
-          end
+        end
+      end
+
+      def create_setter_method(key)
+        meta_def "#{key}=" do |value|
+          instance_variable_set "@#{key}", value
         end
       end
 
