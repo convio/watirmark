@@ -14,7 +14,7 @@ module Watirmark
             elsif value == "false"
               false
             elsif value.strip == ''
-              'nil'
+              nil
             else
               value
             end
