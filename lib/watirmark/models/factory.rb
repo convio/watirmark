@@ -65,7 +65,7 @@ module Watirmark
         @keywords   = self.class.keys || []
         @traits     = self.class.included_traits || []
         @search     = self.class.search || Proc.new{nil}
-        @model_type = self.class.model_type_name unless self.class.model_type_name.nil?
+        @model_type = self.class.model_type_name
       end
 
 
