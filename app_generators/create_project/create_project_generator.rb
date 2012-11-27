@@ -15,7 +15,9 @@ class CreateProjectGenerator < RubiGen::Base
     record do |m|
       create_directories(m)
       create_project_files(m)
-      create_library_files(m)
+      create_library_checker_files(m)
+      create_library_site_files(m)
+      create_library_toplevel_files(m)
       create_mvc_generators(m)
       create_test_files(m)
     end
@@ -27,12 +29,18 @@ class CreateProjectGenerator < RubiGen::Base
     manifest.template "project/rakefile.rb.erb", "rakefile.rb"
   end
 
-  def create_library_files(manifest)
+  def create_library_checker_files(manifest)
     manifest.template "library/page_load_checker.rb.erb", File.join("lib", name, "checkers", "page_load_checker.rb")
     manifest.template "library/post_errors_checker.rb.erb", File.join("lib", name, "checkers", "post_errors_checker.rb")
+  end
+
+  def create_library_site_files(manifest)
     manifest.template "library/base_controller.rb.erb", File.join("lib", name, "site", "base_controller.rb")
     manifest.template "library/search_controller.rb.erb", File.join("lib", name, "site", "search_controller.rb")
     manifest.template "library/base_view.rb.erb", File.join("lib", name, "site", "base_view.rb")
+  end
+
+  def create_library_toplevel_files(manifest)
     manifest.template "library/configuration.rb.erb", File.join("lib", name, "configuration.rb")
     manifest.template "library/workflows.rb.erb", File.join("lib", name, "workflows.rb")
     manifest.template "library/core_libraries.rb.erb", File.join("lib", name, "core_libraries.rb")
