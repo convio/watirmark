@@ -92,12 +92,13 @@ module Watirmark
       return unless File.exists?(configfile.to_s)
       filename = File.expand_path(configfile)
       case File.extname filename
-        when ".txt"
+        when ".txt", ".hudson"
           parse_text_file filename
         when ".yml"
           parse_yaml_file filename
         else
-          raise Watirmark::InvalidConfigurationFile,"Expected .yml but using '#{configfile}'"
+          Watirmark.logger.warn "Unsure how to handle configuration file #{configfile}. Assuming .txt"
+          parse_text_file filename
       end
     end
 
