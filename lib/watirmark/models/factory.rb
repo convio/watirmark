@@ -58,16 +58,18 @@ module Watirmark
       private
 
         def add_keywords_to_subclass klass
-          klass.keys = []
-          klass.keys += @keys.dup
+          if @keys
+            klass.keys = []
+            klass.keys += @keys.dup
+          end
         end
 
         def add_defaults_to_subclass klass
-          klass.default = @default.dup
+          klass.default = @default.dup if @default
         end
 
         def add_traits_to_subclass klass
-          klass.included_traits = @included_traits.dup
+          klass.included_traits = @included_traits.dup if @included_traits
         end
 
       end
