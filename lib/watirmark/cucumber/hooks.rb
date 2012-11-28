@@ -8,7 +8,7 @@ Before('~@catch-post-failure') do
 end
 
 After do |scenario|
-  image = "#{UUID.new.generate(:compact)}.png"
+  image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
   path = "reports/screenshots"
   FileUtils.mkdir_p path unless File.directory? path
   Page.browser.screenshot.save "#{path}/#{image}"
