@@ -76,15 +76,9 @@ module Watirmark
     end
 
     def openbrowser
-      config.webdriver ||= :firefox
-      case config.webdriver.to_sym
-        when :firefox
-          Page.browser = Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
-        else
-          Page.browser = Watir::Browser.new config.webdriver.to_sym
-      end
-      POST_WAIT_CHECKERS.each { |p| Page.browser.add_checker p }
-      Page.browser.screenshot.base64
+      Page.browser = new_watir_browser
+      initialize_page_checkers
+      initialize_screenshots
       Page.browser
     end
 
@@ -97,5 +91,25 @@ module Watirmark
         Page.browser = nil
       end
     end
+
+    private
+
+    def new_watir_browser
+      config.webdriver ||= :firefox
+      if config.webdriver.to_sym == :firefox
+        Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
+      else
+        Watir::Browser.new config.webdriver.to_sym
+      end
+    end
+
+    def initialize_screenshots
+      Page.browser.screenshot.base64
+    end
+
+    def initialize_page_checkers
+      POST_WAIT_CHECKERS.each { |p| Page.browser.add_checker p }
+    end
+
   end
 end
