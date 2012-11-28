@@ -24,6 +24,15 @@ describe "factory" do
     login.username.should == 'username'
     login.password.should == 'password'
   end
+
+  # this is mostly for legacy :(
+  specify "should be able to act like an openstruct" do
+    login = FactoryTest::InitializeModel.new
+    login.foobar.should be_nil
+    login.foobar = 'test'
+    login.foobar.should == 'test'
+  end
+
 end
 
 describe "defaults" do

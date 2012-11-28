@@ -94,9 +94,16 @@ module Watirmark
         @model_type = self.class.model_type_name
       end
 
-
       def uuid
         @uuid ||= (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
+      end
+
+      # Act like an OpenStruct so we work backward compatible
+      def method_missing(key, *args, &block)
+        @keywords << key
+        create_getter_method key
+        create_setter_method key
+        send "#{key}=", nil
       end
 
       # The search_term, used for a controller's search can be defined in this model
@@ -127,7 +134,7 @@ module Watirmark
       def inspect
         model_friendly_name = @model_name ? "#@model_name: " : nil
         model_details = " #{to_h}" unless to_h.empty?
-        included_models = "\n   #{@children.flatten.map(&:inspect).join("\n   ")}" unless @children.empty?
+        included_models = "\n   #{@children.map(&:inspect).join("\n   ")}" unless @children.empty?
         "#{model_friendly_name}#{model_class_name}#{model_details}#{included_models}"
       end
 
