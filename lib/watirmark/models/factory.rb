@@ -13,6 +13,14 @@ module Watirmark
 
         attr_accessor :search, :model_type_name, :keys, :included_traits, :default
 
+        def inherited(klass)
+          unless self == Factory
+            add_keywords_to_subclass klass
+            add_defaults_to_subclass klass
+            add_traits_to_subclass klass
+          end
+        end
+
         def default
           @default ||= DefaultValues.new
         end
@@ -35,7 +43,6 @@ module Watirmark
           @model_type_name = c_name
         end
 
-
         def search_term &block
           @search = block
         end
@@ -47,6 +54,22 @@ module Watirmark
         def keywords(*args)
           @keys = [*args].flatten
         end
+
+      private
+
+        def add_keywords_to_subclass klass
+          klass.keys = []
+          klass.keys += @keys.dup
+        end
+
+        def add_defaults_to_subclass klass
+          klass.default = @default.dup
+        end
+
+        def add_traits_to_subclass klass
+          klass.included_traits = @included_traits.dup
+        end
+
       end
 
       attr_accessor :defaults, :model_name, :models, :parent, :children, :model_type

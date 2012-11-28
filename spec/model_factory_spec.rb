@@ -464,44 +464,45 @@ describe "keywords" do
 
 end
 
+describe "subclassing" do
+  before :all do
+    module Watirmark::Model
+      trait :some_trait do
+        full_name { "full_name" }
+      end
+    end
+    module FactoryTest
+      class BaseModel < Watirmark::Model::Factory
+        keywords :first_name, :last_name, :full_name
+        defaults do
+          first_name { 'base_first_name' }
+          last_name { 'base_last_name' }
+        end
+        traits :some_trait
+      end
 
+      class SubModel < BaseModel
+        defaults do
+          first_name { 'sub_first_name' }
+          last_name { 'sub_last_name' }
+        end
+      end
 
+      class NoDefaultModel < BaseModel
+      end
+    end
+  end
 
+  specify "submodel should be able to inherit keywords" do
+    FactoryTest::SubModel.new.first_name.should == 'sub_first_name'
+  end
 
+  specify "submodel should be able to inherit defaults" do
+    FactoryTest::NoDefaultModel.new.first_name.should == 'base_first_name'
+  end
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  specify "submodel should be able to inherit defaults" do
+    FactoryTest::NoDefaultModel.new.full_name.should == 'full_name'
+  end
+end
 
