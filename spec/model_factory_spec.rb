@@ -462,6 +462,10 @@ describe "keywords" do
     a.last_name.should include "Last"
   end
 
+  specify "should be able to list keywords for a model" do
+    FactoryTest::SomeModel.new.keywords.sort.should == [:first_name, :middle_name, :last_name].sort
+  end
+
 end
 
 describe "subclassing" do

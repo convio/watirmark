@@ -75,6 +75,7 @@ module Watirmark
       end
 
       attr_accessor :defaults, :model_name, :models, :parent, :children, :model_type
+      attr_reader   :keywords
 
       def initialize(params={})
         @params     = params
@@ -221,7 +222,7 @@ module Watirmark
       def create_getter_method(key)
         meta_def key do
           value = instance_variable_get("@#{key}")
-          if value
+          if !value.nil?
             value
           else
             if @defaults.key?(key)
