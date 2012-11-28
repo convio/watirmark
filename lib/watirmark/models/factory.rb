@@ -220,24 +220,18 @@ module Watirmark
         end
       end
 
-
       def create_keyword_methods
         @keywords.each do |key|
           create_getter_method key
           create_setter_method key
+          set_default_value key
         end
       end
 
       def create_getter_method(key)
         meta_def key do
-          value = instance_variable_get("@#{key}")
-          value = get_default_value(key) if value.nil?
-          value
+          normalize instance_variable_get("@#{key}")
         end
-      end
-
-      def get_default_value(key)
-        @defaults.key?(key) ? instance_eval(&@defaults[key]) : nil
       end
 
       def create_setter_method(key)
@@ -246,6 +240,13 @@ module Watirmark
         end
       end
 
+      def set_default_value key
+        send("#{key}=", get_default_value(key)) if send(key).nil?
+      end
+
+      def get_default_value(key)
+        @defaults.key?(key) ? @defaults[key] : nil
+      end
 
       def add_debug_overrides
         return unless @model_name && DebugModelValues != {}
