@@ -222,16 +222,13 @@ module Watirmark
       def create_getter_method(key)
         meta_def key do
           value = instance_variable_get("@#{key}")
-          if !value.nil?
-            value
-          else
-            if @defaults.key?(key)
-              instance_eval &@defaults[key]
-            else
-              nil
-            end
-          end
+          value = get_default_value(key) if value.nil?
+          value
         end
+      end
+
+      def get_default_value(key)
+        @defaults.key?(key) ? instance_eval(&@defaults[key]) : nil
       end
 
       def create_setter_method(key)
