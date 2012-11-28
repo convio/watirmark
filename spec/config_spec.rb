@@ -79,11 +79,4 @@ describe "configuration" do
     Watirmark::Configuration.instance.hostname.should == 'www.convio.com/test'
   end
 
-  specify 'bad config file' do
-    lambda {
-      @config.configfile = File.dirname(__FILE__) + '/configurations/config.bad'
-      @config.read_from_file
-    }.should raise_error
-  end
-
 end
