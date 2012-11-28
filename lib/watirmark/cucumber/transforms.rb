@@ -7,15 +7,23 @@ DataModels = {}
 module Watirmark
   module Transforms
     def self.new_model model_name, user_defined_name
-      model_name = "#{model_name.split.map(&:camelize).join}Model"
-      if DataModels.has_key?(user_defined_name)
-        return DataModels[user_defined_name] unless (DataModels[user_defined_name].class.to_s =~ /Class:/)
+      if model_exists?(user_defined_name)
+        DataModels[user_defined_name]
+      else
+        DataModels[user_defined_name] = model_class(model_name).new(:model_name => user_defined_name)
       end
-      # Get the reference to the class
-      model_class = model_name.split('::').inject(Kernel) {|context, x| context.const_get x}
-      model = model_class.new(:model_name => user_defined_name)
-      DataModels[user_defined_name] = model
     end
+
+    private
+
+    def model_exists?(name)
+      DataModels.has_key?(name)
+    end
+
+    def model_class(name)
+      "#{name.split.map(&:camelize).join}Model".split('::').inject(Kernel) {|context, x| context.const_get x}
+    end
+
   end
 end
 
