@@ -97,7 +97,7 @@ class ModelOpenStruct < OpenStruct
   def keys
     self.marshal_dump.keys
   end
-  alias :members :keys
+  alias :keywords :keys
 
   def has_key?(x)
     members.include? x
