@@ -3,21 +3,16 @@ module Watirmark
 
     attr_accessor :records
 
-    def run(*args)
+    def run(*actions)
       begin
-        @records << @model if @records.size == 0
-        before_all if respond_to?(:before_all)
-        @records.each do |record|
-          @model = hash_to_model(record) if Hash === record
-          args.each do |method|
-            before_each if respond_to?(:before_each)
-            self.send(method)
-            after_each if respond_to?(:after_each)
-          end
+        run_callback_method :before_all
+        record_list.each do |record|
+          create_model_if_hash(record)
+          execute_actions(actions)
         end
-        after_all if respond_to?(:after_all)
+        run_callback_method :after_all
       ensure
-        @records = []
+        clear_record_list
       end
     end
 
@@ -149,6 +144,29 @@ module Watirmark
       end
     end
 
+    def record_list
+      @records << @model if records.empty?
+      @records
+    end
 
+    def clear_record_list
+      @records = []
+    end
+
+    def run_callback_method name
+      send name if respond_to?(name)
+    end
+
+    def execute_actions(actions)
+      actions.each do |action|
+        run_callback_method :before_each
+        send(action)
+        run_callback_method :after_each
+      end
+    end
+
+    def create_model_if_hash(model)
+      @model = hash_to_model(model) if model.kind_of?(Hash)
+    end
   end
 end
