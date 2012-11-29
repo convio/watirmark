@@ -100,13 +100,13 @@ class ModelOpenStruct < OpenStruct
   alias :keywords :keys
 
   def has_key?(x)
-    members.include? x
+    keywords.include? x
   end
   alias :key? :has_key?
 
   def to_h
     h = {}
-    members.each { |name| h[name.to_sym] = self.send name}
+    keywords.each { |name| h[name.to_sym] = self.send name}
     h
   end
 
