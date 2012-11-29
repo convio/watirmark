@@ -32,6 +32,11 @@ describe "factory" do
     login.foobar = 'test'
     login.foobar.should == 'test'
   end
+
+  specify 'to_h' do
+    login = FactoryTest::InitializeModel.new(username: 'foo', password: 'bar')
+    login.to_h.should == {:username=>"foo", :password=>"bar"}
+  end
 end
 
 describe "#update" do
