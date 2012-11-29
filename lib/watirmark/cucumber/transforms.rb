@@ -22,7 +22,11 @@ module Watirmark
       end
 
       def model_class(name)
-        "#{name.split.map(&:camelize).join}Model".split('::').inject(Kernel) {|context, x| context.const_get x}
+        model_class_name.split('::').inject(Kernel) {|context, x| context.const_get x}
+      end
+
+      def model_class_name
+        "#{name.split.map(&:camelize).join}Model"
       end
     end
   end
