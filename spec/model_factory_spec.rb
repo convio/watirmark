@@ -51,13 +51,28 @@ describe "#update" do
     login.foobar.should == 'test'
   end
 
+  specify "keywords should not bleed across instances for defined methods" do
+    first = FactoryTest::UpdateModel.new
+    first.username = 'username'
+    first.username.should == 'username'
+    second = FactoryTest::UpdateModel.new
+    second.username.should be_nil
+  end
+
+  specify "keywords should not bleed across instances for auto-created methods" do
+    first = FactoryTest::UpdateModel.new
+    first.update(:foobar=>1)
+    second = FactoryTest::UpdateModel.new
+    second.respond_to?(:foobar).should be_false
+    second.respond_to?(:foobar).should be_false
+  end
+
   specify "model update should remove empty keys" do
-    login = FactoryTest::UpdateModel.new
-    login.respond_to?(:foobar).should be_false
-    login.update(:foobar=>2)
-    login.foobar.should == 2
-    login.foobar = 'test2'
-    login.foobar.should == 'test2'
+    keys = FactoryTest::UpdateModel.new
+    lambda{keys.update(':'=>'') }.should_not raise_error NameError
+    lambda{keys.update(nil=>'') }.should_not raise_error NameError
+    lambda{keys.update('   '=>'') }.should_not raise_error NameError
+    lambda{keys.update('   '.to_sym=>'') }.should_not raise_error NameError
   end
 
 end

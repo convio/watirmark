@@ -163,7 +163,7 @@ module Watirmark
 
       # Update the model using the provided hash
       def update hash
-        hash.delete('')
+        remove_empty_entries hash
         hash.each_pair { |key, value| send "#{key}=", value }
         self
       end
@@ -171,9 +171,14 @@ module Watirmark
 
       # Update the model using the provided hash but only if exists (TODO: may not be needed any more)
       def update_existing_members hash
-        hash.delete('')
+        remove_empty_entries hash
         hash.each_pair { |key, value| send "#{key}=", value if respond_to? "#{key}=".to_sym }
         self
+      end
+
+      def remove_empty_entries hash
+        hash.delete(':')
+        hash.delete_if {|k| k =~ /^\s+$/}
       end
 
       def model_name=(name)
