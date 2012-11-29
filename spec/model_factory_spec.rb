@@ -32,13 +32,32 @@ describe "factory" do
     login.foobar = 'test'
     login.foobar.should == 'test'
   end
+end
+
+describe "#update" do
+  before :all do
+    module FactoryTest
+      class UpdateModel < Watirmark::Model::Factory
+        keywords :username, :password
+      end
+    end
+  end
 
   specify "model update should create methods if not in model" do
-    login = FactoryTest::InitializeModel.new
+    login = FactoryTest::UpdateModel.new
     login.update(:foobar=>1)
     login.foobar.should == 1
     login.foobar = 'test'
     login.foobar.should == 'test'
+  end
+
+  specify "model update should remove empty keys" do
+    login = FactoryTest::UpdateModel.new
+    login.respond_to?(:foobar).should be_false
+    login.update(:foobar=>2)
+    login.foobar.should == 2
+    login.foobar = 'test2'
+    login.foobar.should == 'test2'
   end
 
 end

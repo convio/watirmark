@@ -11,7 +11,8 @@ module Watirmark
 
       class << self
 
-        attr_accessor :search, :model_type_name, :keys, :included_traits, :default
+        attr_accessor :search, :model_type_name, :included_traits
+        attr_writer :default, :keys
 
         def inherited(klass)
           unless self == Factory
@@ -23,6 +24,10 @@ module Watirmark
 
         def default
           @default ||= DefaultValues.new
+        end
+
+        def keys
+          @keys ||= []
         end
 
         def defaults(&block)
@@ -86,9 +91,9 @@ module Watirmark
       end
 
       def set_instance_variables_from_factory_definition
-        @children   = self.class.children.map(&:new)
-        @defaults   = self.class.default
-        @keywords   = self.class.keys || []
+        @children   = self.class.children.dup.map(&:new)
+        @defaults   = self.class.default.dup
+        @keywords   = self.class.keys.dup || []
         @traits     = self.class.included_traits || []
         @search     = self.class.search || Proc.new{nil}
         @model_type = self.class.model_type_name
@@ -100,11 +105,8 @@ module Watirmark
 
       # Act like an OpenStruct so we work backward compatible
       def method_missing(key, *args, &block)
-        strip_equals_from_method_name(key)
-        @keywords << key
-        create_getter_method key
-        create_setter_method key
-        send "#{key}=", nil
+        create_getters_and_setters strip_equals_from_method_name(key)
+        send key, *args
       end
 
       def strip_equals_from_method_name(method)
@@ -227,10 +229,15 @@ module Watirmark
 
       def create_keyword_methods
         @keywords.each do |key|
-          create_getter_method key
-          create_setter_method key
+          create_getters_and_setters key
           set_default_value key
         end
+      end
+
+      def create_getters_and_setters key
+        @keywords << key unless @keywords.include? key #handle call from method_missing
+        create_getter_method key
+        create_setter_method key
       end
 
       def create_getter_method(key)
