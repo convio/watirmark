@@ -33,6 +33,14 @@ describe "factory" do
     login.foobar.should == 'test'
   end
 
+  specify "model update should create methods if not in model" do
+    login = FactoryTest::InitializeModel.new
+    login.update(:foobar=>1)
+    login.foobar.should == 1
+    login.foobar = 'test'
+    login.foobar.should == 'test'
+  end
+
 end
 
 describe "defaults" do

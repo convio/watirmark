@@ -100,10 +100,15 @@ module Watirmark
 
       # Act like an OpenStruct so we work backward compatible
       def method_missing(key, *args, &block)
+        strip_equals_from_method_name(key)
         @keywords << key
         create_getter_method key
         create_setter_method key
         send "#{key}=", nil
+      end
+
+      def strip_equals_from_method_name(method)
+        method.to_s.delete('=').to_sym
       end
 
       # The search_term, used for a controller's search can be defined in this model
