@@ -1,44 +1,37 @@
 require_relative 'cucumber_helper'
 require_relative 'default_values'
 require_relative 'factory_methods'
+require_relative 'factory_method_generators'
 require_relative 'debug_methods'
 
 module Watirmark
   module Model
 
     class Factory
+      extend FactoryMethods
+
       include CucumberHelper
       include DebugMethods
-      extend FactoryMethods
+      include FactoryMethodGenerators
 
       attr_accessor :defaults, :model_name, :models, :parent, :children, :model_type
       attr_reader   :keywords
 
       def initialize(params={})
-        @params     = params
-        set_instance_variables_from_factory_definition
-        extract_model_name_from_params
-        initialize_model_values
-        Watirmark.logger.info inspect
-      end
-
-      def set_instance_variables_from_factory_definition
-        @children   = self.class.children.dup.map(&:new)
-        @defaults   = self.class.default.dup
-        @keywords   = self.class.keys.dup || []
-        @traits     = self.class.included_traits || []
-        @search     = self.class.search || Proc.new{nil}
+        @params = params
         @model_type = self.class.model_type_name
+        @search     = self.class.search || Proc.new{nil}
+        @keywords   = self.class.keys.dup || []
+        @children   = self.class.children.dup.map(&:new)
+        set_model_name
+        set_default_values
+        create_model_getters_and_setters
+        set_initial_values
+        Watirmark.logger.info inspect
       end
 
       def uuid
         @uuid ||= (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
-      end
-
-      # Act like an OpenStruct so we work backward compatible
-      def method_missing(key, *args, &block)
-        create_getters_and_setters strip_equals_from_method_name(key)
-        send key, *args
       end
 
       def strip_equals_from_method_name(method)
@@ -54,7 +47,7 @@ module Watirmark
 
       def add_model(model)
         @children << model
-        create_model_methods
+        create_child_methods
         Watirmark.logger.info "Added Model #{model.inspect} to #{model_name || model_class_name}"
       end
 
@@ -134,17 +127,25 @@ module Watirmark
 
     private
 
-      def extract_model_name_from_params
+      def set_model_name
         if @params[:model_name]
           @model_name = @params[:model_name]
           @params.delete(:model_name)
         end
       end
 
-      def initialize_model_values
-        include_defaults_from_traits @traits
+      def create_model_getters_and_setters
         create_keyword_methods
-        create_model_methods
+        create_child_methods
+      end
+
+      def set_default_values
+        @defaults = self.class.default.dup
+        @traits = self.class.included_traits || []
+        include_defaults_from_traits @traits
+      end
+
+      def set_initial_values
         update @params
         add_debug_overrides
       end
@@ -158,80 +159,10 @@ module Watirmark
         end
       end
 
-      def create_keyword_methods
-        @keywords.each do |key|
-          create_getters_and_setters key
-          set_default_value key
-        end
-      end
-
-      def create_getters_and_setters key
-        @keywords << key unless @keywords.include? key #handle call from method_missing
-        create_getter_method key
-        create_setter_method key
-      end
-
-      def create_getter_method(key)
-        meta_def key do
-          normalize instance_variable_get("@#{key}")
-        end
-      end
-
-      def create_setter_method(key)
-        meta_def "#{key}=" do |value|
-          instance_variable_set "@#{key}", value
-        end
-      end
-
-      def set_default_value key
-        send("#{key}=", get_default_value(key)) if send(key).nil?
-      end
-
-      def get_default_value(key)
-        @defaults.key?(key) ? @defaults[key] : nil
-      end
-
-      # if the value is a proc, evaluate it, otherwise just return
-      def normalize(val)
-        val.kind_of?(Proc) ? instance_eval(&val) : val
-      end
-
-
-      def create_model_methods
-        @children.each do |model|
-          model.parent = self
-          create_model_collection model
-          create_model_method model
-        end
-      end
-
-
       def method_name model
         model.model_class_name.to_s.sub(/Model$/, '').underscore
       end
 
-
-      def collection_name model
-        method_name(model).pluralize
-      end
-
-
-      def create_model_collection model
-        @collection ||= []
-        @collection << model unless @collection.include? model
-        meta_def collection_name(model).pluralize do
-          @collection
-        end
-      end
-
-
-      def create_model_method model
-        unless respond_to? method_name(model)
-          meta_def method_name(model) do
-            model
-          end
-        end
-      end
     end
   end
 end
