@@ -1,6 +1,9 @@
 module Watirmark
   module Model
     class DefaultValues < Hash
+
+      # This is a workaround for zip being defined in Enumerable and
+      # we want to use zip in the model as a zip code
       undef :zip
 
       # This works around an issue that gets hit when
