@@ -18,14 +18,14 @@ module Watirmark
       private
 
       def model_exists?(name)
-        DataModels.has_key?(name)
+        DataModels.key?(name)
       end
 
       def model_class(name)
-        model_class_name.split('::').inject(Kernel) {|context, x| context.const_get x}
+        model_class_name(name).split('::').inject(Kernel) {|context, x| context.const_get x}
       end
 
-      def model_class_name
+      def model_class_name(name)
         "#{name.split.map(&:camelize).join}Model"
       end
 
