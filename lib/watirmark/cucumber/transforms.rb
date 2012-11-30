@@ -8,7 +8,7 @@ module Watirmark
   module Transforms
     class << self
       def new_model model_name, user_defined_name
-        if model_exists?(user_defined_name)
+        if model_exists?(user_defined_name) && !temporary_model?(user_defined_name)
           DataModels[user_defined_name]
         else
           DataModels[user_defined_name] = model_class(model_name).new(:model_name => user_defined_name)
@@ -28,6 +28,10 @@ module Watirmark
       def model_class_name
         "#{name.split.map(&:camelize).join}Model"
       end
+
+      def temporary_model?(user_defined_name)
+        DataModels[user_defined_name].kind_of?(ModelOpenStruct)
+      end
     end
   end
 end
@@ -46,6 +50,6 @@ end
 
 # Return the models from the collection of existing models
 MODEL = Transform /^\[(\S+)\]$/ do |model_name|
-  DataModels[model_name] ||= Struct.new(:model_name).new(model_name)
+  DataModels[model_name] ||= ModelOpenStruct.new(:model_name => model_name)
 end
 
