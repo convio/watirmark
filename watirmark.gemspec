@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version = version
   s.authors = [%q{Hugh McGowan}]
   s.email = %q{hmcgowan@convio.com}
-  s.description = %q{Watirmark is Convio's test framework}
+  s.description = %q{Watirmark is an MVC test framework for watir-webdriver}
   s.homepage = %q{http://github.com/convio/watirmark}
   s.summary = %Q{watirmark #{version}}
   s.files = Dir['lib/**/*.rb', 'app_generators/**/*', 'bin/**/*']
