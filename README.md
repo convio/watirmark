@@ -8,7 +8,7 @@ An MVC test framework for watir-webdriver.
 [![Code Climate](https://codeclimate.com/badge.png)](https://codeclimate.com/github/convio/watirmark)
 
 Getting Started
-================
+---
 
 Starting with watirmark is easy. We've taken advantage of code generators to give you a head start and create most of the scaffolding that we've found useful in developing tests against our own websites.
 
@@ -20,13 +20,13 @@ watirmark PROJECT_NAME
 Running the 'watirmark' command will create a small project in the current directory. You can then make sure you're set up properly by running the generated cucumber test in /features that navigates to the home page of your application.
 
 Documentation
-=============
+---
 
 Visit the home page at <a href="http://convio.github.com/watirmark/">http://convio.github.com/watirmark/</a>
 
 
 Copyright
-=========
+---
 Copyright (c) 2012-2013 Hugh McGowan and Bret Pettichord. See LICENSE for details.
 
 
