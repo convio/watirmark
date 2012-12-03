@@ -22,7 +22,9 @@ Running the 'watirmark' command will create a small project in the current direc
 Documentation
 ---
 
-Visit the home page at <a href="http://convio.github.com/watirmark/">http://convio.github.com/watirmark/</a>
+Home Page: <a href="http://convio.github.com/watirmark/">http://convio.github.com/watirmark/</a>
+
+Wiki: <a href="https://github.com/convio/watirmark/wiki">https://github.com/convio/watirmark/wiki</a>
 
 
 Copyright
