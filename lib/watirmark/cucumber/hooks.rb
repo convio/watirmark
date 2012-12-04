@@ -1,16 +1,21 @@
+require_relative "hook_helper"
+
 Around('@catch-post-failure') do |scenario, block|
-  Watirmark::Session.instance.catch_post_failures(&block)
+  HookHelper.trap_post_errors(&block)
 end
 
-# Initialize post failures so we don't get leakage between scenarios
 Before('~@catch-post-failure') do
-  Watirmark::Session.instance.post_failure = nil
+  HookHelper.clear_post_errors
+end
+
+Before do |scenario|
+  HookHelper.serialize_models
 end
 
 After do |scenario|
-  image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
-  path = "reports/screenshots"
-  FileUtils.mkdir_p path unless File.directory? path
-  Page.browser.screenshot.save "#{path}/#{image}"
-  embed "screenshots/#{image}", 'image/png'
+  (file, file_type) = HookHelper.take_screenshot
+  embed file, file_type
+  HookHelper.serialize_models
 end
+
+

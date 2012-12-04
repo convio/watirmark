@@ -17,6 +17,16 @@ module Watirmark
       attr_accessor :defaults, :model_name, :models, :parent, :children, :model_type
       attr_reader   :keywords
 
+      def marshal_dump
+        [@keywords, @model_name, @models, @parent, @children, @model_type, self.to_h]
+      end
+
+      def marshal_load(obj)
+        keyword_values = obj.pop
+        @keywords, @model_name, @models, @parent, @children, @model_type = obj
+        update keyword_values
+      end
+
       def initialize(params={})
         @params = params
         @model_type = self.class.model_type_name
