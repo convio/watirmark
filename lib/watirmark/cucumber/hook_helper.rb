@@ -19,6 +19,7 @@ module HookHelper
     end
 
     def serialize_models
+      return unless Watirmark::Configuration.instance.use_cached_models
       Dir.mkdir("cache") unless Dir.exists? "cache"
       File.unlink "cache/DataModels" if File.exists? "cache/DataModels"
       File.open("cache/DataModels", "w") {|f| f.print Marshal::dump(DataModels)}

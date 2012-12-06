@@ -9,7 +9,7 @@ Before('~@catch-post-failure') do
 end
 
 Before do |scenario|
-  HookHelper.serialize_models if Watirmark::Configuration.instance.use_cached_models
+  HookHelper.serialize_models
 end
 
 After do |scenario|
