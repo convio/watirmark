@@ -66,6 +66,15 @@ module Watirmark
         profile['browser.download.folderList'] = 2 # custom location
         profile['browser.download.dir'] = download_directory
         profile['browser.helperApps.neverAsk.saveToDisk'] = "text/csv,application/pdf"
+        profile['security.warn_entering_secure'] =  false
+        profile['security.warn_submit_insecure'] = false
+        profile['security.warn_entering_secure.show_once'] = false
+        profile['security.warn_entering_weak'] =  false
+        profile['security.warn_entering_weak.show_once'] =  false
+        profile['security.warn_leaving_secure'] =  false
+        profile['security.warn_leaving_secure.show_once'] =  false
+        profile['security.warn_viewing_mixed'] =  false
+        profile['security.warn_viewing_mixed.show_once'] =  false
       end
       profile
     end
