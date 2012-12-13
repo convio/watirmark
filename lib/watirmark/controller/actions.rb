@@ -7,7 +7,7 @@ module Watirmark
       begin
         run_callback_method :before_all
         record_list.each do |record|
-          create_model_if_hash(record)
+          create_model(record)
           execute_actions(actions)
         end
         run_callback_method :after_all
@@ -165,8 +165,12 @@ module Watirmark
       end
     end
 
-    def create_model_if_hash(model)
-      @model = hash_to_model(model) if model.kind_of?(Hash)
+    def create_model(record)
+      if record.kind_of?(Hash)
+        @model = hash_to_model(record)
+      else
+        @model = record
+      end
     end
   end
 end

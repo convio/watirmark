@@ -88,4 +88,22 @@ describe Watirmark::Actions do
     controller.records.should == []
   end
 
+  it 'records can be assigned models' do
+    controller = ActionController.new
+    controller.records << ModelOpenStruct.new(:a => 1, :b => 2)
+    controller.run :create
+    controller.model.a.should == 1
+    controller.model.b.should == 2
+  end
+
+  it 'records should be processed separately when models are given' do
+    controller = ActionController.new
+    controller.records << ModelOpenStruct.new(:a => 1, :b => 2)
+    controller.records << ModelOpenStruct.new(:c => 3, :d => 4)
+    controller.run :create
+    controller.model.a.should == nil
+    controller.model.b.should == nil
+    controller.model.c.should == 3
+    controller.model.d.should == 4
+  end
 end
