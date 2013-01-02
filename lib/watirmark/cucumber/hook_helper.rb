@@ -5,7 +5,7 @@ module HookHelper
       Watirmark::Session.instance.post_failure = nil
     end
 
-    def trap_post_errors(block)
+    def trap_post_errors(&block)
       Watirmark::Session.instance.catch_post_failures(&block)
     end
 
