@@ -105,7 +105,11 @@ module Watirmark
       end
 
       def focus_browser
-        Page.browser.element.click
+        begin
+          Page.browser.element.click
+        rescue Selenium::WebDriver::Error::MoveTargetOutOfBoundsError
+          focus_browser
+        end
       end
     end
 
