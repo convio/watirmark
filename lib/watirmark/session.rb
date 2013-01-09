@@ -4,6 +4,7 @@ module Watirmark
   # post failures and then compare on a cucumber step
   module CucumberPostFailureBuffering
     @@buffer_post_failure = false
+    @@post_failure = nil
 
     def post_failure
       @@post_failure
