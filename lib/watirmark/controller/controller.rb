@@ -69,10 +69,10 @@ module Watirmark
 
       def populate_keyword(keyed_element)
         begin
-          @seen_value = true
           before_keyword(keyed_element)
           populate_keyword_value(keyed_element)
           after_keyword(keyed_element)
+          @seen_value = true
         rescue => e
           Watirmark.logger.warn "Unable to populate '#{keyed_element.keyword}'"
           raise e
@@ -122,7 +122,11 @@ module Watirmark
       end
 
       def populate_keyword_value(keyed_element)
-        call_method_if_exists("populate_#{keyed_element.keyword}") {@view.send("#{keyed_element.keyword}=", value(keyed_element))}
+        call_method_if_exists("populate_#{keyed_element.keyword}") do
+          # for the first element on a page we populate, wait for it to appear
+          @view.send(keyed_element.keyword).send(:wait_until_present) unless @seen_value
+          @view.send("#{keyed_element.keyword}=", value(keyed_element))
+        end
       end
 
       def verify_keyword_value(keyed_element)
