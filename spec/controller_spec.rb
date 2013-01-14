@@ -3,13 +3,14 @@ require_relative 'spec_helper'
 describe Watirmark::WebPage::Controller do
 
   class TestView < Page
-    keyword(:text_field)  {browser.text_field(:name, 'text_field')}
-    keyword(:select_list) {browser.select_list(:name, 'select_list')}
-    keyword(:another_text_field)   {browser.text_field(:id, 'validate1')}
+    keyword(:text_field) { browser.text_field(:name, 'text_field') }
+    keyword(:select_list) { browser.select_list(:name, 'select_list') }
+    keyword(:another_text_field) { browser.text_field(:id, 'validate1') }
   end
 
   class TestController < Watirmark::WebPage::Controller
     @view = TestView
+
     def initialize(*args)
       super
       @model.text_field = 'foobar'
@@ -17,49 +18,57 @@ describe Watirmark::WebPage::Controller do
   end
 
   class VerifyView < Page
-    keyword(:validate1)   {browser.text_field(:id, 'validate1')}
-    keyword(:validate2)   {browser.text_field(:id, 'validate2')}
-    keyword(:validate3)   {browser.text_field(:id, 'validate3')}
-    keyword(:validate4)   {browser.select_list(:id, 'validate3')}
-    keyword(:checkbox)    {browser.checkbox(:id, 'checkbox')}
+    keyword(:validate1) { browser.text_field(:id, 'validate1') }
+    keyword(:validate2) { browser.text_field(:id, 'validate2') }
+    keyword(:validate3) { browser.text_field(:id, 'validate3') }
+    keyword(:validate4) { browser.select_list(:id, 'validate3') }
+    keyword(:checkbox) { browser.checkbox(:id, 'checkbox') }
 
-    verify_keyword(:label1)      {browser.td(:id, 'label1')}
-    verify_keyword(:value1)      {browser.td(:id, 'value1')}
-    populate_keyword(:populate1) {browser.text_field(:id, 'validate4')}
-    populate_keyword(:populate2) {browser.td(:id, 'value1')}
+    verify_keyword(:label1) { browser.td(:id, 'label1') }
+    verify_keyword(:value1) { browser.td(:id, 'value1') }
+    populate_keyword(:populate1) { browser.text_field(:id, 'validate4') }
+    populate_keyword(:populate2) { browser.td(:id, 'value1') }
 
-    private_keyword(:private_validate1)  {browser.text_field(:id, 'validate1')}
-    navigation_keyword(:click_submit)    {browser.button(:id, 'Submit').click}
+    private_keyword(:private_validate1) { browser.text_field(:id, 'validate1') }
+    navigation_keyword(:click_submit) { browser.button(:id, 'Submit').click }
   end
 
   class VerifyController < Watirmark::WebPage::Controller
-      @view = VerifyView
+    @view = VerifyView
   end
 
-  class TestControllerSubclass < TestController; end
+  class TestControllerSubclass < TestController;
+  end
 
   class Element
     attr_accessor :value
+
     def initialize(x)
       @value = x
+    end
+
+    # stub this out because we're not actually
+    # using a real HTML page for these tests
+    def wait_until_present
+      self
     end
   end
 
   class ProcessPageControllerView < Page
 
-    keyword(:a) {Element.new :a}
+    keyword(:a) { Element.new :a }
     process_page('Page 1') do
-      keyword(:b) {Element.new :b}
+      keyword(:b) { Element.new :b }
     end
     process_page('Page 2') do
-      keyword(:c) {Element.new :c}
-      keyword(:d) {Element.new :d}
+      keyword(:c) { Element.new :c }
+      keyword(:d) { Element.new :d }
     end
-    keyword(:e) {method :e}
+    keyword(:e) { method :e }
     keyword(:radio_map,
-      ['M'] => 'male',
-      [/f/i] => 'female'
-    )                {Page.browser.radio(:name, 'sex')}
+            ['M'] => 'male',
+            [/f/i] => 'female'
+    ) { Page.browser.radio(:name, 'sex') }
   end
 
   class TestProcessPageController < Watirmark::WebPage::Controller
@@ -81,7 +90,7 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should supportradio maps in controllers' do
-    lambda{
+    lambda {
       TestProcessPageController.new(:radio_map => 'f').populate_data
     }.should_not raise_error
   end
@@ -89,7 +98,7 @@ describe Watirmark::WebPage::Controller do
   it 'should be able to create and use a new keyword' do
     @keyword.should == :text_field
     TestView.new.send("#{@keyword}=", 'test')
-    lambda{ @controller.check(@keyword, 'test')}.should_not raise_error(Watirmark::VerificationException)
+    lambda { @controller.check(@keyword, 'test') }.should_not raise_error(Watirmark::VerificationException)
   end
 
   it 'should be able to populate' do
@@ -99,8 +108,8 @@ describe Watirmark::WebPage::Controller do
       end
     end
     ControllerTest::PopulateController.new(
-        :text_field=>'test',
-        :select_list=>'b',
+        :text_field => 'test',
+        :select_list => 'b',
         :another_text_field => 'nil'
     ).populate_data
     v = TestView.new
@@ -123,14 +132,23 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should support override method for verification' do
-    def @controller.verify_text_field; 'verify';  end
+    def @controller.verify_text_field;
+      'verify';
+    end
+
     @controller.expects(:verify_text_field).returns('verify').once
     @controller.verify_data
   end
 
   it 'should support keyword before and after methods' do
-    def @controller.before_text_field; 'before'; end
-    def @controller.after_text_field; 'after';  end
+    def @controller.before_text_field;
+      'before';
+    end
+
+    def @controller.after_text_field;
+      'after';
+    end
+
     @controller.expects(:before_text_field).returns('before').once
     @controller.expects(:after_text_field).returns('after').once
     @controller.populate_data {}
@@ -141,8 +159,12 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should support before methods for process pages' do
-    c = TestProcessPageController.new({:a=>1, :b=>1, :c=>1, :d=>1})
-    def c.before_process_page_page_1; true; end
+    c = TestProcessPageController.new({:a => 1, :b => 1, :c => 1, :d => 1})
+
+    def c.before_process_page_page_1;
+      true;
+    end
+
     c.expects(:before_process_page_page_1).returns('true').once
     c.populate_data
   end
@@ -150,7 +172,7 @@ describe Watirmark::WebPage::Controller do
   it 'should throw a Watirmark::VerificationException when a verification fails' do
     lambda {
       VerifyController.new(:validate1 => '2').verify_data
-    }.should raise_error(Watirmark::VerificationException,"validate1: expected '2' (String) got '1' (String)")
+    }.should raise_error(Watirmark::VerificationException, "validate1: expected '2' (String) got '1' (String)")
   end
 
   it 'should not throw an exception when a verification succeeds' do
@@ -158,19 +180,19 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should not throw an exception when many verifications succeed' do
-    VerifyController.new(:validate1 => '1',:validate2 => 'a',:validate3 => 1.1).verify_data
+    VerifyController.new(:validate1 => '1', :validate2 => 'a', :validate3 => 1.1).verify_data
   end
 
   it 'should only throw one validation exception when there are 3 three problems' do
     lambda {
-    VerifyController.new(:validate1 => 'z',:validate2 => 'y',:validate3 => 'x').verify_data
+      VerifyController.new(:validate1 => 'z', :validate2 => 'y', :validate3 => 'x').verify_data
     }.should raise_error(Watirmark::VerificationException)
   end
 
   it 'should throw an exception when verifying a verify_keyword fails' do
     lambda {
       VerifyController.new(:label1 => 'text').verify_data
-    }.should raise_error(Watirmark::VerificationException,"label1: expected 'text' (String) got 'numbers' (String)")
+    }.should raise_error(Watirmark::VerificationException, "label1: expected 'text' (String) got 'numbers' (String)")
   end
 
   it 'should not throw an exception when verifying a verify_keyword succeeds' do
@@ -235,7 +257,7 @@ end
 describe "controllers should be able to detect and use embedded models" do
   before :all do
     class MyView < Page
-      keyword(:element) {@@element}
+      keyword(:element) { @@element }
     end
     @controller = Class.new Watirmark::WebPage::Controller do
       @view = MyView
@@ -254,7 +276,7 @@ describe "controllers should be able to detect and use embedded models" do
     @password = Password.new
     @login = Login.new
     @login.add_model @password
-    @model = User.new(:first_name=> 'first')
+    @model = User.new(:first_name => 'first')
     @model.add_model @login
   end
 
@@ -297,9 +319,9 @@ describe "Similar Models" do
   before :all do
     class ProcessPageControllerView < Page
 
-      keyword(:a) {Element.new :a}
+      keyword(:a) { Element.new :a }
       process_page('Page 1') do
-        keyword(:b) {Element.new :b}
+        keyword(:b) { Element.new :b }
       end
       process_page('Page 2') do
         keyword(:c) { Element.new :c }
