@@ -82,7 +82,6 @@ module Watirmark
       def take_screen_shot(snapshotwidth)
         update_window_size(snapshotwidth)
         @filename = "reports/screenshots/#{UUID.new.generate(:compact)}.png"
-        focus_browser
         Page.browser.screenshot.save @filename
       end
 
@@ -102,14 +101,6 @@ module Watirmark
 
       def revert_window_size
         Page.browser.window.resize_to(@screenwidth, @screenheight)
-      end
-
-      def focus_browser
-        begin
-          Page.browser.element.click
-        rescue Selenium::WebDriver::Error::MoveTargetOutOfBoundsError
-          focus_browser
-        end
       end
     end
 
