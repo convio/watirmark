@@ -1,11 +1,3 @@
-if RUBY_VERSION != "1.9.3"
-  warn "
-************************************************************************
-Using unsupported Ruby version #{RUBY_VERSION}. Please upgrade to 1.9.3
-************************************************************************
-"
-end
-
 require 'watirmark/configuration'
 Watirmark::Configuration.instance.reload
 
