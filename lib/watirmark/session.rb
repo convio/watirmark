@@ -54,6 +54,15 @@ module Watirmark
     end
 
     def default_firefox_profile
+      file_types = "text/comma-separated-values,text/csv,application/pdf, application/x-msdos-program, application/x-unknown-application-octet-stream,
+              application/vnd.ms-powerpoint, application/excel, application/vnd.ms-publisher, application/x-unknown-message-rfc822, application/vnd.ms-excel,
+              application/msword, application/x-mspublisher, application/x-tar, application/zip, application/x-gzip, application/x-stuffit,
+              application/vnd.ms-works, application/powerpoint, application/rtf, application/postscript, application/x-gtar,
+              video/quicktime, video/x-msvideo, video/mpeg, audio/x-wav, audio/x-midi, audio/x-aiff, text/plain, application/vnd.ms-excel [official],
+              application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/msexcel, application/x-msexcel,
+              application/x-excel, application/vnd.ms-excel, application/excel, application/x-ms-excel, application/x-dos_ms_excel,
+              text/csv, text/comma-separated-values, application/octet-stream, application/haansoftxls, application/msexcell,
+              application/softgrid-xls, application/vnd.ms-excel, x-softmaker-pm"
       if Configuration.instance.default_firefox_profile
         Watirmark.logger.info "Using firefox profile: #{Configuration.instance.default_firefox_profile}"
         profile = Selenium::WebDriver::Firefox::Profile.from_name Configuration.instance.default_firefox_profile
@@ -66,7 +75,7 @@ module Watirmark
         download_directory.gsub!("/", "\\") if Selenium::WebDriver::Platform.windows?
         profile['browser.download.folderList'] = 2 # custom location
         profile['browser.download.dir'] = download_directory
-        profile['browser.helperApps.neverAsk.saveToDisk'] = "text/csv,application/pdf"
+        profile['browser.helperApps.neverAsk.saveToDisk'] = file_types
         profile['security.warn_entering_secure'] =  false
         profile['security.warn_submit_insecure'] = false
         profile['security.warn_entering_secure.show_once'] = false
