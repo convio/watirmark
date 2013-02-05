@@ -21,5 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency("nokogiri")
   s.add_dependency("rubigen")
   s.add_dependency("activesupport")
+  s.add_dependency("i18n")
 end
 
