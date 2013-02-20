@@ -1,5 +1,5 @@
-$:.unshift File.expand_path("../lib", __FILE__)
-require "watirmark/version"
+$:.unshift File.expand_path('../lib', __FILE__)
+require 'watirmark/version'
 
 Gem::Specification.new do |s|
   s.name = %q{watirmark}
@@ -12,15 +12,16 @@ Gem::Specification.new do |s|
   s.summary = %Q{watirmark #{version}}
   s.files = Dir['lib/**/*.rb', 'app_generators/**/*', 'bin/**/*']
   s.test_files =  Dir['spec/**/*.rb']
-  s.executables = "watirmark"
+  s.executables = 'watirmark'
   s.require_paths = %w(lib)
-  s.add_dependency("watir-webdriver")
-  s.add_dependency("american_date")
-  s.add_dependency("logger")
-  s.add_dependency("uuid")
-  s.add_dependency("nokogiri")
-  s.add_dependency("rubigen")
-  s.add_dependency("activesupport")
-  s.add_dependency("i18n")
+  s.add_dependency('watir-webdriver', '>= 0.6.1')
+  s.add_dependency('selenium-webdriver', '~> 2.30.0')
+  s.add_dependency('american_date', '~> 1.0')
+  s.add_dependency('logger', '~> 1.2.8')
+  s.add_dependency('uuid', '~> 2.3.6')
+  s.add_dependency('nokogiri', '~> 1.5.6')
+  s.add_dependency('rubigen' '~> 1.5.8')
+  s.add_dependency('activesupport', '~> 3.1.11')
+  s.add_dependency('i18n', '~> 0.6.1')
 end
 
