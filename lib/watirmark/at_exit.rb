@@ -6,7 +6,7 @@ module Watirmark
       else
         code = $!.is_a?(SystemExit) ? $!.status : 1
       end
-      block.call
+      block.call if block
       exit code
     }
   end
