@@ -1,5 +1,6 @@
 require 'singleton'
 require 'logger'
+require 'yaml'
 
 module Watirmark
 
