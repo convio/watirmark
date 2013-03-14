@@ -15,4 +15,5 @@ require 'uuid'
 require 'watirmark/model'
 require 'watirmark/rake/smoketest'
 require 'active_support/inflector'
+require 'watirmark/screenshot'
 FileUtils.rm_rf('reports/screenshots')
