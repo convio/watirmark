@@ -1,9 +1,9 @@
 source "https://rubygems.org"
-source "http://gemserver.qa.convioanalyticstest.net:8808"
 
 gemspec
 
 group :development do
+  gem 'watir-webdriver'
   gem 'rdoc'
   gem 'rspec'
   gem 'rake', '0.9.2.2'
