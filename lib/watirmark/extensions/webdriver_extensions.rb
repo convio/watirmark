@@ -136,9 +136,11 @@ module Watir
   end
 
   class Element
-    alias :prev_sibling :previous_sibling
-    alias :prevsibling :previous_sibling
-    alias :nextsibling :next_sibling
+    if respond_to? :previous_sibling  #convio-specific feature
+      alias :prev_sibling :previous_sibling
+      alias :prevsibling :previous_sibling
+      alias :nextsibling :next_sibling
+    end
 
     def click_if_exists
       click if exists?
