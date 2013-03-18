@@ -1,4 +1,5 @@
 source "https://rubygems.org"
+source "http://gemserver.qa.convioanalyticstest.net:8808"
 
 gemspec
 

@@ -14,6 +14,7 @@ PATH
 
 GEM
   remote: https://rubygems.org/
+  remote: http://gemserver.qa.convioanalyticstest.net:8808/
   specs:
     activesupport (3.1.12)
       multi_json (~> 1.0)
