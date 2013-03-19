@@ -136,10 +136,12 @@ module Watir
   end
 
   class Element
-    if respond_to? :previous_sibling  #convio-specific feature
+    begin
       alias :prev_sibling :previous_sibling
       alias :prevsibling :previous_sibling
       alias :nextsibling :next_sibling
+    rescue NameError
+      # not using convio-specific webdriver. Ignore and continue
     end
 
     def click_if_exists
