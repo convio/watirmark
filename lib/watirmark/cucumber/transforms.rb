@@ -26,7 +26,9 @@ module Watirmark
       end
 
       def model_class_name(name)
-        "#{name.split.map(&:camelize).join}Model"
+        class_name = name.split.map(&:camelize).join
+        class_name = "#{class_name}Model" unless class_name =~ /.+Model$/
+        class_name
       end
 
       def temporary_model?(user_defined_name)
