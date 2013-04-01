@@ -4,7 +4,7 @@ module SmokeTest
     def rspec_task(task_name, files, tag=:smoke)
       Dir.mkdir("reports") unless Dir.exists?("reports")
       RSpec::Core::RakeTask.new(task_name) do |spec|
-        spec.rspec_opts = "--tag #{tag} --tag ~bug -fd -fh --out spec/reports/#{spec.name}.html --backtrace"
+        spec.rspec_opts = "--tag #{tag} --tag ~bug -fd -fh --out reports/#{spec.name}.html --backtrace"
         spec.pattern = files
       end
     end
