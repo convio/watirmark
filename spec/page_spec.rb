@@ -22,12 +22,20 @@ describe 'Page' do
     class Page5 < Page1
       keyword(:i) { "i" }
     end
+    class Page6 < Page
+
+    end
 
     @page1 = Page1.new
     @page2 = Page2.new
     @page3 = Page3.new
     @page4 = Page4.new
     @page5 = Page5.new
+    @page6 = Page6.new
+  end
+
+  it "should handle empty keywords gracefully" do
+    @page6.keywords.should == []
   end
 
   it "should list its keywords" do
@@ -109,14 +117,14 @@ describe "keyword metadata inheritance" do
 
   it 'should allow child to override superclass' do
     child = Child.new
-    child.keywords.sort_by{|k| k.to_s}.should == [:a, :b, :c, :same]
+    child.keywords.sort_by { |k| k.to_s }.should == [:a, :b, :c, :same]
     child.a.should == "a"
     child.same.should == 'c1-child'
   end
 
   it 'should not bleed settings between children' do
     child2 = Child2.new
-    child2.keywords.sort_by{|k| k.to_s}.should == [:a, :b, :g, :same]
+    child2.keywords.sort_by { |k| k.to_s }.should == [:a, :b, :g, :same]
     child2.g.should == 'g'
     child2.same.should == 'c1'
   end

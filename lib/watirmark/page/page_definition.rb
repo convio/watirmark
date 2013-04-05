@@ -33,7 +33,7 @@ module Watirmark
       @process_page_active_page_method = proc
     end
 
-  private
+    private
 
     def add_superclass_process_pages_to_subclass(klass)
       klass.process_pages = (@process_pages ? @process_pages.dup : klass.process_pages = [])
@@ -73,7 +73,6 @@ module Watirmark
   end
 
 
-
   module PageDefinition
     include ProcessPageDefinition
     attr_accessor :kwds, :perms, :kwd_metadata
@@ -102,6 +101,7 @@ module Watirmark
     def private_keyword(name, map=nil, &block)
       create_new_keyword(name, map, &block)
     end
+
     alias :navigation_keyword :private_keyword
 
     # Create an alias to an existing keyword
@@ -119,14 +119,16 @@ module Watirmark
     end
 
     def browser_exists?
-      !! @@browser
+      !!@@browser
     end
 
     def keywords
+      @kwds ||= Hash.new { |h, k| h[k] = Array.new }
       @kwds.values.flatten.uniq.sort_by { |key| key.to_s }
     end
 
     def native_keywords
+      @kwds ||= Hash.new { |h, k| h[k] = Array.new }
       @kwds[self.to_s].sort_by { |key| key.to_s }
     end
 
@@ -135,7 +137,7 @@ module Watirmark
       @kwd_metadata.values.inject(:merge)
     end
 
-  private
+    private
     def nested_hash
       Hash.new { |h, k| h[k] = Hash.new { |h, k| h[k]=Hash.new } }
     end
