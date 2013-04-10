@@ -25,7 +25,7 @@ module Watirmark
 
       def insert_model(text)
         result = text
-        regexp = /\[([^\]]+)\]\.(\w+)/
+        regexp = /\[([^\[\]]+)\]\.(\w+)/
         while result =~ regexp #get value from models
           model_name = $1
           method     = $2
