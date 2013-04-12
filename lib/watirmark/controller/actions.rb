@@ -26,6 +26,14 @@ module Watirmark
       end
     end
 
+    def populate_data_overridden?
+      self.class.instance_method(:populate_data).owner == self.class
+    end
+
+    def check_for_noop_populate
+      raise Watirmark::TestError, "Expected to populate values but none were provided" unless @seen_value || populate_data_overridden?
+    end
+
     # Navigate to the View's edit page and for every value in
     # the models hash, verify that the html element has
     # the proper value for each keyword
@@ -41,6 +49,7 @@ module Watirmark
       search_for_record
       @view.edit @model
       populate_data
+      check_for_noop_populate
     end
 
     # Navigate to the View's create page and
@@ -48,7 +57,9 @@ module Watirmark
     def create
       @view.create @model
       populate_data
+      check_for_noop_populate
     end
+
 
     def verify_until(&block)
       run_with_stop_condition(:verify, block)
@@ -115,6 +126,7 @@ module Watirmark
       @view.create @model
       verify_data
     end
+
     alias :check_create_defaults :check_defaults
 
 
@@ -125,10 +137,17 @@ module Watirmark
     end
 
     # Stubs so converted XLS->RSPEC files don't fail
-    def before_all; end
-    def before_each; end
-    def after_all; end
-    def after_each; end
+    def before_all;
+    end
+
+    def before_each;
+    end
+
+    def after_all;
+    end
+
+    def after_each;
+    end
 
     private
 
@@ -138,7 +157,7 @@ module Watirmark
           Watirmark::Session.instance.stop_condition_block = block
           send(method)
         ensure
-          Watirmark::Session.instance.stop_condition_block = Proc.new{}
+          Watirmark::Session.instance.stop_condition_block = Proc.new {}
         end
         raise Watirmark::TestError, "Expected a stop condition but no stop conditon met!"
       end

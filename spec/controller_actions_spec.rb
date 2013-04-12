@@ -32,8 +32,8 @@ describe Watirmark::Actions do
     class ActionModel < Watirmark::Model::Factory
       keywords :a, :b
       defaults do
-        a {1}
-        b {2}
+        a { 1 }
+        b { 2 }
       end
     end
   end
@@ -69,8 +69,8 @@ describe Watirmark::Actions do
 
   it 'records should be processed separately' do
     controller = ActionController.new
-    controller.records << {a:1, b:2}
-    controller.records << {c:3, d:4}
+    controller.records << {a: 1, b: 2}
+    controller.records << {c: 3, d: 4}
     controller.expects(:before_all).once
     controller.expects(:after_all).once
     controller.expects(:before_each).twice
@@ -81,9 +81,9 @@ describe Watirmark::Actions do
   it 'records should be cleared after run' do
     controller = ActionController.new
     controller.records.should == []
-    controller.records << {a:1, b:2}
-    controller.records << {c:3, d:4}
-    controller.records.should == [{a:1, b:2}, {c:3, d:4}]
+    controller.records << {a: 1, b: 2}
+    controller.records << {c: 3, d: 4}
+    controller.records.should == [{a: 1, b: 2}, {c: 3, d: 4}]
     controller.run :create
     controller.records.should == []
   end
@@ -105,5 +105,43 @@ describe Watirmark::Actions do
     controller.model.b.should == nil
     controller.model.c.should == 3
     controller.model.d.should == 4
+  end
+
+  class Element
+    attr_accessor :value
+
+    def wait_until_present
+      true
+    end
+  end
+
+  class ActionCreateView < Page
+    keyword(:a) { Element.new }
+    keyword(:b) { Element.new }
+
+    def create(*args)
+    end
+
+  end
+
+  class ActionCreateController < Watirmark::WebPage::Controller
+    @view = ActionCreateView
+  end
+
+  class ActionCreateControllerWithOverride < ActionCreateController
+    def populate_data
+    end
+  end
+
+  it 'should not throw an exception if anything is populated' do
+    lambda { ActionCreateController.new(:a => 1).create }.should_not raise_error Watirmark::TestError
+  end
+
+  it 'should throw an exception if nothing is populated' do
+    lambda { ActionCreateController.new.create }.should raise_error Watirmark::TestError
+  end
+
+  it 'should not throw an exception if populate_data is overridden' do
+    lambda { ActionCreateControllerWithOverride.new.create }.should_not raise_error Watirmark::TestError
   end
 end
