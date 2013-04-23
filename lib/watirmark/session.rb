@@ -104,7 +104,7 @@ module Watirmark
     def closebrowser
       begin
         Page.browser.close
-      rescue Errno::ECONNREFUSED
+      rescue Errno::ECONNREFUSED, Selenium::WebDriver::Error::WebDriverError
         # browser already closed or unavailable
       ensure
         Page.browser = nil
