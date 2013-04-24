@@ -18,10 +18,10 @@ module Watirmark
       @@buffer_post_failure
     end
 
-    def catch_post_failures(&block)
+    def catch_post_failures
       @@post_failure = nil
       @@buffer_post_failure = true
-      block.call
+      yield
       @@buffer_post_failure = false
       @@post_failure
     end

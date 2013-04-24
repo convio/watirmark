@@ -97,11 +97,11 @@ module Watirmark
         @seen_value = false
       end
 
-      def call_method_if_exists(override, &block)
+      def call_method_if_exists(override)
         if respond_to?(override)
           send(override)
         else
-          block.call if block
+          yield if block_given?
         end
       end
 

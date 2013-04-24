@@ -1,13 +1,13 @@
 require 'ruby-prof'
 
 class Profiler
-  def self.profile(options={}, &block)
+  def self.profile(options={})
     RubyProf.start
     beginning = Time.now
     puts '-----------------------'
     puts options[:name]
     puts '-----------------------'
-    block.call
+    yield
     result = RubyProf.stop
     result.eliminate_methods!([/IO/, /Net::/, /Global/])
     printer = RubyProf::FlatPrinter.new(result)

@@ -9,20 +9,20 @@ module ModelHelper
     model.update(hash_record(table))
   end
 
-  def with_updated_model(model, table, &block)
+  def with_updated_model(model, table)
     unless model.includes?(hash_record(table))
       update_model(model, table)
-      block.call
+      yield
       Watirmark.logger.info "Updated models '#{model.model_name}':\n#{hash_record(table).inspect}"
     end
   end
 
 # Perform an action using a models and update
 # the models if that action is successful
-  def with_model(model, table, &block)
+  def with_model(model, table)
     orig_model = model.clone
     update_model(model, table)
-    block.call
+    yield
     if Watirmark::Session.instance.post_failure
       Watirmark.logger.info  "Reverting Model #{Watirmark::Session.instance.post_failure}"
       model.update(orig_model.to_h) # revert models on failure
