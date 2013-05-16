@@ -31,8 +31,7 @@ module Watirmark
     end
 
     def check_for_noop_populate
-      @log           = Configuration.instance.logger
-      @log.warn "Warning: Expected to populate values but none were provided" unless @seen_value || populate_data_overridden?
+      warn "Warning: Expected to populate values but none were provided" unless @seen_value || populate_data_overridden?
     end
 
     # Navigate to the View's edit page and for every value in
