@@ -137,10 +137,6 @@ describe Watirmark::Actions do
     lambda { ActionCreateController.new(:a => 1).create }.should_not raise_error Watirmark::TestError
   end
 
-  it 'should throw an exception if nothing is populated' do
-    lambda { ActionCreateController.new.create }.should raise_error Watirmark::TestError
-  end
-
   it 'should not throw an exception if populate_data is overridden' do
     lambda { ActionCreateControllerWithOverride.new.create }.should_not raise_error Watirmark::TestError
   end
