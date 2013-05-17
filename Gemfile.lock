@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    watirmark (5.14.44)
+    watirmark (5.14.46)
       activesupport (~> 3.1.11)
       american_date (~> 1.0)
       i18n (~> 0.6.1)
@@ -43,7 +43,6 @@ GEM
       metaclass (~> 0.0.1)
     multi_json (1.7.3)
     nokogiri (1.5.9)
-    nokogiri (1.5.9-x86-mingw32)
     rake (0.9.2.2)
     rdoc (4.0.1)
       json (~> 1.4)
