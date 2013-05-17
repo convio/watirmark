@@ -11,11 +11,11 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://github.com/convio/watirmark}
   s.summary = %Q{watirmark #{version}}
   s.files = Dir['lib/**/*.rb', 'app_generators/**/*', 'bin/**/*']
-  s.test_files =  Dir['spec/**/*.rb']
+  s.test_files = Dir['spec/**/*.rb']
   s.executables = 'watirmark'
   s.require_paths = %w(lib)
   s.add_dependency('watir-webdriver', '>= 0.6.1')
-  s.add_dependency('selenium-webdriver', '~> 2.31.0')
+  s.add_dependency('selenium-webdriver', '~> 2.32.0')
   s.add_dependency('american_date', '~> 1.0')
   s.add_dependency('logger', '~> 1.2.8')
   s.add_dependency('uuid', '~> 2.3.6')
