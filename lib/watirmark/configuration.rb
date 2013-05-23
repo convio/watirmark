@@ -115,7 +115,7 @@ module Watirmark
           ENV['JOB_NAME']=~ /WEBDRIVER=(\w+)/
           env ||= $1
         end
-        update var.to_sym => env if env
+        update_key var, env if env
       end
     end
 
