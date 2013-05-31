@@ -14,7 +14,14 @@ module HookHelper
       image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
       path = "reports/screenshots"
       FileUtils.mkdir_p path unless File.directory? path
-      Page.browser.screenshot.save "#{path}/#{image}"
+      begin
+        Page.browser.screenshot.save "#{path}/#{image}"
+      rescue Exception => e
+        Watirmark.logger.warn("Screenshot was not taken due to an exception")
+        Watirmark.logger.warn(e.to_s)
+        Watirmark.logger.warn(e.backtrace)
+      end
+
       ["screenshots/#{image}", 'image/png']
     end
 
