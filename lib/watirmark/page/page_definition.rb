@@ -7,7 +7,7 @@ module Watirmark
                   :process_page_active_page_method,
                   :process_page_submit_method
 
-    def process_page(name, method=nil)
+    def process_page(name)
       @current_process_page = find_or_create_process_page(name)
       yield
       @current_process_page = @current_process_page.parent
