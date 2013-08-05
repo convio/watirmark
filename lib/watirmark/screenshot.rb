@@ -20,9 +20,9 @@ module Watirmark
       end
 
       def compare_specific_screenshot_size(currents, masters)
-         unless currents.screenshots.md5 == masters.album.md5
-           report_failure(currents.screenshots.filename, masters.album.filename)
-         end
+       unless currents.screenshots.md5 == masters.album.md5
+         report_failure(currents.screenshots.filename, masters.album.filename)
+       end
       end
 
       def compare_standard_screenshot_sizes(currents, masters)
