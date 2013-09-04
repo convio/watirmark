@@ -85,6 +85,7 @@ module Watirmark
         profile['security.warn_leaving_secure.show_once'] =  false
         profile['security.warn_viewing_mixed'] =  false
         profile['security.warn_viewing_mixed.show_once'] =  false
+        profile['security.mixed_content.block_active_content'] = false
       end
       profile
     end
