@@ -1,12 +1,12 @@
 PATH
   remote: .
   specs:
-    watirmark (5.15.7)
+    watirmark (5.15.8)
       activesupport (~> 3.1.11)
       american_date (~> 1.0)
       i18n (~> 0.6.1)
       logger (~> 1.2.8)
-      nokogiri (~> 1.6.0)
+      nokogiri (~> 1.5.10)
       rubigen (~> 1.5.8)
       selenium-webdriver (~> 2.35.0)
       uuid (~> 2.3.6)
