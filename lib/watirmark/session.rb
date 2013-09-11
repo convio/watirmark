@@ -47,8 +47,10 @@ module Watirmark
 
     # set up the global variables, reading from the config file
     def initialize
+      @headless = Headless.new if config.headless
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
+        @headless.destroy if config.headless
       }
       config.firefox_profile = default_firefox_profile if config.webdriver.to_s == 'firefox'
     end
@@ -92,6 +94,7 @@ module Watirmark
 
     def newsession
       closebrowser
+      @headless.start if config.headless
       openbrowser
     end
 

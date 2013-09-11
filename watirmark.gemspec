@@ -23,5 +23,6 @@ Gem::Specification.new do |s|
   s.add_dependency('rubigen', '~> 1.5.8')
   s.add_dependency('activesupport', '~> 3.1.11')
   s.add_dependency('i18n', '~> 0.6.1')
+  s.add_dependency('headless', '>= 1.0.1')
 end
 
