@@ -110,6 +110,7 @@ module Watirmark
     def read_from_environment
       @settings.each_key do |var|
         next if var.to_s.upcase == "USERNAME"
+        next if var.to_s.upcase == "HOSTNAME" && self.hostname
         env = ENV[var.to_s.upcase]
         if var == :webdriver
           ENV['JOB_NAME']=~ /WEBDRIVER=(\w+)/
