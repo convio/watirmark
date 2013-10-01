@@ -4,3 +4,4 @@ pkg
 .bundle
 *.rbx
 coverage
+Gemfile.lock
