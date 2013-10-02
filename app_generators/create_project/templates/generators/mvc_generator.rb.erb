@@ -50,7 +50,8 @@ class MvcGenerator < RubiGen::Base
     end
 
     def append_to_file name, &block
-        File.open(name, 'a+') {|f| yield f}
+      path = File.join(File.dirname(__FILE__), "..", name)
+      File.open(path, 'a+') {|f| yield f}
     end
 
     def create_directories(m)
