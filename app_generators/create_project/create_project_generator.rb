@@ -49,7 +49,7 @@ class CreateProjectGenerator < RubiGen::Base
   end
 
   def create_mvc_generators(manifest)
-    manifest.template "generators/generate.rb.erb", File.join("script","generate.rb")
+    manifest.template "generators/generate.rb.erb", File.join("script","generate.rb"), :chmod => 0755
     manifest.template "generators/mvc_generator.rb.erb", File.join("generators","mvc","mvc_generator.rb")
     manifest.template "generators/rbeautify.rb.erb", File.join("generators", "mvc", "rbeautify.rb")
     manifest.template "generators/controller.rb.erb", File.join("generators","mvc","templates","controller.rb.erb")
