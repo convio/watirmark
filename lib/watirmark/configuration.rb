@@ -31,7 +31,6 @@ module Watirmark
         # snapshots
         :snapshotwidth      => 1000,
         :snapshotheight     => 1000,
-        :sandbox            => false,
         :projectpath        => nil,
 
         #to deprecate
