@@ -3,12 +3,12 @@ module Watirmark
 
     attr_accessor :records
 
-    def run(*actions)
+    def run(*actions, &block)
       begin
         run_callback_method :before_all
         record_list.each do |record|
           create_model(record)
-          execute_actions(actions)
+          execute_actions(actions, block)
         end
         run_callback_method :after_all
       ensure
@@ -176,10 +176,10 @@ module Watirmark
       send name if respond_to?(name)
     end
 
-    def execute_actions(actions)
+    def execute_actions(actions, block)
       actions.each do |action|
         run_callback_method :before_each
-        send(action)
+        send(action, &block)
         run_callback_method :after_each
       end
     end

@@ -13,6 +13,9 @@ describe Watirmark::Actions do
       def create
       end
 
+      def create_until(&block)
+      end
+
       def edit
       end
 
@@ -105,6 +108,12 @@ describe Watirmark::Actions do
     controller.model.b.should == nil
     controller.model.c.should == 3
     controller.model.d.should == 4
+  end
+
+  it 'run can accept a block for the stop_until methods' do
+    @controller.expects(:before_all).once
+    @controller.expects(:after_all).once
+    @controller.run(:create_until){ eval "true"}
   end
 
   class Element
