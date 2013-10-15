@@ -1,10 +1,5 @@
 #!/usr/bin/env ruby
-$:<< File.dirname(__FILE__)
 
-require 'rubigen'
-require 'rubigen/scripts/generate'
-
-source = RubiGen::PathSource.new(:application, File.join(File.dirname(__FILE__), "../app_generators"))
-RubiGen::Base.reset_sources
-RubiGen::Base.append_sources source
-RubiGen::Scripts::Generate.new.run(ARGV, :generator => 'create_project')
+require 'active_support/inflector'
+require File.expand_path('../../app_generators/create_project/create_project_generator', __FILE__)
+CreateProjectGenerator.start

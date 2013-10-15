@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency('logger', '~> 1.2.8')
   s.add_dependency('uuid', '~> 2.3.6')
   s.add_dependency('nokogiri', '~> 1.5.10')
-  s.add_dependency('rubigen', '~> 1.5.8')
+  s.add_dependency('thor')
   s.add_dependency('activesupport', '~> 3.1.11')
   s.add_dependency('i18n', '~> 0.6.1')
 end
