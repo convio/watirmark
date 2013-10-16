@@ -51,9 +51,9 @@ class CreateProjectGenerator < Thor::Group
   def generators_mvc_files
     template "generators/mvc/generator.rb.erb", File.join(name, "generators", "mvc", "generator.rb")
     template "generators/mvc/rbeautify.rb.erb", File.join(name, "generators", "mvc", "rbeautify.rb")
+
     template "generators/mvc/templates/controller.rb.erb", File.join(name, "generators", "mvc", "templates", "controller.rb.erb")
     template "generators/mvc/templates/model.rb.erb", File.join(name, "generators", "mvc", "templates", "model.rb.erb")
     template "generators/mvc/templates/view.rb.erb", File.join(name, "generators", "mvc", "templates", "view.rb.erb")
-    template "generators/mvc/templates/workflow_loader.rb.erb", File.join(name, "generators", "mvc", "templates", "workflow_loader.rb.erb")
   end
 end

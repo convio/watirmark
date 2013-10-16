@@ -23,7 +23,7 @@ class MvcGenerator < Thor
     template "controller.rb.erb", File.join(workflows_path, product, "#{name}_controller.rb")
 
     append_to_file "#{workflows_path}/../workflows.rb" do
-      "#{workflow_loader} '#{product.downcase}/#{name.downcase}'"
+      "#{workflow_loader} '#{product.downcase}/#{name.downcase}'\n"
     end
 
   end
@@ -39,11 +39,16 @@ class MvcGenerator < Thor
     end
 
     def create_modules
-      product.split('/').map { |x| "module #{x.camelize}\n" }.join.strip
+      product.split('/').zip(indents).map { |e| "#{e[1]}module #{e[0].camelize}" }.join("\n").strip
+    end
+
+    # for workflow a/b/c returns ["", "  ", "    "] spaces for formatting output
+    def indents
+      @indents ||= (i = [] and product.split('/').each_index { |e| i << e * 2 } and i.map { |e| "\s" * e })
     end
 
     def create_module_end
-      product.split('/').map { |x| "end\n" }.join.strip
+      indents.reverse.map { |e| "#{e}end" }.join("\n").strip
     end
 
   end
