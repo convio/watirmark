@@ -1,5 +1,4 @@
 #!/usr/bin/env ruby
 
-require 'active_support/inflector'
 require File.expand_path('../../app_generators/create_project/create_project_generator', __FILE__)
 CreateProjectGenerator.start
