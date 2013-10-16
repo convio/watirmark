@@ -1,9 +1,9 @@
 module <%= @name.camelize %>
-  <%%= create_modules %>
-    <%%= indents.last %>class <%%= name.camelize %> < BaseController
-    <%%= indents.last %>  @model = <%%= name.camelize %>Model
-    <%%= indents.last %>  @view = <%%= name.camelize %>View
-    <%%= indents.last %>end
-  <%%= create_module_end %>
+<%%= create_modules %>
+  <%%= indents.last %>class <%%= name.camelize %> < BaseController
+  <%%= indents.last %>  @model = <%%= name.camelize %>Model
+  <%%= indents.last %>  @view = <%%= name.camelize %>View
+  <%%= indents.last %>end
+<%%= create_module_end %>
 end
 
