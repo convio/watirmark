@@ -1,7 +1,7 @@
 module <%= name.camelize %>
   <%%= create_modules %>
-    class <%%= name.camelize %>Model < Watirmark::Model::Factory
-      keywords <%%= name.camelize %>View.keywords
-    end
+    <%%= indents.last %>class <%%= name.camelize %>Model < Watirmark::Model::Factory
+    <%%= indents.last %>  keywords <%%= name.camelize %>View.keywords
+    <%%= indents.last %>end
   <%%= create_module_end %>
 end
