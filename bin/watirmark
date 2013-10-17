@@ -1,4 +1,4 @@
 #!/usr/bin/env ruby
 
-require File.expand_path('../../app_generators/create_project/create_project_generator', __FILE__)
-CreateProjectGenerator.start
+require File.expand_path('../../generators/new_project/generator', __FILE__)
+NewProject.start

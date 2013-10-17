@@ -10,7 +10,7 @@ Gem::Specification.new do |s|
   s.description = %q{Watirmark is an MVC test framework for watir-webdriver}
   s.homepage = %q{http://github.com/convio/watirmark}
   s.summary = %Q{watirmark #{version}}
-  s.files = Dir['lib/**/*.rb', 'app_generators/**/*', 'bin/**/*']
+  s.files = Dir['lib/**/*.rb', 'generators/**/*', 'bin/**/*']
   s.test_files = Dir['spec/**/*.rb']
   s.executables = 'watirmark'
   s.require_paths = %w(lib)
