@@ -1,10 +1,10 @@
 require 'thor/group'
 require 'active_support/inflector'
 
-class CreateProjectGenerator < Thor::Group
+class NewProject < Thor::Group
   include Thor::Actions
 
-  argument :name
+  argument :name, banner: 'creates new test project'
 
   def self.source_root
     File.expand_path(File.join(File.dirname(__FILE__), 'templates'))
