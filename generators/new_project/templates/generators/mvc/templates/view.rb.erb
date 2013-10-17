@@ -1,0 +1,16 @@
+module <%= name.camelize %>
+<%%= create_modules %>
+  <%%= indents.last %>class <%%= name.camelize %>View < BaseView
+  <%%= indents.last %>  keyword(:keyword_name)  { browser.text_field(:id, 'element_id') }
+
+  <%%= indents.last %>  def home(model)
+  <%%= indents.last %>  end
+
+  <%%= indents.last %>  def create(model)
+  <%%= indents.last %>  end
+
+  <%%= indents.last %>  def edit(model)
+  <%%= indents.last %>  end
+  <%%= indents.last %>end
+<%%= create_module_end %>
+end
