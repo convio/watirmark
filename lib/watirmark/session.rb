@@ -98,7 +98,6 @@ module Watirmark
     def openbrowser
       Page.browser = new_watir_browser
       initialize_page_checkers
-      initialize_screenshots
       Page.browser
     end
 
@@ -121,10 +120,6 @@ module Watirmark
       else
         Watir::Browser.new config.webdriver.to_sym
       end
-    end
-
-    def initialize_screenshots
-      Page.browser.screenshot.base64
     end
 
     def initialize_page_checkers
