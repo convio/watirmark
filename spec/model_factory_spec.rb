@@ -74,10 +74,10 @@ describe "#update" do
 
   specify "model update should remove empty keys" do
     keys = FactoryTest::UpdateModel.new
-    lambda{keys.update(':'=>'') }.should_not raise_error NameError
-    lambda{keys.update(nil=>'') }.should_not raise_error NameError
-    lambda{keys.update('   '=>'') }.should_not raise_error NameError
-    lambda{keys.update('   '.to_sym=>'') }.should_not raise_error NameError
+    lambda{keys.update(':'=>'') }.should_not raise_error
+    lambda{keys.update(nil=>'') }.should_not raise_error
+    lambda{keys.update('   '=>'') }.should_not raise_error
+    lambda{keys.update('   '.to_sym=>'') }.should_not raise_error
   end
 
 end

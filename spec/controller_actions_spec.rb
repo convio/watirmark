@@ -147,6 +147,6 @@ describe Watirmark::Actions do
   end
 
   it 'should not throw an exception if populate_data is overridden' do
-    lambda { ActionCreateControllerWithOverride.new.create }.should_not raise_error Watirmark::TestError
+    lambda { ActionCreateControllerWithOverride.new.create }.should_not raise_error
   end
 end
