@@ -566,3 +566,21 @@ describe "subclassing" do
   end
 end
 
+describe "#hash_id" do
+  class HashIdModel < Watirmark::Model::Factory
+    keywords :first_name, :last_name
+    defaults do
+      first_name { "First" }
+      middle_name { "Middle" }
+      last_name { "Last #{hash_id}" }
+    end
+  end
+
+  specify "HashIdModel should have a 8 digit hash_id" do
+    model1 = HashIdModel.new
+    model2 = HashIdModel.new
+    model1.last_name.should match(/^Last [a-f0-9]{8}/)
+    model2.last_name.should match(/^Last [a-f0-9]{8}/)
+    model1.last_name.should == model2.last_name
+  end
+end
