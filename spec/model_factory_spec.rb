@@ -576,11 +576,85 @@ describe "#hash_id" do
     end
   end
 
-  specify "HashIdModel should have a 8 digit hash_id" do
-    model1 = HashIdModel.new
-    model2 = HashIdModel.new
-    model1.last_name.should match(/^Last [a-f0-9]{8}/)
-    model2.last_name.should match(/^Last [a-f0-9]{8}/)
+  let(:model1) { HashIdModel.new }
+  let(:model2) { HashIdModel.new }
+  let(:model3) { HashIdModel.new }
+
+  specify "HashIdModel should have a 8 digit hash_id and are always the same" do
+    [model1, model2].each{|x| x.last_name.should match(/^Last [a-f0-9]{8}$/)}
     model1.last_name.should == model2.last_name
   end
+
+  specify "HashIdModels should have a hash_id of '4033fe24' when using the default seed 'Watirmark Default Seed'" do
+    #Watirmark::Configuration is a Singleton!
+    Watirmark::Configuration.instance.hash_id_seed = nil
+    model1.hash_id.should == '4033fe24'
+  end
+
+  specify "HashIdModels should have a different 8 digit hash_id when they have different seeds" do
+    model_seed_1 = HashIdModel.new
+    Watirmark::Configuration.instance.hash_id_seed = "New Seed"
+    model_seed_2 = HashIdModel.new
+    Watirmark::Configuration.instance.hash_id_seed = "Newest Seed"
+    model_seed_3 = HashIdModel.new
+    #Watirmark::Configuration is a Singleton!
+    Watirmark::Configuration.instance.hash_id_seed = nil
+
+    [model_seed_1, model_seed_2, model_seed_3].each do |x|
+      x.last_name.should match(/^Last [a-f0-9]{8}$/)
+    end
+    [model_seed_1.last_name, model_seed_2.last_name, model_seed_3.last_name].uniq.length.should == 3
+  end
+
+  specify "add a new attribute to a HashIdModel with the hash_id" do
+    model1.foo = "bar #{model1.hash_id}"
+    model2.zoo = "baz #{model1.hash_id}"
+
+    model1.foo.gsub("bar", "baz").should == model2.zoo
+    HashIdModel.new.hash_id.should == HashIdModel.new.hash_id
+  end
+
+end
+
+describe "#uuid" do
+  class UUIDModel < Watirmark::Model::Factory
+    keywords :first_name, :last_name
+    defaults do
+      first_name { "First" }
+      middle_name { "Middle" }
+      last_name { "Last #{uuid}" }
+    end
+  end
+
+  let(:model1) {UUIDModel.new}
+  let(:model2) {UUIDModel.new}
+  let(:model3) {UUIDModel.new}
+
+  specify "UUIDModel should have a 10 digit uuid and are never the same" do
+    [model1, model2].each{|x| x.last_name.should match(/^Last [a-f0-9]{10}$/)}
+    model1.last_name.should_not == model2.last_name
+  end
+
+  specify "UUIDModels should have a different 10 digit uuid when they are initialized with a different UUID" do
+    model_seed_1 = UUIDModel.new
+    Watirmark::Configuration.instance.uuid = "1234567890"
+    model_seed_2 = UUIDModel.new
+    Watirmark::Configuration.instance.uuid = "0987654321"
+    model_seed_3 = UUIDModel.new
+
+    [model_seed_1, model_seed_2, model_seed_3].each do |x|
+      puts x.last_name
+      x.last_name.should match(/^Last [a-f0-9]{10}$/)
+    end
+    [model_seed_1.last_name, model_seed_2.last_name, model_seed_3.last_name].uniq.length.should == 3
+  end
+
+  specify "add a new attribute to a UUIDModel with the uuid" do
+    model1.foo = "bar #{model1.uuid}"
+    model2.zoo = "baz #{model1.uuid}"
+
+    model1.foo.gsub("bar", "baz").should == model2.zoo
+    UUIDModel.new.uuid.should == UUIDModel.new.uuid
+  end
+
 end
