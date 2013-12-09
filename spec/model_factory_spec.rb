@@ -588,7 +588,8 @@ describe "#hash_id" do
 
   specify "HashIdModels should have a hash_id of '4033fe24' when using the default seed 'Watirmark Default Seed'" do
     Watirmark::Configuration.instance.hash_id_seed = nil
-    model1.hash_id.should == '4033fe24'
+    hash_id = (RUBY_VERSION == '1.9.3') ? 'ca14e5fb' : '4033fe24'
+    model1.hash_id.should == hash_id
   end
 
   specify "HashIdModels should have a different 8 digit hash_id when they have different seeds" do
