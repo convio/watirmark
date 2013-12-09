@@ -586,7 +586,6 @@ describe "#hash_id" do
   end
 
   specify "HashIdModels should have a hash_id of '4033fe24' when using the default seed 'Watirmark Default Seed'" do
-    #Watirmark::Configuration is a Singleton!
     Watirmark::Configuration.instance.hash_id_seed = nil
     model1.hash_id.should == '4033fe24'
   end
@@ -597,7 +596,6 @@ describe "#hash_id" do
     model_seed_2 = HashIdModel.new
     Watirmark::Configuration.instance.hash_id_seed = "Newest Seed"
     model_seed_3 = HashIdModel.new
-    #Watirmark::Configuration is a Singleton!
     Watirmark::Configuration.instance.hash_id_seed = nil
 
     [model_seed_1, model_seed_2, model_seed_3].each do |x|
@@ -647,6 +645,7 @@ describe "#uuid" do
       x.last_name.should match(/^Last [a-f0-9]{10}$/)
     end
     [model_seed_1.last_name, model_seed_2.last_name, model_seed_3.last_name].uniq.length.should == 3
+    Watirmark::Configuration.instance.uuid = nil
   end
 
   specify "add a new attribute to a UUIDModel with the uuid" do

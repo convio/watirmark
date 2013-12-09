@@ -49,6 +49,11 @@ describe "Traits" do
     end
   end
 
+  before :all do
+    # guard against other tests setting UUID
+    Watirmark::Configuration.instance.uuid = nil
+  end
+
   specify "should have different last names" do
     a = FactoryTest::TraitsA.new
     b = FactoryTest::TraitsB.new
