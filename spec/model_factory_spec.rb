@@ -612,6 +612,59 @@ describe "#hash_id" do
     HashIdModel.new.hash_id.should == HashIdModel.new.hash_id
   end
 
+  let(:test_strings) {
+    ["0",
+     "1",
+     "a",
+     "b",
+     "This is quite a long test string",
+     "This is quite a much longer test string that I'm going to use in my tests",
+     "And one test string I'll use with special characters ©åßƒ"
+    ]
+  }
+
+  specify "should generate a hash value with a length of 8 - the default" do
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id }
+    keys.each { |x| x.length.should == 8 }
+  end
+
+  specify "should generate a hash value with a length of 20" do
+    length = Watirmark::Configuration.instance.hash_id_length = 20
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length) }
+    keys.each { |x| x.length.should == 20 }
+  end
+
+  specify "should generate a hash value with a length of 1" do
+    length = Watirmark::Configuration.instance.hash_id_length = 1
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length) }
+    keys.each { |x| x.length.should == 1 }
+  end
+
+  specify "should generate keys with hex values" do
+    length = Watirmark::Configuration.instance.hash_id_length = 8
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length, :hex) }
+    keys.each do |key|
+      key.each_char do |char|
+        char[/[a-f0-9]/].should_not be_nil
+      end
+    end
+  end
+
+  specify "should generate keys with alphanumeric values" do
+    length = Watirmark::Configuration.instance.hash_id_length = 8
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length, :alpha) }
+    keys.each do |key|
+      key.each_char do |char|
+        char[/[A-Za-z0-9]/].should_not be_nil
+      end
+    end
+  end
+
 end
 
 describe "#uuid" do
@@ -641,11 +694,16 @@ describe "#uuid" do
     model_seed_3 = UUIDModel.new
 
     [model_seed_1, model_seed_2, model_seed_3].each do |x|
-      puts x.last_name
+      #puts x.last_name
       x.last_name.should match(/^Last [a-f0-9]{10}$/)
     end
     [model_seed_1.last_name, model_seed_2.last_name, model_seed_3.last_name].uniq.length.should == 3
+  end
+
+  specify "UUIDModels should have different UUIDs if Watirmark::Configuration#uuid is not set" do
     Watirmark::Configuration.instance.uuid = nil
+    Watirmark::Configuration.instance.uuid.should be_nil
+    UUIDModel.new.uuid.should_not == UUIDModel.new.uuid
   end
 
   specify "add a new attribute to a UUIDModel with the uuid" do
@@ -653,7 +711,10 @@ describe "#uuid" do
     model2.zoo = "baz #{model1.uuid}"
 
     model1.foo.gsub("bar", "baz").should == model2.zoo
-    UUIDModel.new.uuid.should == UUIDModel.new.uuid
+  end
+
+  after :all do
+    Watirmark::Configuration.instance.uuid = nil
   end
 
 end

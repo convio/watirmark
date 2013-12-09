@@ -44,9 +44,10 @@ module Watirmark
         @uuid ||= (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
       end
 
-      def hash_id
+      def hash_id(size = nil, type = :hex)
+        size = size || Watirmark::Configuration.instance.hash_id_length || 8
         seed = Watirmark::Configuration.instance.hash_id_seed || "Watirmark Default Seed"
-        @hash_id ||= generate_hash_id seed
+        @hash_id ||= generate_hash_id seed, size, type
       end
 
       def strip_equals_from_method_name(method)
