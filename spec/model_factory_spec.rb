@@ -1,3 +1,4 @@
+# encoding: UTF-8
 require_relative 'spec_helper'
 
 describe "factory" do
@@ -74,10 +75,10 @@ describe "#update" do
 
   specify "model update should remove empty keys" do
     keys = FactoryTest::UpdateModel.new
-    lambda{keys.update(':'=>'') }.should_not raise_error NameError
-    lambda{keys.update(nil=>'') }.should_not raise_error NameError
-    lambda{keys.update('   '=>'') }.should_not raise_error NameError
-    lambda{keys.update('   '.to_sym=>'') }.should_not raise_error NameError
+    lambda{keys.update(':'=>'') }.should_not raise_error
+    lambda{keys.update(nil=>'') }.should_not raise_error
+    lambda{keys.update('   '=>'') }.should_not raise_error
+    lambda{keys.update('   '.to_sym=>'') }.should_not raise_error
   end
 
 end
@@ -566,3 +567,156 @@ describe "subclassing" do
   end
 end
 
+describe "#hash_id" do
+  class HashIdModel < Watirmark::Model::Factory
+    keywords :first_name, :last_name
+    defaults do
+      first_name { "First" }
+      middle_name { "Middle" }
+      last_name { "Last #{hash_id}" }
+    end
+  end
+
+  let(:model1) { HashIdModel.new }
+  let(:model2) { HashIdModel.new }
+  let(:model3) { HashIdModel.new }
+
+  specify "HashIdModel should have a 8 digit hash_id and are always the same" do
+    [model1, model2].each{|x| x.last_name.should match(/^Last [a-f0-9]{8}$/)}
+    model1.last_name.should == model2.last_name
+  end
+
+  specify "HashIdModels should have a hash_id of '4033fe24' when using the default seed 'Watirmark Default Seed'" do
+    Watirmark::Configuration.instance.hash_id_seed = nil
+    hash_id = (RUBY_VERSION == '1.9.3') ? 'ca14e5fb' : '4033fe24'
+    model1.hash_id.should == hash_id
+  end
+
+  specify "HashIdModels should have a different 8 digit hash_id when they have different seeds" do
+    model_seed_1 = HashIdModel.new
+    Watirmark::Configuration.instance.hash_id_seed = "New Seed"
+    model_seed_2 = HashIdModel.new
+    Watirmark::Configuration.instance.hash_id_seed = "Newest Seed"
+    model_seed_3 = HashIdModel.new
+    Watirmark::Configuration.instance.hash_id_seed = nil
+
+    [model_seed_1, model_seed_2, model_seed_3].each do |x|
+      x.last_name.should match(/^Last [a-f0-9]{8}$/)
+    end
+    [model_seed_1.last_name, model_seed_2.last_name, model_seed_3.last_name].uniq.length.should == 3
+  end
+
+  specify "add a new attribute to a HashIdModel with the hash_id" do
+    model1.foo = "bar #{model1.hash_id}"
+    model2.zoo = "baz #{model1.hash_id}"
+
+    model1.foo.gsub("bar", "baz").should == model2.zoo
+    HashIdModel.new.hash_id.should == HashIdModel.new.hash_id
+  end
+
+  let(:test_strings) {
+    ["0",
+     "1",
+     "a",
+     "b",
+     "This is quite a long test string",
+     "This is quite a much longer test string that I'm going to use in my tests",
+     "And one test string I'll use with special characters ©åßƒ"
+    ]
+  }
+
+  specify "should generate a hash value with a length of 8 - the default" do
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id }
+    keys.each { |x| x.length.should == 8 }
+  end
+
+  specify "should generate a hash value with a length of 20" do
+    length = Watirmark::Configuration.instance.hash_id_length = 20
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length) }
+    keys.each { |x| x.length.should == 20 }
+  end
+
+  specify "should generate a hash value with a length of 1" do
+    length = Watirmark::Configuration.instance.hash_id_length = 1
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length) }
+    keys.each { |x| x.length.should == 1 }
+  end
+
+  specify "should generate keys with hex values" do
+    length = Watirmark::Configuration.instance.hash_id_length = 8
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length, :hex) }
+    keys.each do |key|
+      key.each_char do |char|
+        char[/[a-f0-9]/].should_not be_nil
+      end
+    end
+  end
+
+  specify "should generate keys with alphanumeric values" do
+    length = Watirmark::Configuration.instance.hash_id_length = 8
+    new_model = Watirmark::Model::Factory.new
+    keys = test_strings.map { |x| new_model.hash_id(length, :alpha) }
+    keys.each do |key|
+      key.each_char do |char|
+        char[/[A-Za-z0-9]/].should_not be_nil
+      end
+    end
+  end
+
+end
+
+describe "#uuid" do
+  class UUIDModel < Watirmark::Model::Factory
+    keywords :first_name, :last_name
+    defaults do
+      first_name { "First" }
+      middle_name { "Middle" }
+      last_name { "Last #{uuid}" }
+    end
+  end
+
+  let(:model1) {UUIDModel.new}
+  let(:model2) {UUIDModel.new}
+  let(:model3) {UUIDModel.new}
+
+  specify "UUIDModel should have a 10 digit uuid and are never the same" do
+    [model1, model2].each{|x| x.last_name.should match(/^Last [a-f0-9]{10}$/)}
+    model1.last_name.should_not == model2.last_name
+  end
+
+  specify "UUIDModels should have a different 10 digit uuid when they are initialized with a different UUID" do
+    model_seed_1 = UUIDModel.new
+    Watirmark::Configuration.instance.uuid = "1234567890"
+    model_seed_2 = UUIDModel.new
+    Watirmark::Configuration.instance.uuid = "0987654321"
+    model_seed_3 = UUIDModel.new
+
+    [model_seed_1, model_seed_2, model_seed_3].each do |x|
+      #puts x.last_name
+      x.last_name.should match(/^Last [a-f0-9]{10}$/)
+    end
+    [model_seed_1.last_name, model_seed_2.last_name, model_seed_3.last_name].uniq.length.should == 3
+  end
+
+  specify "UUIDModels should have different UUIDs if Watirmark::Configuration#uuid is not set" do
+    Watirmark::Configuration.instance.uuid = nil
+    Watirmark::Configuration.instance.uuid.should be_nil
+    UUIDModel.new.uuid.should_not == UUIDModel.new.uuid
+  end
+
+  specify "add a new attribute to a UUIDModel with the uuid" do
+    model1.foo = "bar #{model1.uuid}"
+    model2.zoo = "baz #{model1.uuid}"
+
+    model1.foo.gsub("bar", "baz").should == model2.zoo
+  end
+
+  after :all do
+    Watirmark::Configuration.instance.uuid = nil
+  end
+
+end

@@ -8,7 +8,7 @@ describe 'ProcessPage' do
   
   it 'should support an activate method' do
     p = Watirmark::ProcessPage.new('pp')
-    lambda{p.activate}.should_not raise_error(NoMethodError)
+    lambda{p.activate}.should_not raise_error
   end
   
 end

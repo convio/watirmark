@@ -44,6 +44,12 @@ module Watirmark
         @uuid ||= (Watirmark::Configuration.instance.uuid || UUID.new.generate(:compact)[0..9]).to_s
       end
 
+      def hash_id(size = nil, type = :hex)
+        size = size || Watirmark::Configuration.instance.hash_id_length || 8
+        seed = Watirmark::Configuration.instance.hash_id_seed || "Watirmark Default Seed"
+        @hash_id ||= generate_hash_id seed, size, type
+      end
+
       def strip_equals_from_method_name(method)
         method.to_s.delete('=').to_sym
       end
@@ -171,6 +177,17 @@ module Watirmark
 
       def method_name model
         model.model_class_name.to_s.sub(/Model$/, '').underscore
+      end
+
+      def generate_hash_id(seed, size=8, type = :hex)
+        seed_int = seed.scan(/./).inject(1) { |sum, chr| sum * chr.ord }
+        prng     = Random.new(seed_int)
+        if type == :alpha
+          o = ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a
+        else #:hex
+          o = ('a'..'f').to_a + (0..9).to_a
+        end
+        (0...size.to_i).map { o.sample(random: prng) }.join
       end
 
     end
