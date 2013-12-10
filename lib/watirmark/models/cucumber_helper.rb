@@ -26,12 +26,18 @@ module Watirmark
       def insert_model(text)
         return text unless text.class == String || text.class == Cucumber::Ast::DocString
         result = text
-        regexp = /\[([^\[\]]+)\]\.(\w+)/
-        while result =~ regexp #get value from models
+        method_regexp = /\[([^\[\]]+)\]\.(\w+)/
+        model_regexp = /\[([^\[\]]+)\]/
+        if text =~ method_regexp
+          while result =~ method_regexp #get value from models
+            model_name = $1
+            method     = $2
+            value = DataModels[model_name].send method.to_sym
+            result.sub!(method_regexp, value.to_s)
+          end
+        elsif text =~ model_regexp
           model_name = $1
-          method     = $2
-          value = DataModels[model_name].send method.to_sym
-          result.sub!(regexp, value.to_s)
+          result = DataModels[model_name]
         end
         result
       end
