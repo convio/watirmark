@@ -37,7 +37,7 @@ module Watirmark
           end
         elsif text =~ model_regexp
           model_name = $1
-          result = DataModels[model_name]
+          result = DataModels[model_name] if DataModels[model_name] != nil
         end
         result
       end
