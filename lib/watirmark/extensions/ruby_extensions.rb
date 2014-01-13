@@ -1,3 +1,11 @@
+module Kernel
+  alias :original_exit :exit
+  def exit(status=true)
+    $watirmark_exit=status
+    original_exit(status)
+  end
+end
+
 module Watirmark::MatchMethod
   def matches(x)
     self == x
