@@ -111,17 +111,6 @@ module Watirmark
       end
     end
 
-    def getos
-      case RUBY_PLATFORM
-        when /cygwin|mswin|mingw|bccwin|wince|emx/
-          return "windows"
-        when /darwin/
-          return "mac"
-        when /linux/
-          return "linux"
-      end
-    end
-
     private
 
     def new_watir_browser
