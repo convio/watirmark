@@ -103,26 +103,11 @@ module Watirmark
 
     def closebrowser
       begin
-        if config.webdriver == "chrome"
-          killchrome
-        else
-          Page.browser.close
-        end
+        Page.browser.close
       rescue Errno::ECONNREFUSED, Selenium::WebDriver::Error::WebDriverError
         # browser already closed or unavailable
       ensure
         Page.browser = nil
-      end
-    end
-
-    def killchrome
-      os = getos
-      begin
-        if os=="windows"
-          system("TASKKILL /F /IM chrome.exe")
-        end
-      ensure
-        Page.browser.close
       end
     end
 
