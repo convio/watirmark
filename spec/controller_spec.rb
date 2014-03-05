@@ -96,9 +96,8 @@ describe Watirmark::WebPage::Controller do
   end
 
   it 'should be able to create and use a new keyword' do
-    @keyword.should == :text_field
     TestView.new.send("#{@keyword}=", 'test')
-    lambda { @controller.check(@keyword, 'test') }.should_not raise_error(Watirmark::VerificationException)
+    expect { @controller.send(@keyword).value == 'text' }.to be_true
   end
 
   it 'should be able to populate' do

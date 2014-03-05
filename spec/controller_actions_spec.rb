@@ -116,37 +116,39 @@ describe Watirmark::Actions do
     @controller.run(:create_until){ eval "true"}
   end
 
-  class Element
-    attr_accessor :value
+  module ControllerActionsTest
+    class Element
+      attr_accessor :value
 
-    def wait_until_present
-      true
-    end
-  end
-
-  class ActionCreateView < Page
-    keyword(:a) { Element.new }
-    keyword(:b) { Element.new }
-
-    def create(*args)
+      def wait_until_present
+        true
+      end
     end
 
-  end
+    class ActionCreateView < Page
+      keyword(:a) { Element.new }
+      keyword(:b) { Element.new }
 
-  class ActionCreateController < Watirmark::WebPage::Controller
-    @view = ActionCreateView
-  end
+      def create(*args)
+      end
 
-  class ActionCreateControllerWithOverride < ActionCreateController
-    def populate_data
+    end
+
+    class ActionCreateController < Watirmark::WebPage::Controller
+      @view = ActionCreateView
+    end
+
+    class ActionCreateControllerWithOverride < ActionCreateController
+      def populate_data
+      end
     end
   end
 
   it 'should not throw an exception if anything is populated' do
-    lambda { ActionCreateController.new(:a => 1).create }.should_not raise_error Watirmark::TestError
+    expect { ControllerActionsTest::ActionCreateController.new(:a => 1).create }.not_to raise_error
   end
 
   it 'should not throw an exception if populate_data is overridden' do
-    lambda { ActionCreateControllerWithOverride.new.create }.should_not raise_error
+    lambda { ControllerActionsTest::ActionCreateControllerWithOverride.new.create }.should_not raise_error
   end
 end
