@@ -152,3 +152,23 @@ module Watir
   end
 
 end
+
+module Selenium
+  module WebDriver
+    module Chrome
+      class Service
+        alias :stop_original :stop
+        def stop
+          watirmark_close_browser
+          stop_original
+        end
+
+        def watirmark_close_browser
+          return if @process.nil? || @process.exited? || @stopped
+          @stopped = true
+          Page.browser.close if Watirmark::Configuration.instance.closebrowseronexit
+        end
+      end
+    end
+  end
+end
