@@ -65,7 +65,7 @@ module Watirmark
         @children << model
         create_child_methods
         Watirmark.logger.info "Added Model #{model.inspect} to #{model_name || model_class_name}"
-        return model
+        return self
       end
 
 
