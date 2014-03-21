@@ -180,7 +180,7 @@ module Watirmark
       end
 
       def generate_hash_id(seed, size=8, type = :hex)
-        seed_int = seed.scan(/./).inject(1) { |sum, chr| sum * chr.ord }
+        seed_int = seed.scan(/./).inject(1) { |product, chr| product * chr.ord }
         prng     = Random.new(seed_int)
         if type == :alpha
           o = ('a'..'z').to_a + ('A'..'Z').to_a + (0..9).to_a
