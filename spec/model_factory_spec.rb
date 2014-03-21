@@ -534,10 +534,12 @@ describe "subclassing" do
     end
     module FactoryTest
       class BaseModel < Watirmark::Model::Factory
-        keywords :first_name, :last_name, :full_name
+        keywords :first_name, :last_name, :full_name, :attr_test, :base_attr
         defaults do
           first_name { 'base_first_name' }
           last_name { 'base_last_name' }
+          attr_test { 'I came from BaseModel' }
+          base_attr { 'This is a base attribute' }
         end
         traits :some_trait
       end
@@ -546,6 +548,7 @@ describe "subclassing" do
         defaults do
           first_name { 'sub_first_name' }
           last_name { 'sub_last_name' }
+          attr_test { 'I came from SubModel'}
         end
       end
 
@@ -565,6 +568,14 @@ describe "subclassing" do
   specify "submodel should be able to inherit defaults" do
     FactoryTest::NoDefaultModel.new.full_name.should == 'full_name'
   end
+
+  specify "submodel should be able to override defaults" do
+    FactoryTest::SubModel.new.first_name.should == 'sub_first_name'
+    FactoryTest::SubModel.new.last_name.should == 'sub_last_name'
+    FactoryTest::SubModel.new.attr_test.should == 'I came from SubModel'
+    FactoryTest::SubModel.new.base_attr.should == 'This is a base attribute'
+  end
+
 end
 
 describe "#hash_id" do
