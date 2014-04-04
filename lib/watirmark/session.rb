@@ -50,7 +50,12 @@ module Watirmark
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
       }
-      config.firefox_profile = default_firefox_profile if config.webdriver.to_s == 'firefox'
+
+      if config.webdriver.to_s.eql? 'firefox'
+        config.firefox_profile = default_firefox_profile
+      elsif config.webdriver.to_s.eql? 'firefox_proxy'
+        config.firefox_profile = proxy_firefox_profile(config.proxy_host, config.proxy_port)
+      end
     end
 
     def default_firefox_profile
@@ -63,6 +68,7 @@ module Watirmark
               application/x-excel, application/vnd.ms-excel, application/excel, application/x-ms-excel, application/x-dos_ms_excel,
               text/csv, text/comma-separated-values, application/octet-stream, application/haansoftxls, application/msexcell,
               application/softgrid-xls, application/vnd.ms-excel, x-softmaker-pm"
+
       if Configuration.instance.default_firefox_profile
         Watirmark.logger.info "Using firefox profile: #{Configuration.instance.default_firefox_profile}"
         profile = Selenium::WebDriver::Firefox::Profile.from_name Configuration.instance.default_firefox_profile
@@ -87,6 +93,19 @@ module Watirmark
         profile['security.warn_viewing_mixed.show_once'] =  false
         profile['security.mixed_content.block_active_content'] = false
       end
+      profile
+    end
+
+    def proxy_firefox_profile(hostname,port)
+      profile = default_firefox_profile
+      profile['network.proxy.http'] = hostname
+      profile['network.proxy.http_port'] = port.to_i
+      profile['network.proxy.ssl'] = hostname
+      profile['network.proxy.ssl_port'] = port.to_i
+      profile['network.proxy.ftp'] = hostname
+      profile['network.proxy.ftp_port'] = port.to_i
+      profile['network.proxy_type'] = 1
+      profile['network.proxy.type'] = 1
       profile
     end
 
@@ -128,6 +147,8 @@ module Watirmark
       config.webdriver ||= :firefox
       if config.webdriver.to_sym == :firefox
         Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
+      elsif config.webdriver.to_sym == :firefox_proxy
+        Watir::Browser.new :firefox, :profile => config.firefox_profile
       else
         Watir::Browser.new config.webdriver.to_sym
       end
