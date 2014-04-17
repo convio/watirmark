@@ -32,6 +32,11 @@ module EmailHelper
         email[model.model_name] = EmailBody.new(email_content)
       end
 
+      def read_email_from(model, from, timeout=30)
+        email_content = qa_inbox(model).get_email_text(["FROM", from, "TO", model.email], timeout)
+        email[model.model_name] = EmailBody.new(email_content)
+      end
+
       def log_email(model)
         Watirmark.logger.info "Email Received"
         Watirmark.logger.info email[model.model_name].body.inspect
@@ -61,6 +66,16 @@ module EmailHelper
       @href = doc['href']
       @text = doc.content
     end
+  end
+
+  class EmailEnvelope
+    attr_accessor :envelope
+
+    def initialize(envelope)
+      @envelope = envelope
+      @from = envelope.from
+    end
+
   end
 
   class EmailBody
