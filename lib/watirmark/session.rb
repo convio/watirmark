@@ -49,6 +49,7 @@ module Watirmark
     def initialize
       Watirmark.add_exit_task {
         closebrowser if config.closebrowseronexit
+        @driver.quit if config.webdriver.to_s.eql? 'sauce'
       }
 
       if config.webdriver.to_s.eql? 'firefox'
@@ -149,9 +150,25 @@ module Watirmark
         Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
       elsif config.webdriver.to_sym == :firefox_proxy
         Watir::Browser.new :firefox, :profile => config.firefox_profile
+      elsif config.webdriver.to_sym == :sauce
+        Watir::Browser.new use_sauce
       else
         Watir::Browser.new config.webdriver.to_sym
       end
+    end
+
+    def use_sauce
+      caps              = Selenium::WebDriver::Remote::Capabilities.firefox
+      caps.browser_name = config.sauce_browser.nil? ? "firefox" : config.sauce_browser.to_s
+      caps.version      = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
+      caps.platform     = config.sauce_os.nil? ? "Windows 7" : config.sauce_os.to_s
+      caps[:name]       = config.sauce_test_title.nil? ? "Testing Selenium 2 with Ruby on Sauce" : config.sauce_test_title
+
+      @driver = Selenium::WebDriver.for(
+        :remote,
+        :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
+        :desired_capabilities => caps)
+      @driver
     end
 
     def initialize_page_checkers
