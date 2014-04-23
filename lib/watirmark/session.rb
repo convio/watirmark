@@ -158,17 +158,32 @@ module Watirmark
     end
 
     def use_sauce
-      caps              = Selenium::WebDriver::Remote::Capabilities.firefox
-      caps.browser_name = config.sauce_browser.nil? ? "firefox" : config.sauce_browser.to_s
-      caps.version      = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
-      caps.platform     = config.sauce_os.nil? ? "Windows 7" : config.sauce_os.to_s
-      caps[:name]       = config.sauce_test_title.nil? ? "Testing Selenium 2 with Ruby on Sauce" : config.sauce_test_title
+      sb   = config.sauce_browser.nil? ? "firefox" : config.sauce_browser.to_s
+      caps = sauce_config(sb)
 
       @driver = Selenium::WebDriver.for(
         :remote,
         :url                  => "http://#{config.sauce_username}:#{config.sauce_access_key}@ondemand.saucelabs.com:80/wd/hub",
         :desired_capabilities => caps)
       @driver
+    end
+
+    def sauce_config(sb)
+      caps              = Selenium::WebDriver::Remote::Capabilities.send(sb.to_sym)
+      caps.browser_name = sb
+      case sb
+        when "firefox"
+          caps.version = config.sauce_browser_version.nil? ? 26 : config.sauce_browser_version.to_i
+        when "chrome"
+          caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
+        when "ie"
+          caps.browser_name = "internet explorer" # caps.browser_name requires ie to be full name
+          caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
+      end
+      caps.platform = config.sauce_os.nil? ? "Windows 7" : config.sauce_os.to_s
+      caps[:name]   = config.sauce_test_title.nil? ? "Testing Selenium 2 with Ruby on Sauce" : config.sauce_test_title
+      puts caps
+      caps
     end
 
     def initialize_page_checkers
