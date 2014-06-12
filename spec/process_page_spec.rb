@@ -118,9 +118,9 @@ describe 'Process Page Views' do
     custom_method_called = false
     Watirmark::ProcessPage.navigate_method_default = Proc.new { custom_method_called = true }
     @processpagetest.a.should == 'a'
-    custom_method_called.should be_false
+    custom_method_called.should == false
     @processpagetest.b.should == 'b'
-    custom_method_called.should be_true
+    custom_method_called.should == true
   end
 
   it 'should support defining the process page submit method' do

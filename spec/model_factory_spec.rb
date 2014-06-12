@@ -69,8 +69,8 @@ describe "#update" do
     first = FactoryTest::UpdateModel.new
     first.update(:foobar=>1)
     second = FactoryTest::UpdateModel.new
-    second.respond_to?(:foobar).should be_false
-    second.respond_to?(:foobar).should be_false
+    second.respond_to?(:foobar).should == false
+    second.respond_to?(:foobar).should == false
   end
 
   specify "model update should remove empty keys" do
@@ -463,7 +463,7 @@ describe "methods in Enumerable should not collide with model defaults" do
         end
       end
     end
-    FactoryTest::NoZipModel.new.respond_to?(:zip).should_not be_true
+    FactoryTest::NoZipModel.new.respond_to?(:zip).should_not == true
   end
 
 end
