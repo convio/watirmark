@@ -5,10 +5,10 @@ gemspec
 group :development do
   gem 'watir-webdriver'
   gem 'rdoc'
-  gem 'rspec'
-  gem 'rake', '0.9.2.2'
+  gem 'rspec', '2.8.0'
+  gem 'rake'
   gem 'bundler'
-  gem 'mocha'
+  gem 'mocha', '0.12.8', :require => false
   gem 'cucumber'
   gem 'gherkin'
   gem 'rspec-mocks'
