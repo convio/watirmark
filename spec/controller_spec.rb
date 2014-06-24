@@ -89,18 +89,18 @@ describe Watirmark::WebPage::Controller do
     Page.browser.refresh #reset page before each test
   end
 
-  it 'should supportradio maps in controllers' do
+  specify 'should supportradio maps in controllers' do
     lambda {
       TestProcessPageController.new(:radio_map => 'f').populate_data
     }.should_not raise_error
   end
 
-  it 'should be able to create and use a new keyword' do
+  specify 'should be able to create and use a new keyword' do
     TestView.new.send("#{@keyword}=", 'test')
     expect { @controller.send(@keyword).value == 'text' }.to be_true
   end
 
-  it 'should be able to populate' do
+  specify 'should be able to populate' do
     module ControllerTest
       class PopulateController < Watirmark::WebPage::Controller
         @view = TestView
@@ -117,11 +117,11 @@ describe Watirmark::WebPage::Controller do
     v.another_text_field.value.should == ''
   end
 
-  it 'should be be able to interpret use value' do
+  specify 'should be be able to interpret use value' do
     @controller.value(@keyed_element).should == 'foobar'
   end
 
-  it 'should support override method to value' do
+  specify 'should support override method to value' do
     class TestController
       def text_field_value
         'override'
@@ -130,7 +130,7 @@ describe Watirmark::WebPage::Controller do
     @controller.value(Watirmark::KeyedElement.new(TestController.new, :keyword => @keyword)).should == 'override'
   end
 
-  it 'should support override method for verification' do
+  specify 'should support override method for verification' do
     def @controller.verify_text_field;
       'verify';
     end
@@ -139,7 +139,7 @@ describe Watirmark::WebPage::Controller do
     @controller.verify_data
   end
 
-  it 'should support keyword before and after methods' do
+  specify 'should support keyword before and after methods' do
     def @controller.before_text_field;
       'before';
     end
@@ -153,11 +153,11 @@ describe Watirmark::WebPage::Controller do
     @controller.populate_data {}
   end
 
-  it 'should propogate page declaration to subclasses' do
+  specify 'should propogate page declaration to subclasses' do
     TestControllerSubclass.view.should == TestView
   end
 
-  it 'should support before methods for process pages' do
+  specify 'should support before methods for process pages' do
     c = TestProcessPageController.new({:a => 1, :b => 1, :c => 1, :d => 1})
 
     def c.before_process_page_page_1;
@@ -168,88 +168,88 @@ describe Watirmark::WebPage::Controller do
     c.populate_data
   end
 
-  it 'should throw a Watirmark::VerificationException when a verification fails' do
+  specify 'should throw a Watirmark::VerificationException when a verification fails' do
     lambda {
       VerifyController.new(:validate1 => '2').verify_data
     }.should raise_error(Watirmark::VerificationException, "validate1: expected '2' (String) got '1' (String)")
   end
 
-  it 'should not throw an exception when a verification succeeds' do
+  specify 'should not throw an exception when a verification succeeds' do
     VerifyController.new(:validate2 => 'a').verify_data
   end
 
-  it 'should not throw an exception when many verifications succeed' do
+  specify 'should not throw an exception when many verifications succeed' do
     VerifyController.new(:validate1 => '1', :validate2 => 'a', :validate3 => 1.1).verify_data
   end
 
-  it 'should only throw one validation exception when there are 3 three problems' do
+  specify 'should only throw one validation exception when there are 3 three problems' do
     lambda {
       VerifyController.new(:validate1 => 'z', :validate2 => 'y', :validate3 => 'x').verify_data
     }.should raise_error(Watirmark::VerificationException)
   end
 
-  it 'should throw an exception when verifying a verify_keyword fails' do
+  specify 'should throw an exception when verifying a verify_keyword fails' do
     lambda {
       VerifyController.new(:label1 => 'text').verify_data
     }.should raise_error(Watirmark::VerificationException, "label1: expected 'text' (String) got 'numbers' (String)")
   end
 
-  it 'should not throw an exception when verifying a verify_keyword succeeds' do
+  specify 'should not throw an exception when verifying a verify_keyword succeeds' do
     VerifyController.new(:label1 => 'numbers', :value1 => 1).verify_data
   end
 
-  it 'should not throw an exception when populating with a verify_keyword' do
+  specify 'should not throw an exception when populating with a verify_keyword' do
     VerifyController.new(:label1 => 'string').populate_data
   end
 
-  it 'should throw an exception when populating a populate_keyword fails' do
+  specify 'should throw an exception when populating a populate_keyword fails' do
     lambda {
       VerifyController.new(:populate2 => '32').populate_data
     }.should raise_error(NoMethodError)
   end
 
-  it 'should not throw an exception when populating a populate_keyword succeeds' do
+  specify 'should not throw an exception when populating a populate_keyword succeeds' do
     VerifyController.new(:populate1 => '3.14159').populate_data
   end
 
-  it 'should not throw an exception when verifying with a populate_keyword' do
+  specify 'should not throw an exception when verifying with a populate_keyword' do
     VerifyController.new(:populate1 => 'void').verify_data
   end
 
-  it 'should not populate a private_keyword successfully' do
+  specify 'should not populate a private_keyword successfully' do
     c = VerifyController.new(:validate1 => 'hello')
     c.populate_data
     VerifyController.new(:private_validate1 => 'goodbye').populate_data
     c.verify_data
   end
 
-  it 'should not verify a private_keyword successfully' do
+  specify 'should not verify a private_keyword successfully' do
     c = VerifyController.new(:private_validate1 => 'hello')
     VerifyController.new(:validate1 => 'goodbye').populate_data
     c.verify_data
   end
 
-  it 'should not throw an exception when populating or verifying a private_keyword fails' do
+  specify 'should not throw an exception when populating or verifying a private_keyword fails' do
     c = VerifyController.new(:private_validate1 => 'goodbye')
     c.populate_data
     c.model.update(:private_validate1 => 'hello')
     c.verify_data
   end
 
-  it 'should not throw an exception when populating or verifying a navigation_keyword fails' do
+  specify 'should not throw an exception when populating or verifying a navigation_keyword fails' do
     c = VerifyController.new(:button1 => 'Cancel')
     c.populate_data
     c.model.update(:button1 => 'Submit')
     c.verify_data
   end
 
-  it 'false should be a valid keyword value' do
+  specify 'false should be a valid keyword value' do
     c = VerifyController.new(:checkbox => true)
     c.populate_data
-    VerifyView.new.checkbox.set?.should be_true
+    VerifyView.new.checkbox.set?.should == true
     c.model.update(:checkbox => false)
     c.populate_data
-    VerifyView.new.checkbox.set?.should be_false
+    VerifyView.new.checkbox.set?.should == false
   end
 end
 
@@ -279,15 +279,15 @@ describe "controllers should be able to detect and use embedded models" do
     @model.add_model @login
   end
 
-  it 'should be able to see itself' do
+  specify 'should be able to see itself' do
     @model.find(User).should == @model
   end
 
-  it 'should be able to see a sub_model' do
+  specify 'should be able to see a sub_model' do
     @model.find(Login).should == @login
   end
 
-  it 'should be able to see a nested sub_model' do
+  specify 'should be able to see a nested sub_model' do
     @model.find(Password).should == @password
   end
 end
@@ -306,7 +306,7 @@ describe "controllers should create a default model if one exists" do
     end
   end
 
-  it 'should be able to see itself' do
+  specify 'should be able to see itself' do
     c = @controller.new
     c.model.should be_kind_of(MyModel)
   end
@@ -386,36 +386,34 @@ describe "Similar Models" do
     class TestNoModelController < Watirmark::WebPage::Controller
       @view = ProcessPageControllerView
     end
-
-
   end
 
-  it 'should use the similar modelA' do
+  specify 'should use the similar modelA' do
     @controller = TestProcessPageController.new(ModelD.new)
     @controller.model.should be_kind_of ModelB
     @controller.supermodel.should be_kind_of ModelD
   end
 
-  it 'should use the top model' do
+  specify 'should use the top model' do
     @controller = TestProcessPageController.new(ModelB.new)
     @controller.model.should be_kind_of ModelB
     @controller.supermodel.should be_kind_of ModelB
   end
 
-  it 'should use parent model' do
+  specify 'should use parent model' do
     @controller = TestProcessPageController.new(ModelC.new)
     @controller.model.should be_kind_of ModelA
     @controller.supermodel.should be_kind_of ModelC
   end
 
-  it 'should call the smallest child similar to the model in controller' do
+  specify 'should call the smallest child similar to the model in controller' do
     @controller = TestProcessPageController.new(ModelE.new)
     @controller.model.should be_kind_of ModelB
     @controller.supermodel.should be_kind_of ModelE
 
   end
 
-  it 'should select the correct model when base model has 2 similar models' do
+  specify 'should select the correct model when base model has 2 similar models' do
     @controller = TestProcessPageController.new(ModelG.new)
     @controller.model.should be_kind_of ModelF
     @controller.supermodel.should be_kind_of ModelG
@@ -425,19 +423,19 @@ describe "Similar Models" do
     @controller.supermodel.should be_kind_of ModelF
   end
 
-  it 'should use the supermodel as a model if a controller model is not defined' do
+  specify 'should use the supermodel as a model if a controller model is not defined' do
     @controller = TestNoModelController.new(ModelE.new)
     @controller.model.should be_kind_of ModelE
     @controller.supermodel.should be_kind_of ModelE
   end
 
-  it 'should use passed in model as @model when model_type is not defined' do
+  specify 'should use passed in model as @model when model_type is not defined' do
     @controller = TestProcessPageController.new(ModelH.new)
     @controller.model.should be_kind_of ModelH
     @controller.supermodel.should be_kind_of ModelH
   end
 
-  it 'should allow us to override the default model' do
+  specify 'should allow us to override the default model' do
     @controller = TestProcessPageController.new(ModelH.new)
     @controller.model.should be_kind_of ModelH
     @controller.model = ModelA.new

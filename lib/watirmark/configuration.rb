@@ -32,6 +32,9 @@ module Watirmark
         :snapshotwidth      => 1000,
         :snapshotheight     => 1000,
         :projectpath        => nil,
+        :sauce_username     => nil,
+        :sauce_access_key   => nil,
+        :dbi_url            => nil,
 
         #to deprecate
         :profile            => Hash.new { |h, k| h[k] = Hash.new },
