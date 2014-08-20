@@ -151,6 +151,16 @@ module Watir
     alias :click_no_wait :click
   end
 
+  class TextFieldLocator
+    def validate_element(element)
+      if element.tag_name.downcase == 'textarea'
+        warn "Locating textareas with '#text_field' is deprecated. Please, use '#textarea' method instead for #{@selector}"
+      end
+      super
+    end
+  end
+
+
 end
 
 module Selenium
