@@ -140,6 +140,12 @@ module Watirmark
         h
       end
 
+      def unique_instance_name
+        class_name = self.class.name[/([^\:]+)Model$/i,1]
+        model_name_exists = model_name.nil? ? false : (not model_name.empty?)
+        unique_name = model_name_exists ? model_name : class_name.downcase
+        unique_name_with_uuid = unique_name + "_" + uuid
+      end
 
     private
 
