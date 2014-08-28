@@ -5,11 +5,16 @@ describe "factory" do
   before :all do
     module FactoryTest
       class InitializeModel < Watirmark::Model::Factory
-        keywords :username, :password, :test_name
+        keywords :username, :password
+      end
+
+      class UniqueDefaultsModel < Watirmark::Model::Factory
+        keywords :test_name
         defaults do
           test_name { unique_instance_name }
         end
       end
+
     end
   end
 
@@ -43,13 +48,13 @@ describe "factory" do
   end
 
   specify "should generate custom unique_instance_name given model_name" do
-     demo_model = FactoryTest::InitializeModel.new({:model_name => "RspecUniqueName"})
+     demo_model = FactoryTest::UniqueDefaultsModel.new({:model_name => "RspecUniqueName"})
      demo_model.test_name.should =~ /^RspecUniqueName_[\dA-Za-z]+$/
   end
 
   specify "should generate default unique_instance_name given no model_name" do
-     demo_model = FactoryTest::InitializeModel.new()
-     demo_model.test_name.should =~ /^initialize_[\dA-Za-z]+$/
+     demo_model = FactoryTest::UniqueDefaultsModel.new()
+     demo_model.test_name.should =~ /^uniquedefaults_[\dA-Za-z]+$/
   end
 end
 
