@@ -119,7 +119,7 @@ module Watirmark
       end
 
       def remove_empty_entries hash
-        hash.delete_if {|k| k.nil? || k.empty? || k == ':' || k =~ /^\s+$/}
+        hash.delete_if {|k| k.nil? || k == ':' || k =~ /^\s+$/}
       end
 
       def to_h

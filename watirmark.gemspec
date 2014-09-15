@@ -23,5 +23,6 @@ Gem::Specification.new do |s|
   s.add_dependency('thor')
   s.add_dependency('activesupport', '~> 3.1.11')
   s.add_dependency('i18n', '~> 0.6.1')
+  s.add_dependency('headless') # This only gets required when on Linux
 end
 
