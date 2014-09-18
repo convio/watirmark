@@ -119,8 +119,14 @@ module Watirmark
     def openbrowser
       use_headless_display if config.headless
       Page.browser = new_watir_browser
+      watirmark_statistics if config.statistics
       initialize_page_checkers
       Page.browser
+    end
+
+    def watirmark_statistics
+      require 'watirmark/extensions/watirmark_statistics' if config.statistics
+      @watirmark_stats_collection ||= WatirmarkStatsCollection.new
     end
 
     def closebrowser
