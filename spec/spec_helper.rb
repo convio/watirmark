@@ -14,4 +14,4 @@ RSpec.configure do |config|
   config.mock_with :mocha
 end
 
-Watirmark.add_exit_task  { Page.browser.close if Page.browser_exists? }
+Watirmark.add_exit_task  { Watirmark::Session.instance.closebrowser }

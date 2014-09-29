@@ -21,5 +21,6 @@ Gem::Specification.new do |s|
   s.add_dependency('nokogiri', '~> 1.6.0')
   s.add_dependency('thor', '~> 0.19.1')
   s.add_dependency('activesupport', '~> 4.0')
+  s.add_dependency('headless') # This only gets required when on Linux
 end
 

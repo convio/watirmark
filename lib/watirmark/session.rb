@@ -48,7 +48,7 @@ module Watirmark
     # set up the global variables, reading from the config file
     def initialize
       Watirmark.add_exit_task {
-        closebrowser if config.closebrowseronexit
+        closebrowser if config.closebrowseronexit || config.headless
         @driver.quit if config.webdriver.to_s.eql? 'sauce'
       }
 
@@ -116,6 +116,7 @@ module Watirmark
     end
 
     def openbrowser
+      use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
       Page.browser
@@ -128,6 +129,11 @@ module Watirmark
         # browser already closed or unavailable
       ensure
         Page.browser = nil
+      end
+
+      if @headless
+        @headless.destroy
+        @headless = nil
       end
     end
 
@@ -143,6 +149,16 @@ module Watirmark
     end
 
     private
+
+    def use_headless_display
+      unless RbConfig::CONFIG['host_os'].match('linux')
+        warn "Headless only supported on Linux"
+        return
+      end
+      require 'headless'
+      @headless = Headless.new
+      @headless.start
+    end
 
     def new_watir_browser
       config.webdriver ||= :firefox
