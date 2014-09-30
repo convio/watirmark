@@ -22,8 +22,9 @@ module Watirmark
         :loglevel           => Logger::INFO,
         :uuid               => nil,
         :webdriver          => :firefox,
-        :statistics         => false,
         :headless           => false,
+        :statistics         => false,
+        :execute_debug      => false, # requires statistics => true
         # database
         :dbhostname         => nil,
         :dbusername         => nil,

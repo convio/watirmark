@@ -50,9 +50,12 @@ module Watirmark
       @navigation_time = 0
 
       @sleep_time = 0
+
+      @exception_counts = 0
     end
 
-    attr_accessor :clicks, :click_time, :text_input, :text_input_time, :found_elements, :element_time, :error_checks, :error_time, :navigations, :navigation_time, :sleep_time
+    attr_accessor :clicks, :click_time, :text_input, :text_input_time, :found_elements, :element_time,
+                  :error_checks, :error_time, :navigations, :navigation_time, :sleep_time, :exception_counts
 
     def add_click
       @clicks += 1
@@ -90,6 +93,10 @@ module Watirmark
     end
 
 
+    def add_exception
+      @exception_counts += 1
+    end
+
     def add_navigation
       @navigations += 1
     end
@@ -113,13 +120,14 @@ module Watirmark
     def results
       test_time = current_test_duration
     "\tTest Execution in: #{test_time.round(0)} seconds
-    \tPolling sleeps for #{sleep_time.round(1)} seconds;\t\t\t\t\t#{(100*sleep_time/test_time).round(0)}% of test time
-    \tNavigated #{navigations} times in #{navigation_time.round(1)} seconds;\t\t\t\t#{(100*navigation_time/test_time).round(0)}% of test time
-    \tFound #{found_elements.size} elements in #{element_time.round(1)} seconds;\t\t\t\t#{(100*element_time/test_time).round(0)}% of test time
-    \tClicked #{clicks} elements in #{click_time.round(1)} seconds;\t\t\t\t#{(100*click_time/test_time).round(0)}% of test time
-    \tInputText #{text_input} times in #{text_input_time.round(1)} seconds;\t\t\t\t#{(100*text_input_time/test_time).round(0)}% of test time
-    \tChecked for errors: #{error_checks} times in #{error_time.round(1)} seconds;\t#{(100*error_time/test_time).round(0)}% of test time
-    \tUnknown time & overhead: #{(test_time - total_known_time).round(1)} seconds;\t\t\t#{(100*(test_time - total_known_time)/test_time).round(0)}% of test time\n"
+    \tPolling sleeps for #{sleep_time.round(1)} seconds;\t\t\t\t#{(100*sleep_time/test_time).round(0)}% of test time
+    \tNavigated #{navigations} times in #{navigation_time.round(1)} seconds;\t\t\t#{(100*navigation_time/test_time).round(0)}% of test time
+    \tFound #{found_elements.size} elements in #{element_time.round(1)} seconds;\t\t\t#{(100*element_time/test_time).round(0)}% of test time
+    \tClicked #{clicks} elements in #{click_time.round(1)} seconds;\t\t\t#{(100*click_time/test_time).round(0)}% of test time
+    \tInputText #{text_input} times in #{text_input_time.round(1)} seconds;\t\t\t#{(100*text_input_time/test_time).round(0)}% of test time
+    \tChecked for errors: #{error_checks} times in #{error_time.round(1)} seconds;\t\t#{(100*error_time/test_time).round(0)}% of test time
+    \tNumber of Exceptions: #{exception_counts}; (multiply this number by implicit wait time to know how much of the finding element time is implicit wait)
+    \tUnknown time & overhead: #{(test_time - total_known_time).round(1)} seconds;\t\t\t#{(100*(test_time - total_known_time)/test_time).round(0)}% of test time\n\n"
     end
   end
 end
@@ -222,6 +230,9 @@ module Selenium
 
         # WARNING - Overwritten Method
         def execute(*args)
+          puts "Commands: #{args}" if Watirmark::Configuration.instance.execute_debug
+          no_start_time = nil
+
           case args[0]
             when :sendKeysToElement
               Watirmark::Session.instance.watirmark_statistics.add_text_input
@@ -242,17 +253,24 @@ module Selenium
               no_start_time = true
           end
 
-          return_value = raw_execute(*args)['value']
-
-          unless no_start_time
-            if text_input_start
-              Watirmark::Session.instance.watirmark_statistics.count_text_input_time(::Time.now - text_input_start)
-            elsif click_time_start
-              Watirmark::Session.instance.watirmark_statistics.count_click_time(::Time.now - click_time_start)
-            elsif nav_time_start
-              Watirmark::Session.instance.watirmark_statistics.count_navigation_time(::Time.now - nav_time_start)
+          begin
+            return_value = raw_execute(*args)['value']
+          rescue Exception => e
+            Watirmark::Session.instance.watirmark_statistics.add_exception
+            raise e
+          ensure
+            unless no_start_time
+              if text_input_start
+                Watirmark::Session.instance.watirmark_statistics.count_text_input_time(::Time.now - text_input_start)
+              elsif click_time_start
+                Watirmark::Session.instance.watirmark_statistics.count_click_time(::Time.now - click_time_start)
+              elsif nav_time_start
+                Watirmark::Session.instance.watirmark_statistics.count_navigation_time(::Time.now - nav_time_start)
+              end
             end
           end
+
+          puts "Returned: #{return_value}" if Watirmark::Configuration.instance.execute_debug
 
           return_value
         end
