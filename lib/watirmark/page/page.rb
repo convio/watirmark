@@ -29,6 +29,15 @@ module Watirmark
       process_pages.each { |page| return page if page.name == x }
     end
 
+    def popup_windows
+      self.class.popup_windows
+    end
+
+    def popup_window(x)
+      popup_windows.each { |window| return window if window.name == x }
+    end
+
+
   private
 
     def create_keyword_methods

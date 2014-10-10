@@ -72,9 +72,59 @@ module Watirmark
     end
   end
 
+  module PopupWindowDefinition
+
+    attr_accessor :popup_windows,
+                  :popup_windows_navigate_method,
+                  :popup_windows_submit_method
+
+    def popup_window(name)
+      @current_popup_window = find_or_create_popup_window(name)
+      yield
+    end
+
+    def popup_window_alias(x)
+      @current_popup_window.alias << x
+    end
+
+    def popup_window_navigate_method(proc=nil)
+      @popup_window_navigate_method = proc
+    end
+
+    def popup_window_submit_method(proc)
+      @popup_window_submit_method = proc
+    end
+
+    private
+
+    def add_superclass_popup_windows_to_subclass(klass)
+      klass.popup_windows = (@popup_windows ? @popup_windows.dup : klass.popup_windows = [] )
+    end
+
+    def find_or_create_popup_window(name)
+      mypopup = find_popup_window(name)
+      unless mypopup
+        mypopup = PopupWindow.new(name,
+                                  @current_popup_window,
+                                  @popup_window_navigate_method,
+                                  @popup_window_submit_method
+        )
+        @popup_windows ||= []
+        @popup_windows << mypopup
+      end
+      mypopup
+    end
+
+    def find_popup_window(name)
+      @popup_windows.find { |p| p.name == name}
+    end
+
+  end
+
 
   module PageDefinition
     include ProcessPageDefinition
+    include PopupWindowDefinition
     attr_accessor :kwds, :perms, :kwd_metadata
 
     @@browser = nil
