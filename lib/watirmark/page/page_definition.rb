@@ -1,4 +1,5 @@
 require 'watirmark/page/process_page'
+require 'watirmark/page/popup_window'
 
 module Watirmark
   module ProcessPageDefinition
@@ -81,6 +82,7 @@ module Watirmark
     def popup_window(name)
       @current_popup_window = find_or_create_popup_window(name)
       yield
+      @current_popup_window = nil
     end
 
     def popup_window_alias(x)
@@ -101,6 +103,12 @@ module Watirmark
       klass.popup_windows = (@popup_windows ? @popup_windows.dup : klass.popup_windows = [] )
     end
 
+    def create_default_popup_window(klass)
+      klass.instance_variable_set :@current_popup_window, PopupWindow.new
+      current_window = klass.instance_variable_get(:@current_popup_window)
+      klass.popup_windows << current_window
+    end
+
     def find_or_create_popup_window(name)
       mypopup = find_popup_window(name)
       unless mypopup
@@ -116,7 +124,9 @@ module Watirmark
     end
 
     def find_popup_window(name)
-      @popup_windows.find { |p| p.name == name}
+      return nil unless @current_popup_window
+      underscored_name = (@current_popup_window.underscored_name + '_' + name).downcase.gsub!(/\s+/, '_')
+      @popup_windows.find { |p| p.underscored_name == underscored_name}
     end
 
   end
@@ -133,7 +143,9 @@ module Watirmark
       add_superclass_keywords_to_subclass(klass)
       add_superclass_keyword_metadata_to_subclass(klass)
       add_superclass_process_pages_to_subclass(klass)
+      add_superclass_popup_windows_to_subclass(klass)
       create_default_process_page(klass)
+      # create_default_popup_window(klass)
     end
 
     def keyword(name, map=nil, &block)
@@ -196,6 +208,7 @@ module Watirmark
       keyword_name = name.to_sym
       add_to_keywords(keyword_name)
       add_to_current_process_page(keyword_name, permissions)
+      add_to_current_popup_window(keyword_name, permissions) if @current_popup_window
       add_keyword_metadata(keyword_name, map, permissions, block)
     end
 
@@ -206,10 +219,15 @@ module Watirmark
       @kwd_metadata[self.to_s][name][:permissions] = permissions
       @kwd_metadata[self.to_s][name][:block] = block
       @kwd_metadata[self.to_s][name][:process_page] = @current_process_page
+      @kwd_metadata[self.to_s][name][:popup_window] = @current_popup_window
     end
 
     def add_to_current_process_page(name, permissions)
       @current_process_page << name if permissions
+    end
+
+    def add_to_current_popup_window(name, permissions)
+      @current_popup_window << name if permissions
     end
 
     def add_to_keywords(method_sym)
