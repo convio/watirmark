@@ -43,11 +43,6 @@ describe 'Process Page Views' do
       keyword(:c) {'c'}
     end
 
-    class DefaultView < Watirmark::Page
-      keyword(:a) {'a'}
-      keyword(:b) {'b'}
-    end
-
     class ProcessPageView < Watirmark::Page
       process_page 'page 1' do
         keyword(:a) {'a'}
@@ -123,7 +118,7 @@ describe 'Process Page Views' do
     custom_method_called.should == true
   end
 
-  it 'should support defining the process page submit method' do
+  it 'should support aliasing process pages' do
     process_page = @processpagealias.process_page('page 1')
     process_page.alias.should == ['page a', 'page b']
   end
