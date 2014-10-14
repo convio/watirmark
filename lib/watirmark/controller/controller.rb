@@ -154,7 +154,7 @@ module Watirmark
 
       def keyed_elements
         @cache = {}
-        @view.keyed_elements.select{|e| !value(e).nil?}
+        @view.keyed_elements.select{|e| !value(e).nil? && value(e) != //}
       end
 
       def locate_model(supermodel)
