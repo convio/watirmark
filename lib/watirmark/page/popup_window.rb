@@ -47,6 +47,7 @@ module Watirmark
     def activate
       return if active?
       goto_popup_window
+      Page.browser.windows.last.use
     end
 
     def <<(x)
@@ -71,6 +72,7 @@ module Watirmark
 
     def submit
       instance_eval &(submit_method || @@submit_method_default)
+      Page.browser.windows.first.use
     end
 
     def aliases
