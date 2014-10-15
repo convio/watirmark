@@ -120,7 +120,7 @@ module Watirmark
       use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
-      add_cookies unless SAVED_COOKIES.empty
+      add_cookies unless SAVED_COOKIES.empty?
       Page.browser
     end
 
