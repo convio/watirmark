@@ -32,6 +32,7 @@ module Watirmark
     include CucumberPostFailureBuffering
 
     POST_WAIT_CHECKERS = []
+    SAVED_COOKIES = []
 
     def browser
       Page.browser
@@ -119,11 +120,13 @@ module Watirmark
       use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
+      add_cookies unless SAVED_COOKIES.empty
       Page.browser
     end
 
-    def closebrowser
+    def closebrowser(opts={})
       begin
+        save_cookies if opts[:save_cookies]
         Page.browser.close
       rescue Errno::ECONNREFUSED, Selenium::WebDriver::Error::WebDriverError
         # browser already closed or unavailable
@@ -149,6 +152,20 @@ module Watirmark
     end
 
     private
+
+    def add_cookies
+      SAVED_COOKIES.each do |cookie|
+        Page.browser.driver.manage.add_cookie cookie
+      end
+      #clear cookies
+      SAVED_COOKIES.clear
+    end
+
+    def save_cookies
+      Page.browser.manage.all_cookies.each do | cookie |
+        SAVED_COOKIES >> cookie
+      end
+    end
 
     def use_headless_display
       unless RbConfig::CONFIG['host_os'].match('linux')
