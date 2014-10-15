@@ -73,6 +73,7 @@ module Watirmark
     def submit
       instance_eval &(submit_method || @@submit_method_default)
       Page.browser.windows.first.use
+      Page.browser.windows.last.close
     end
 
     def aliases

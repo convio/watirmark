@@ -39,7 +39,10 @@ module Watirmark
       end
 
       def populate_data
-        submit_process_page(@last_process_page.underscored_name) {submit} if populate_values
+        if populate_values
+          submit_process_page(@last_process_page.underscored_name) {submit}
+          @last_popup_window.submit if @last_popup_window
+        end
       end
 
       def populate_values
@@ -49,6 +52,7 @@ module Watirmark
           next unless k.populate_allowed?
           submit_process_page_when_page_changes(k)
           before_process_page(k)
+          get_last_popup_window(k)
           populate_keyword(k)
         end
         @seen_value
@@ -146,6 +150,10 @@ module Watirmark
 
       def submit_process_page(name, &block)
         call_method_if_exists("submit_process_page_#{name}", &block)
+      end
+
+      def get_last_popup_window(keyed_element)
+        @last_popup_window = keyed_element.popup_window
       end
 
       def value(keyed_element)
