@@ -33,7 +33,7 @@ module Watirmark
     alias :value :values
 
     def lookup(x)
-      return nil if x.nil?
+      return nil if x.nil? || x == //
       @maps.each do |map|
         if Array === map.list
           map.list.each do |items|
