@@ -2,6 +2,7 @@ require 'watirmark/controller/actions'
 require 'watirmark/controller/dialogs'
 require 'watirmark/controller/assertions'
 require 'watirmark/controller/matcher'
+require 'wait'
 
 module Watirmark
   module WebPage
