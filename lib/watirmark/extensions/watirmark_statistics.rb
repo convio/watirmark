@@ -1,3 +1,5 @@
+
+
 module Watirmark
   class WatirmarkStatsCollection
     attr_reader :stats_list
@@ -129,6 +131,17 @@ module Watirmark
     \tNumber of Exceptions: #{exception_counts}; (multiply this number by implicit wait time to know how much of the finding element time is implicit wait)
     \tUnknown time & overhead: #{(test_time - total_known_time).round(1)} seconds;\t\t\t#{(100*(test_time - total_known_time)/test_time).round(0)}% of test time\n\n"
     end
+  end
+end
+
+class Wait
+  alias_method :wait_until, :until
+
+  def until
+    start_time = ::Time.now
+    return_value = old_until
+    Watirmark::Session.instance.watirmark_statistics.count_poll_time(Time.now - start_time)
+    return_value
   end
 end
 
