@@ -196,18 +196,6 @@ module Watir
     end
   end
 
-  class Button
-    alias_method :old_locate, :locate
-
-    def locate
-      Watirmark::Session.instance.watirmark_statistics.add_found_element(@selector)
-      start_time = ::Time.now
-      return_value = old_locate
-      Watirmark::Session.instance.watirmark_statistics.count_element_time(::Time.now - start_time)
-      return_value
-    end
-  end
-
   class Browser
     alias :old_old_run_checkers :run_checkers
 
