@@ -162,8 +162,8 @@ module Watirmark
     end
 
     def save_cookies
-      Page.browser.manage.all_cookies.each do | cookie |
-        SAVED_COOKIES >> cookie
+      Page.browser.driver.manage.all_cookies.each do | cookie |
+        SAVED_COOKIES << cookie
       end
     end
 
