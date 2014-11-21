@@ -47,7 +47,9 @@ module Watirmark
       end
 
       def keywords(*args)
-        @keys = [*args].flatten
+        @keys ||= []
+        @keys += [*args].flatten
+        @keys = @keys.uniq
       end
 
       private
