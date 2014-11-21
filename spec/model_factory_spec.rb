@@ -549,6 +549,10 @@ describe "subclassing" do
       trait :some_trait do
         full_name { "full_name" }
       end
+
+      trait :new_trait do
+        dog_name {"sugar"}
+      end
     end
     module FactoryTest
       class BaseModel < Watirmark::Model::Factory
@@ -572,6 +576,15 @@ describe "subclassing" do
 
       class NoDefaultModel < BaseModel
       end
+
+      class KeywordsSubModel < BaseModel
+        keywords :middle_name, :cat_name, :dog_name
+        traits :new_trait
+        defaults do
+          middle_name {'middle_name'}
+          cat_name {'Annie'}
+        end
+      end
     end
   end
 
@@ -592,6 +605,14 @@ describe "subclassing" do
     FactoryTest::SubModel.new.last_name.should == 'sub_last_name'
     FactoryTest::SubModel.new.attr_test.should == 'I came from SubModel'
     FactoryTest::SubModel.new.base_attr.should == 'This is a base attribute'
+  end
+
+  specify "submodel should be able to add new keywords to the inherited set" do
+    FactoryTest::KeywordsSubModel.new.middle_name.should == 'middle_name'
+    FactoryTest::KeywordsSubModel.new.cat_name.should == 'Annie'
+    FactoryTest::KeywordsSubModel.new.keywords.include?(:first_name).should == true
+    FactoryTest::KeywordsSubModel.new.first_name.should == 'base_first_name'
+    FactoryTest::KeywordsSubModel.new.dog_name.should == 'sugar'
   end
 
 end
