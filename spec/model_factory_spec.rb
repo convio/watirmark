@@ -520,6 +520,22 @@ describe "keywords" do
           last_name { "Last #{uuid}" }
         end
       end
+
+      class MultipleKeywordsModel < Watirmark::Model::Factory
+        keywords :first_name
+        keywords :last_name
+        defaults do
+          first_name { "First" }
+          last_name {"Last"}
+        end
+      end
+
+      class DuplicateKeywordsModel < Watirmark::Model::Factory
+        keywords :first_name, :first_name
+        defaults do
+          first_name { "First" }
+        end
+      end
     end
   end
 
@@ -539,6 +555,18 @@ describe "keywords" do
 
   specify "should be able to list keywords for a model" do
     FactoryTest::SomeModel.new.keywords.sort.should == [:first_name, :middle_name, :last_name].sort
+  end
+
+  specify "should be able to support multiple calls to keywords method" do
+    a = FactoryTest::MultipleKeywordsModel.new
+    a.first_name.should == "First"
+    a.keywords.include?(:last_name).should == true
+    a.last_name.should == "Last"
+  end
+
+  specify "should not contain duplicate values in the keywords" do
+    a = FactoryTest::DuplicateKeywordsModel.new
+    a.keywords.size.should == 1
   end
 
 end
@@ -585,6 +613,10 @@ describe "subclassing" do
           cat_name {'Annie'}
         end
       end
+
+      class DuplicateKeywordsSubModel < BaseModel
+        keywords :first_name
+      end
     end
   end
 
@@ -601,18 +633,25 @@ describe "subclassing" do
   end
 
   specify "submodel should be able to override defaults" do
-    FactoryTest::SubModel.new.first_name.should == 'sub_first_name'
-    FactoryTest::SubModel.new.last_name.should == 'sub_last_name'
-    FactoryTest::SubModel.new.attr_test.should == 'I came from SubModel'
-    FactoryTest::SubModel.new.base_attr.should == 'This is a base attribute'
+    a = FactoryTest::SubModel.new
+    a.first_name.should == 'sub_first_name'
+    a.last_name.should == 'sub_last_name'
+    a.attr_test.should == 'I came from SubModel'
+    a.base_attr.should == 'This is a base attribute'
   end
 
   specify "submodel should be able to add new keywords to the inherited set" do
-    FactoryTest::KeywordsSubModel.new.middle_name.should == 'middle_name'
-    FactoryTest::KeywordsSubModel.new.cat_name.should == 'Annie'
-    FactoryTest::KeywordsSubModel.new.keywords.include?(:first_name).should == true
-    FactoryTest::KeywordsSubModel.new.first_name.should == 'base_first_name'
-    FactoryTest::KeywordsSubModel.new.dog_name.should == 'sugar'
+    a = FactoryTest::KeywordsSubModel.new
+    a.middle_name.should == 'middle_name'
+    a.keywords.include?(:first_name).should == true
+    a.cat_name.should == 'Annie'
+    a.first_name.should == 'base_first_name'
+    a.dog_name.should == 'sugar'
+  end
+
+  specify "should not have duplicate keywords after inheritance" do
+    a = FactoryTest::DuplicateKeywordsSubModel.new
+    a.keywords.select{|x| x == :first_name}.size.should == 1
   end
 
 end
