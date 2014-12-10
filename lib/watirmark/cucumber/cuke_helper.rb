@@ -8,10 +8,11 @@ module CukeHelper
   end
 
   def eval_keywords(hash)
+    newhash = {}
     hash.each do |key, value|
-      hash[key] = format_value(value)
+      newhash[key] = format_value(value)
     end
-    hash
+    newhash
   end
 
   # when the input is an array, eval each element
