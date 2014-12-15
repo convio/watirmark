@@ -41,6 +41,11 @@ module EmailHelper
         qa_inbox(model).get_email_replyto(["FROM", from, "TO", model.email], timeout)
       end
 
+      def read_email_subject_and_from(model, from, subject, timeout=30)
+        email_content = qa_inbox(model).get_email_text(["FROM", from, "TO", model.email, "SUBJECT", subject], timeout)
+        email[model.model_name] = EmailBody.new(email_content)
+      end
+
       def log_email(model)
         Watirmark.logger.info "Email Received"
         Watirmark.logger.info email[model.model_name].body.inspect
