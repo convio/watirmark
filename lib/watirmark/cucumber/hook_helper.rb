@@ -13,16 +13,19 @@ module HookHelper
     def take_screenshot
       image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
       path = "reports/screenshots"
+      file = "#{path}/#{image}"
       FileUtils.mkdir_p path unless File.directory? path
       begin
-        Page.browser.screenshot.save "#{path}/#{image}"
+        Page.browser.screenshot.save file
+        data = File.open(file, 'rb') { |f| f.read }
+        data = Base64.encode64(data)
       rescue Exception => e
         Watirmark.logger.warn("Screenshot was not taken due to an exception")
         Watirmark.logger.warn(e.to_s)
         Watirmark.logger.warn(e.backtrace)
       end
 
-      ["screenshots/#{image}", 'image/png']
+      [data, 'image/png']
     end
 
     def serialize_models

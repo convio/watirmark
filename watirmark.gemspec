@@ -14,14 +14,13 @@ Gem::Specification.new do |s|
   s.test_files = Dir['spec/**/*.rb']
   s.executables = 'watirmark'
   s.require_paths = %w(lib)
-  s.add_dependency('watir-webdriver', '>= 0.6.1')
-  s.add_dependency('selenium-webdriver', '~> 2.42.0')
-  s.add_dependency('american_date', '~> 1.0')
+  s.add_dependency('watir-webdriver', '>= 0.6.2')
+  s.add_dependency('american_date', '~> 1.1.0')
   s.add_dependency('logger', '~> 1.2.8')
-  s.add_dependency('uuid', '~> 2.3.6')
-  s.add_dependency('nokogiri', '~> 1.5.10')
-  s.add_dependency('thor')
-  s.add_dependency('activesupport', '~> 3.1.11')
-  s.add_dependency('i18n', '~> 0.6.1')
+  s.add_dependency('uuid', '~> 2.3.7')
+  s.add_dependency('nokogiri', '~> 1.6.0')
+  s.add_dependency('thor', '~> 0.19.1')
+  s.add_dependency('activesupport', '~> 4.0')
+  s.add_dependency('headless') # This only gets required when on Linux
 end
 

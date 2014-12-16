@@ -86,17 +86,5 @@ describe "configuration" do
   specify 'inspect' do
     @config.inspect.should =~ /^{.+}/
   end
-  
-  specify 'override how a setting is set' do
-    module Watirmark
-      class Configuration
-        def hostname_value(hostname)
-          hostname + '/test'
-        end
-      end
-    end
-    Watirmark::Configuration.instance.hostname = 'www.convio.com'
-    Watirmark::Configuration.instance.hostname.should == 'www.convio.com/test'
-  end
 
 end
