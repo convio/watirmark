@@ -4,26 +4,6 @@ Watir::always_locate = false
 
 module Watir
 
-  class Browser
-    # for modal dialogs that close on submission, these might
-    # fail to run because the window has been destroyed
-    alias :old_run_checkers :run_checkers
-
-    # this is basically a check to make sure we're not
-    # running the checkers on a modal dialog that has closed
-    # by the time the checkers have run
-    def run_checkers
-      @error_checkers.each do |checker|
-        begin
-          checker.call(self)
-        rescue Selenium::WebDriver::Error::UnknownError, Selenium::WebDriver::Error::NoSuchWindowError => e
-          Watirmark.logger.warn "Unable to run checker: #{e.message}"
-          break
-        end
-      end
-    end
-  end
-
   module Container
     alias :row :tr
     alias :cell :td
