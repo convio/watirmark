@@ -27,14 +27,25 @@ module EmailHelper
       end
 
       # Read the contents of an email, cache it and delete the email
-      def read_email(model, subject, timeout=30)
-        email_content = qa_inbox(model).get_email_text(["SUBJECT", subject, "TO", model.email], timeout)
+      def read_email(model, options_hash, timeout=30)
+        search_array = options_hash_to_array(options_hash)
+        email_content = qa_inbox(model).get_email_text(search_array, timeout)
         email[model.model_name] = EmailBody.new(email_content)
       end
 
+      def options_hash_to_array(hash_of_search_params)
+        Kernel.warn(self + ':>' + Kernel.__callee__ + ': Attempting hash-to-array conversion with object that is not a hash') unless hash_of_search_params.is_a?(Hash)
+        converted_array = Array.new
+        hash_of_search_params.each do | search_key, search_value |
+          converted_array << search_key.to_s.upcase
+          converted_array << search_value.to_s
+        end
+        converted_array
+      end
+
       def read_email_from(model, from, timeout=30)
-        email_content = qa_inbox(model).get_email_text(["FROM", from, "TO", model.email], timeout)
-        email[model.model_name] = EmailBody.new(email_content)
+        Kernel.warn(self + ':>' + Kernel.__callee__ + ': This method is deprecated, please use read_email')
+        read_email(model, {:from => from, :to => model.email}, timeout)
       end
 
       def read_email_replyto(model, from, timeout=30)
@@ -42,8 +53,8 @@ module EmailHelper
       end
 
       def read_email_subject_and_from(model, from, subject, timeout=30)
-        email_content = qa_inbox(model).get_email_text(["FROM", from, "TO", model.email, "SUBJECT", subject], timeout)
-        email[model.model_name] = EmailBody.new(email_content)
+        Kernel.warn(self + ':>' + Kernel.__callee__ + ': This method is deprecated, please use read_email')
+        read_email(model, {:from => from, :to => model.email, :subject => subject}, timeout)
       end
 
       def log_email(model)
