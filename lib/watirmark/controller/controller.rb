@@ -123,14 +123,16 @@ module Watirmark
 
       def populate_keyword_value(keyed_element)
         call_method_if_exists("populate_#{keyed_element.keyword}") do
-          # for the first element on a page we populate, wait for it to appear
-          @view.send(keyed_element.keyword).send(:wait_until_present) unless @seen_value
+          @view.send(keyed_element.keyword).wait_until_present
           @view.send("#{keyed_element.keyword}=", value(keyed_element))
         end
       end
 
       def verify_keyword_value(keyed_element)
-        call_method_if_exists("verify_#{keyed_element.keyword}") {assert_equal(keyed_element.get, value(keyed_element))}
+        call_method_if_exists("verify_#{keyed_element.keyword}") do
+          keyed_element.get.wait_until_present
+          assert_equal(keyed_element.get, value(keyed_element))
+        end
       end
 
       def keyword_value(keyed_element)
