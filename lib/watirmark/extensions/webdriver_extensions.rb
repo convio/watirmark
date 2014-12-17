@@ -24,15 +24,6 @@ module Watir
     end
   end
 
-  # Trigger checkers when manually submitting a form
-  class Form < HTMLElement
-    alias :old_submit :submit
-    def submit
-      old_submit
-      browser.run_checkers
-    end
-  end
-
   module Container
     alias :row :tr
     alias :cell :td
