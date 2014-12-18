@@ -71,6 +71,7 @@ module Watirmark
 
     def goto_process_page
       unless navigate
+        raise Watirmark::TestError, "Unable to navigate to Process Page: #{name}" if aliases.empty?
         aliases.each do |alias_name|
           alias_process_page = self.dup
           alias_process_page.alias = []
