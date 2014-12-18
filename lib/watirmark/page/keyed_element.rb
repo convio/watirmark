@@ -29,7 +29,6 @@ module Watirmark
 
     def set val
       return if val.nil?
-      @process_page.activate
       element = get
       val = @map.lookup(val) if @map
       case val

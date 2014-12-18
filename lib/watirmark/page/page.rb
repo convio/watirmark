@@ -33,9 +33,9 @@ module Watirmark
 
     def create_keyword_methods
       keywords = self.class.keyword_metadata || {}
-      keywords.each_key do |key|
-        keyed_element = KeyedElement.new(self, keywords[key])
-        next if !@keyed_elements.empty? and @keyed_elements.any? {|k| k.keyword.eql? keyed_element.keyword }
+      keywords.each do |key, value|
+        keyed_element = KeyedElement.new(self, value)
+        next if @keyed_elements.any? {|k| k.keyword.eql? keyed_element.keyword }
         @keyed_elements << keyed_element
         meta_def key do |*args|
           keyed_element.get *args
