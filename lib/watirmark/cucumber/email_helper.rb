@@ -34,7 +34,7 @@ module EmailHelper
       end
 
       def options_hash_to_array(hash_of_search_params)
-        Kernel.warn(self + ':>' + Kernel.__callee__ + ': Attempting hash-to-array conversion with object that is not a hash') unless hash_of_search_params.is_a?(Hash)
+        Kernel.warn(self.to_s + ':>' + Kernel.__callee__.to_s + ': Attempting hash-to-array conversion with object that is not a hash') unless hash_of_search_params.is_a?(Hash)
         converted_array = Array.new
         hash_of_search_params.each do | search_key, search_value |
           converted_array << search_key.to_s.upcase
@@ -44,7 +44,7 @@ module EmailHelper
       end
 
       def read_email_from(model, from, timeout=30)
-        Kernel.warn(self + ':>' + Kernel.__callee__ + ': This method is deprecated, please use read_email')
+        Kernel.warn(self.to_s + ':>' + Kernel.__callee__.to_s + ': This method is deprecated, please use read_email')
         read_email(model, {:from => from, :to => model.email}, timeout)
       end
 
@@ -53,7 +53,7 @@ module EmailHelper
       end
 
       def read_email_subject_and_from(model, from, subject, timeout=30)
-        Kernel.warn(self + ':>' + Kernel.__callee__ + ': This method is deprecated, please use read_email')
+        Kernel.warn(self.to_s + ':>' + Kernel.__callee__.to_s + ': This method is deprecated, please use read_email')
         read_email(model, {:from => from, :to => model.email, :subject => subject}, timeout)
       end
 
