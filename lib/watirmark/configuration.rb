@@ -23,6 +23,9 @@ module Watirmark
         :uuid               => nil,
         :webdriver          => :firefox,
         :headless           => false,
+        :always_locate      => true,
+        :prefer_css         => false,
+        :watir_timeout      => 30,
         :http_timeout       => 60,
         # database
         :dbhostname         => nil,
