@@ -162,15 +162,16 @@ module Watirmark
     end
 
     def new_watir_browser
-      config.webdriver ||= :firefox
-      if config.webdriver.to_sym == :firefox
-        Watir::Browser.new config.webdriver.to_sym, :profile => config.firefox_profile
-      elsif config.webdriver.to_sym == :firefox_proxy
-        Watir::Browser.new :firefox, :profile => config.firefox_profile
-      elsif config.webdriver.to_sym == :sauce
+      client = Selenium::WebDriver::Remote::Http::Default.new
+      client.timeout = config.http_timeout
+
+      case config.webdriver.to_sym
+      when :firefox, :firefox_proxy
+        Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
+      when :sauce
         Watir::Browser.new use_sauce
       else
-        Watir::Browser.new config.webdriver.to_sym
+        Watir::Browser.new config.webdriver.to_sym, http_client: client
       end
     end
 
