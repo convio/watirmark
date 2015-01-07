@@ -23,6 +23,8 @@ module Watirmark
         :uuid               => nil,
         :webdriver          => :firefox,
         :headless           => false,
+        :statistics         => false,
+        :execute_debug      => false, # requires statistics => true
         # database
         :dbhostname         => nil,
         :dbusername         => nil,
