@@ -117,6 +117,10 @@ module Watirmark
     end
 
     def openbrowser
+      Watir.default_timeout = config.watir_timeout
+      Watir.prefer_css = config.prefer_css
+      Watir.always_locate = config.always_locate
+
       use_headless_display if config.headless
       Page.browser = new_watir_browser
       initialize_page_checkers
