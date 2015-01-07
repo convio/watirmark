@@ -1,33 +1,32 @@
 module Watirmark
   module Dialogs
-    def modal_exists?
-      !!(Page.browser.windows.size > 1)
+
+    def current_window_index
+      current_window = Page.browser.window
+      Page.browser.windows.find_index(current_window)
     end
 
-    def with_modal_dialog
-      wait_for_modal_dialog
-      parent_window = (Page.browser.windows.size) - 2
-      begin
-        Page.browser.windows.last.use
-        Page.browser.wait
-        yield
-      ensure
-        Page.browser.windows[parent_window].use
-      end
+    def modal_exists?
+      Page.browser.window(index: current_window_index+1).exists?
     end
 
     def wait_for_modal_dialog
-      begin
-        Timeout::timeout(30) {
-          until modal_exists?
-            sleep 0.002
-          end
-          Page.browser.wait
-          sleep 0.02
-        }
-      rescue Timeout::Error
-        raise Watirmark::TestError, 'Timed out while waiting for modal dialog to open'
-      end
+      Watir::Wait.until { modal_exists? }
+    rescue TimeoutError
+      raise Watirmark::TestError, 'Timed out while waiting for modal dialog to open'
+    end
+
+    def with_modal_dialog &blk
+      wait_for_modal_dialog
+      Page.browser.windows.last.use &blk
+    end
+
+    def close_chrome_windows
+      Page.browser.windows(url: /chrome-extension/).each {|win| win.close}
+    end
+
+    def close_modal_window
+      Page.browser.window(index: current_window_index+1).close if Page.browser.windows.size >= current_window_index
     end
   end
 end
