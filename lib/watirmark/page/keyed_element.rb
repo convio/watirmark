@@ -21,6 +21,7 @@ module Watirmark
     def get *args
       @process_page.activate
       watir_object = @context.instance_exec(*args, &@block)
+      return if watir_object.nil?
       watir_object.extend(KeywordMethods)
       watir_object.radio_map = @map if @map
       watir_object.keyword = @keyword
