@@ -109,6 +109,7 @@ module Watirmark
         hash.each_pair { |key, value| send "#{key}=", value }
         self
       end
+      alias :has :update
 
 
       # Update the model using the provided hash but only if exists (TODO: may not be needed any more)
