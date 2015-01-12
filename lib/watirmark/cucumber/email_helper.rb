@@ -28,13 +28,13 @@ module EmailHelper
 
       # Read the contents of an email, cache it and delete the email
       def read_email(model, options_hash, timeout=30)
+        Kernel.raise ArgumentError, 'The options provided are not in the form of a hash, i.e. {:subject => "subject"}' unless options_hash.is_a?(Hash)
         search_array = options_hash_to_array(options_hash)
         email_content = qa_inbox(model).get_email_text(search_array, timeout)
         email[model.model_name] = EmailBody.new(email_content)
       end
 
       def options_hash_to_array(hash_of_search_params)
-        Kernel.warn(self.to_s + ':>' + Kernel.__callee__.to_s + ': Attempting hash-to-array conversion with object that is not a hash') unless hash_of_search_params.is_a?(Hash)
         converted_array = Array.new
         hash_of_search_params.each do | search_key, search_value |
           converted_array << search_key.to_s.upcase

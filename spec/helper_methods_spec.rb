@@ -18,4 +18,12 @@ describe "Testing helpers for email_helper's read_email method" do
       end
   end
 
+  it "should throw an argument exception because of the options parameter" do
+     test_collection = EmailHelper::EmailCollection
+     option_hash = ["Subject", "subject"]
+     dummy_model = Watirmark::Model::Factory.new
+     expect { test_collection.read_email(dummy_model,option_hash) }.to raise_error(ArgumentError)
+     expect { test_collection.read_email(dummy_model, nil)}.to raise_error(ArgumentError)
+  end
+
 end
