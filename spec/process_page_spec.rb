@@ -1,13 +1,14 @@
 require_relative 'spec_helper'
 
 describe 'ProcessPage' do
-  
+
   it 'should implement a process page interface' do
     lambda{Watirmark::ProcessPage.new('pp')}.should_not raise_error
   end
   
   it 'should support an activate method' do
     p = Watirmark::ProcessPage.new('pp')
+    Watirmark::ProcessPage.navigate_method_default = Proc.new { true }
     lambda{p.activate}.should_not raise_error
   end
   
@@ -75,11 +76,20 @@ describe 'Process Page Views' do
     end
 
     class ProcessPageCustomNav < Watirmark::Page
-      process_page_navigate_method Proc.new {}
+      process_page_navigate_method Proc.new { true }
       process_page_submit_method Proc.new {}
       process_page_active_page_method Proc.new {}
       process_page 'page 4' do
         keyword(:d) {'d'}
+      end
+    end
+
+    class ProcessPageBadNav < Watirmark::Page
+      process_page_navigate_method Proc.new { false }
+      process_page_submit_method Proc.new {}
+      process_page_active_page_method Proc.new {}
+      process_page 'page 4' do
+        keyword(:d) { 'd' }
       end
     end
 
@@ -89,9 +99,11 @@ describe 'Process Page Views' do
     @processpagealias = ProcessPageAliasView.new
     @processpagesubclass = ProcessPageSubclassView.new
     @processpagecustomnav = ProcessPageCustomNav.new
+    @processpagebadnav = ProcessPageBadNav.new
   end
  
   it 'should only activate process_page when in the closure' do
+    Watirmark::ProcessPage.navigate_method_default = Proc.new { true }
     @processpagetest.a.should == 'a'
     @processpagetest.b.should == 'b'
     @processpagetest.c.should == 'c'
@@ -156,6 +168,11 @@ describe 'Process Page Views' do
     @processpagecustomnav.class.instance_variable_get(:@process_page_navigate_method).should be_kind_of(Proc)
     @processpagecustomnav.class.instance_variable_get(:@process_page_submit_method).should  be_kind_of(Proc)
   end
+
+  it 'should raise error if process page not present' do
+    expect {@processpagebadnav.d}.to raise_error Watirmark::TestError, 'Unable to navigate to Process Page: page 4'
+  end
+
 end
 
 

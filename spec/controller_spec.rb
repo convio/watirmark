@@ -55,6 +55,7 @@ describe Watirmark::WebPage::Controller do
   end
 
   class ProcessPageControllerView < Page
+    process_page_navigate_method Proc.new { true }
 
     keyword(:a) { Element.new :a }
     process_page('Page 1') do
