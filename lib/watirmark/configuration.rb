@@ -22,6 +22,8 @@ module Watirmark
         :loglevel           => Logger::INFO,
         :uuid               => nil,
         :webdriver          => :firefox,
+        :statistics         => false,
+        :execute_debug      => false, # requires statistics => true
         :headless           => false,
         :always_locate      => true,
         :prefer_css         => false,
