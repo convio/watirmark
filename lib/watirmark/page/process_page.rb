@@ -100,14 +100,9 @@ module Watirmark
 
     def active?
       page = active_page
-      return true if in_submenu(page, underscored_name)
-      aliases.each { |a| return true if in_submenu(page, underscored_name(a)) } unless aliases.empty?
+      return true if page =~ /@name/
+      aliases.each { |a| return true if page =~ /#{a}/ } unless aliases.empty?
       false
     end
-
-    def in_submenu(active_page, requested_page)
-      !!(active_page.to_s.downcase.delete('>').gsub(/\s+/, '_') =~ /^#{requested_page}/)
-    end
-
   end
 end
