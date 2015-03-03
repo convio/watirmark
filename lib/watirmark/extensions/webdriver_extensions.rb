@@ -48,6 +48,11 @@ module Watir
     end
   end
 
+  module Atoms
+    ATOMS[:getPreviousSibling] = File.read(File.expand_path("../atoms/getPreviousSibling.js", __FILE__))
+    ATOMS[:getNextSibling] = File.read(File.expand_path("../atoms/getNextSibling.js", __FILE__))
+  end
+
   class Table < HTMLElement
     def each
       rows.each { |x| yield x }
@@ -105,19 +110,50 @@ module Watir
   end
 
   class Element
-    begin
-      alias :prev_sibling :previous_sibling
-      alias :prevsibling :previous_sibling
-      alias :nextsibling :next_sibling
-    rescue NameError
-      # not using convio-specific webdriver. Ignore and continue
+
+    def next_sibling
+      e = locate_dom_element(:getNextSibling)
+      e.nil? ? raise(UnknownObjectException, "Next Sibling does not exist for #{@selector}") : e
+    end
+    alias_method :nextsibling, :next_sibling
+
+    def previous_sibling
+      e = locate_dom_element(:getPreviousSibling)
+      e.nil? ? raise(UnknownObjectException, "Next Sibling does not exist for #{@selector}") : e
+    end
+    alias_method :prev_sibling, :previous_sibling
+    alias_method :prevsibling, :previous_sibling
+
+    def locate_dom_element(method)
+      assert_exists
+
+      e = element_call { execute_atom method, @element }
+
+      if e.kind_of?(Selenium::WebDriver::Element)
+        Watir.element_class_for(e.tag_name.downcase).new(@parent, :element => e)
+      end
+    end
+
+    alias_method :old_element_call, :element_call
+    def element_call &block
+      old_element_call &block
+    rescue Selenium::WebDriver::Error::UnknownError => ex
+      raise unless ex.message.include?("Element is not clickable at point")
+      reset!
+      assert_exists
+      retry
+    end
+
+    alias_method :old_text, :text
+    def text
+      old_text.strip
     end
 
     def click_if_exists
       click if exists?
     end
 
-    alias :click_no_wait :click
+    alias_method :click_no_wait, :click
   end
 
   class TextFieldLocator
@@ -128,6 +164,29 @@ module Watir
     end
   end
 
+  class IFrame < HTMLElement
+    alias_method :old_switch_to!, :switch_to!
+    def switch_to!
+      old_switch_to!
+    rescue Watir::Exception::UnknownFrameException
+      # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
+      retry
+    end
+  end
+
+  class Alert
+    alias_method :old_text, :text
+    def text
+      old_text.strip
+    end
+  end
+
+  class Browser
+    alias_method :old_text, :text
+    def text
+      old_text.strip
+    end
+  end
 
 end
 
