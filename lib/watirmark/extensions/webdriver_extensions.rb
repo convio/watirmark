@@ -167,10 +167,12 @@ module Watir
   class IFrame < HTMLElement
     alias_method :old_switch_to!, :switch_to!
     def switch_to!
+      retry_attempts ||= 0
       old_switch_to!
     rescue Watir::Exception::UnknownFrameException
       # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
-      retry
+      retry_attempts += 1
+      retry if retry_attempts == 1
     end
   end
 
