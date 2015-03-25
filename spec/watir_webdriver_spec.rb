@@ -34,11 +34,25 @@ describe Watirmark::Session do
     expect(sib.exists?).to eq(false)
   end
 
+  specify 'can get child object for nonexistent previous sibling and does not raise exception, just returns false' do
+    element = Page.browser.option(:text => 'a')
+    child = element.previous_sibling.element(:text => 'doesntmatter')
+    expect(child.class).to eq(Watir::HTMLElement)
+    expect(child.exists?).to eq(false)
+  end
+
   specify 'can get following sibling object even though sibling does not exist' do
     element = Page.browser.option(:text => 'c')
     sib = element.next_sibling
     expect(sib.class).to eq(Watir::HTMLElement)
     expect(sib.exists?).to eq(false)
+  end
+
+  specify 'can get child object for nonexistent following sibling and does not raise exception, just returns false' do
+    element = Page.browser.option(:text => 'c')
+    child = element.next_sibling.element(:text => 'doesntmatter')
+    expect(child.class).to eq(Watir::HTMLElement)
+    expect(child.exists?).to eq(false)
   end
 
   specify 'can get previous sibling object and evaluate it does exist' do
