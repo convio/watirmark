@@ -119,7 +119,7 @@ module Watir
 
     def previous_sibling
       e = locate_dom_element(:getPreviousSibling)
-      e.nil? ? element(xpath: './preceeding-sibling::*') : e
+      e.nil? ? element(xpath: './preceding-sibling::*') : e
     end
     alias_method :prev_sibling, :previous_sibling
     alias_method :prevsibling, :previous_sibling
