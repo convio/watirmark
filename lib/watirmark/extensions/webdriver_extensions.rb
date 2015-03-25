@@ -113,13 +113,13 @@ module Watir
 
     def next_sibling
       e = locate_dom_element(:getNextSibling)
-      e.nil? ? raise(UnknownObjectException, "Next Sibling does not exist for #{@selector}") : e
+      e.nil? ? element(xpath: './following-sibling::*') : e
     end
     alias_method :nextsibling, :next_sibling
 
     def previous_sibling
       e = locate_dom_element(:getPreviousSibling)
-      e.nil? ? raise(UnknownObjectException, "Previous Sibling does not exist for #{@selector}") : e
+      e.nil? ? element(xpath: './preceeding-sibling::*') : e
     end
     alias_method :prev_sibling, :previous_sibling
     alias_method :prevsibling, :previous_sibling
