@@ -135,12 +135,10 @@ module Watir
     end
 
     alias_method :old_element_call, :element_call
-    def element_call &block
-      old_element_call &block
+    def element_call *args, &block
+      old_element_call *args, &block
     rescue Selenium::WebDriver::Error::UnknownError => ex
       raise unless ex.message.include?("Element is not clickable at point")
-      reset!
-      assert_exists
       retry
     end
 
@@ -164,11 +162,11 @@ module Watir
     end
   end
 
-  class IFrame < HTMLElement
-    alias_method :old_switch_to!, :switch_to!
-    def switch_to!
+  class FramedDriver
+    alias_method :old_switch!, :switch!
+    def switch!
       retry_attempts ||= 0
-      old_switch_to!
+      old_switch!
     rescue Watir::Exception::UnknownFrameException
       # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
       retry_attempts += 1

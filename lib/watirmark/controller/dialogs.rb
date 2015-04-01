@@ -2,16 +2,11 @@ module Watirmark
   module Dialogs
 
     def current_window_index
-      current_window = Page.browser.window
-      Page.browser.windows.find_index(current_window)
-    end
-
-    def modal_exists?
-      Page.browser.window(index: current_window_index+1).exists?
+      Page.browser.windows.find_index(Page.browser.window)
     end
 
     def wait_for_modal_dialog
-      Watir::Wait.until { modal_exists? }
+      Watir::Wait.until { Page.browser.windows.size > current_window_index }
     rescue TimeoutError
       raise Watirmark::TestError, 'Timed out while waiting for modal dialog to open'
     end
