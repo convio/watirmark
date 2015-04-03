@@ -24,7 +24,9 @@ module Watirmark
       end
 
       def insert_model(text)
-        return text unless text.class == String || text.class == Cucumber::Ast::DocString
+        # cucumber 2.0 defines a Core module between Cucumber and Ast
+        doc_class = Cucumber::Ast.const_defined?(:DocString) ? Cucumber::Ast::DocString : Cucumber::Core::Ast::DocString
+        return text unless text.class == String || text.class == doc_class
         result = text
         method_regexp = /\[([^\[\]]+)\]\.(\w+)/
         model_regexp = /\[([^\[\]]+)\]/
