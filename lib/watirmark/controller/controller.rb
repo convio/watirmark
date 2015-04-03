@@ -38,14 +38,14 @@ module Watirmark
         initialize_model(data)
       end
 
-      def populate_data
-        submit_process_page(@last_process_page.underscored_name) {submit} if populate_values
+      def populate_data(updates=nil)
+        submit_process_page(@last_process_page.underscored_name) {submit} if populate_values(updates)
       end
 
-      def populate_values
+      def populate_values(updates=nil)
         @seen_value = false
         @last_process_page = nil
-        keyed_elements.each do |k|
+        keyed_update_elements(updates).each do |k|
           next unless k.populate_allowed?
           submit_process_page_when_page_changes(k)
           before_process_page(k)
@@ -157,6 +157,11 @@ module Watirmark
       def keyed_elements
         @cache = {}
         @view.keyed_elements.select{|e| !value(e).nil?}
+      end
+
+      def keyed_update_elements(updates)
+        Watirmark.logger.info("Editing these keyword(s) in populate_data: #{updates}") unless updates.nil? || updates.empty?
+        keyed_elements.select{|k| updates.nil? || updates.include?(k.keyword) }
       end
 
       def locate_model(supermodel)

@@ -15,7 +15,7 @@ module Watirmark
       include FactoryMethodGenerators
 
       attr_accessor :defaults, :model_name, :models, :parent, :children, :model_type
-      attr_reader   :keywords
+      attr_reader   :keywords, :updates
 
       def marshal_dump
         [@keywords, @model_name, @models, @parent, @children, @model_type, self.to_h]
@@ -33,6 +33,7 @@ module Watirmark
         @search     = self.class.search || Proc.new{nil}
         @keywords   = self.class.keys.dup || []
         @children   = self.class.children.dup.map(&:new)
+        @updates    = []
         set_model_name
         set_default_values
         create_model_getters_and_setters
@@ -106,10 +107,17 @@ module Watirmark
       # Update the model using the provided hash
       def update hash
         remove_empty_entries hash
-        hash.each_pair { |key, value| send "#{key}=", value }
+        hash.each_pair do |key, value|
+          @updates << key
+          send "#{key}=", value
+        end
         self
       end
       alias :has :update
+
+      def clear_updates
+        @updates = []
+      end
 
 
       # Update the model using the provided hash but only if exists (TODO: may not be needed any more)
