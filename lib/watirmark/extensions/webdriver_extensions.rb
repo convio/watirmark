@@ -112,14 +112,12 @@ module Watir
   class Element
 
     def next_sibling
-      e = locate_dom_element(:getNextSibling)
-      e.nil? ? element(xpath: './following-sibling::*') : e
+      element(xpath: './following-sibling::*')
     end
     alias_method :nextsibling, :next_sibling
 
     def previous_sibling
-      e = locate_dom_element(:getPreviousSibling)
-      e.nil? ? element(xpath: './preceding-sibling::*') : e
+      element(xpath: './preceding-sibling::*[1]')
     end
     alias_method :prev_sibling, :previous_sibling
     alias_method :prevsibling, :previous_sibling
