@@ -10,9 +10,14 @@ module HookHelper
     end
 
 
-    def take_screenshot
-      image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
-      path = "reports/screenshots"
+    def take_screenshot(folder=nil, feature=nil)
+      if folder.nil?
+        path = "reports/screenshots"
+        image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
+      else
+        path = "reports/screenshots/#{folder}"
+        image = "#{feature}.png"
+      end
       file = "#{path}/#{image}"
       FileUtils.mkdir_p path unless File.directory? path
       begin
