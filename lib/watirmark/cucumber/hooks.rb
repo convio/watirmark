@@ -13,7 +13,9 @@ Before do |scenario|
 end
 
 After do |scenario|
-  (file, file_type) = HookHelper.take_screenshot
+  folder = scenario.file[/\/features\/([^\.]*)/,1]
+  feature = scenario.title.tr(' ','_')
+  (file, file_type) = HookHelper.take_screenshot(folder, feature)
   embed file, file_type
   HookHelper.serialize_models
 end
