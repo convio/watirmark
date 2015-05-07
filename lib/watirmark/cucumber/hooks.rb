@@ -14,7 +14,7 @@ end
 
 After do |scenario|
   (file, file_type) = HookHelper.take_screenshot
-  embed file, file_type
+  embed file, file_type if file && file_type
   HookHelper.serialize_models
 end
 
