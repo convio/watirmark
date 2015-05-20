@@ -52,7 +52,7 @@ module Watirmark
     # easily get the full path for alias names.
     def underscored_name(name=@name)
       u_name = (@parent && !@parent.root) ? "#{@parent.underscored_name}_#{name}" : name
-      u_name.downcase.gsub(/\s+/, '_') if u_name
+      u_name.downcase.gsub(/\s+|\//, '_') if u_name
     end
 
     def activate
