@@ -94,6 +94,19 @@ module Watirmark
         profile['security.warn_viewing_mixed.show_once'] =  false
         profile['security.mixed_content.block_active_content'] = false
       end
+      if config.firebug
+        unless RbConfig::CONFIG['host_os'].match('linux')
+          warn "Firebug with Firefox only supported on Linux"
+          return
+        end
+        path = (File.expand_path "../../../bin/firefox_extensions/firebug", __FILE__)
+        file = 'addon-1843-latest.xpi'
+        Dir.chdir(path) do
+          File.delete(file) if File.exists?(file)
+          `wget https://addons.mozilla.org/firefox/downloads/latest/1843/addon-1843-latest.xpi`
+        end
+        profile.add_extension("#{path}/#{file}")
+      end
       profile["focusmanager.testmode"] = true
       profile
     end

@@ -27,6 +27,7 @@ module Watirmark
         :prefer_css         => false,
         :watir_timeout      => 30,
         :http_timeout       => 60,
+        :firebug            => false,
         # database
         :dbhostname         => nil,
         :dbusername         => nil,
