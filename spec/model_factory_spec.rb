@@ -99,6 +99,20 @@ describe "#update" do
     lambda{keys.update('   '.to_sym=>'') }.should_not raise_error
   end
 
+  specify "model #updates hash is updated when any keywords in the model is updated" do
+    keys = FactoryTest::UpdateModel.new
+    keys.update(:username=>'username', :foo=>'foo')
+    expect(keys.updates).to include(:username)
+    expect(keys.updates).to include(:foo)
+  end
+
+  specify "model #updates hash is cleared when #clear_updates is called" do
+    keys = FactoryTest::UpdateModel.new
+    keys.update(:username=>'username', :foo=>'foo')
+    keys.clear_updates
+    expect(keys.updates).to be_empty
+  end
+
 end
 
 describe "defaults" do
@@ -489,7 +503,7 @@ end
 describe "keywords" do
   before :all do
     module FactoryTest
-      class Element
+      class ElementTest
         attr_accessor :value
 
         def initialize(x)
@@ -498,9 +512,9 @@ describe "keywords" do
       end
 
       class SomeView < Page
-        keyword(:first_name)  { Element.new :a }
-        keyword(:middle_name) { Element.new :b }
-        keyword(:last_name)   { Element.new :c }
+        keyword(:first_name)  { ElementTest.new :a }
+        keyword(:middle_name) { ElementTest.new :b }
+        keyword(:last_name)   { ElementTest.new :c }
       end
 
       class SomeModel < Watirmark::Model::Factory

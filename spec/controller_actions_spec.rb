@@ -151,4 +151,60 @@ describe Watirmark::Actions do
   it 'should not throw an exception if populate_data is overridden' do
     lambda { ControllerActionsTest::ActionCreateControllerWithOverride.new.create }.should_not raise_error
   end
+
+  describe 'Controllers will only populate newly updated values in the model' do
+
+    before(:all) do
+      class TestEditView < Page
+        keyword(:edit_test) {}
+        keyword(:edit_test_two) {}
+        def create(model); end
+        def edit(model); end
+      end
+      class TestEditController < Watirmark::WebPage::Controller
+        @view = TestEditView
+        def populate_edit_test; end
+        def populate_edit_test_two; end
+      end
+      class TestEditModel < Watirmark::Model::Factory
+        keywords :edit_test
+        defaults do
+          edit_test { true }
+        end
+      end
+    end
+
+    specify 'populate_data populates keywords that have not been populated before' do
+      model = TestEditModel.new
+      c = TestEditController.new(model)
+      model.update(edit_test: true)
+      c.expects(:populate_edit_test).once
+      c.run :edit
+      c.run :edit
+      c.run :edit
+      model.update(edit_test_two: true)
+      c.expects(:populate_edit_test_two).once
+      c.run :edit
+      c.run :edit
+      c.run :edit
+    end
+
+    specify 'create should populate every time regardless of model updates' do
+      model = TestEditModel.new
+      c = TestEditController.new(model)
+      c.expects(:populate_edit_test).twice
+      c.run :create
+      c.run :create
+    end
+
+    specify 'create should populate every time even when the model is updated' do
+      model = TestEditModel.new
+      c = TestEditController.new(model)
+      c.expects(:populate_edit_test).twice
+      c.run :create
+      model.update(edit_test_two: true)
+      c.expects(:populate_edit_test_two).once
+      c.run :create
+    end
+  end
 end
