@@ -20,15 +20,9 @@ module ModelHelper
 # Perform an action using a models and update
 # the models if that action is successful
   def with_model(model, table)
-    orig_model = model.clone
-    update_model(model, table)
+    cloned_model = model.clone
+    update_model(cloned_model, table)
     yield
-    if Watirmark::Session.instance.post_failure
-      Watirmark.logger.info  "Reverting Model #{Watirmark::Session.instance.post_failure}"
-      model.update(orig_model.to_h) # revert models on failure
-    elsif model.to_h != orig_model.to_h
-      Watirmark.logger.info "Updated model '#{model.model_name}' #{hash_record(table).inspect}"
-    end
   end
 end
 
