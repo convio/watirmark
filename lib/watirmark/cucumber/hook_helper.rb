@@ -10,20 +10,12 @@ module HookHelper
     end
 
 
-    def take_screenshot(folder='', feature='')
-      path = "reports/screenshots/#{folder}"
-      if folder.empty?
-        image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
-      else
-        image = "#{feature}.png"
-      end
+    def take_screenshot
+      image = "#{Time.now.to_i}-#{UUID.new.generate(:compact)}.png"
+      path = "reports/screenshots"
       file = "#{path}/#{image}"
       FileUtils.mkdir_p path unless File.directory? path
       begin
-        if Page.browser.alert.exists?
-          Watirmark.logger.warn("Alert is Open while taking screenshot: #{Page.browser.alert.text}")
-          Page.browser.alert.close
-        end
         Page.browser.screenshot.save file
         data = File.open(file, 'rb') { |f| f.read }
         data = Base64.encode64(data)
