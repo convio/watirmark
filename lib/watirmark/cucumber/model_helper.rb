@@ -20,9 +20,10 @@ module ModelHelper
 # Perform an action using a models and update
 # the models if that action is successful
   def with_model(model, table)
-    cloned_model = model.clone
-    update_model(cloned_model, table)
+    orig_model = model.clone
+    update_model(model, table)
     yield
+    model.update(orig_model.to_h)
   end
 end
 
