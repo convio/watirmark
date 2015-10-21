@@ -48,8 +48,7 @@ module Watirmark
     def edit
       search_for_record
       @view.edit @model
-      populate_data(@model.updates)
-      @model.clear_updates
+      populate_data
       check_for_noop_populate
     end
 
