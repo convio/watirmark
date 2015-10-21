@@ -118,6 +118,13 @@ class ModelOpenStruct < OpenStruct
     h
   end
 
+  def includes? hash
+    raise "#{hash.inspect} is not a Hash" unless hash.is_a?(Hash)
+    h = self.to_h
+    hash.each_pair { |key, value| return false unless h[key] == value }
+    true
+  end
+
   # Stub these out so it doesn't find anything
   def find(model)
   end
