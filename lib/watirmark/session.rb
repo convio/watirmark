@@ -212,7 +212,6 @@ module Watirmark
         when "chrome"
           caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
         when "ie"
-        when "ie"
           caps.browser_name = "internet explorer" # caps.browser_name requires ie to be full name
           caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
       end
