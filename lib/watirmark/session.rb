@@ -212,6 +212,7 @@ module Watirmark
         when "chrome"
           caps.version = config.sauce_browser_version.nil? ? 32 : config.sauce_browser_version.to_i
         when "ie"
+        when "ie"
           caps.browser_name = "internet explorer" # caps.browser_name requires ie to be full name
           caps.version      = config.sauce_browser_version.nil? ? 10 : config.sauce_browser_version.to_i
       end
@@ -222,7 +223,7 @@ module Watirmark
     end
 
     def initialize_page_checkers
-      POST_WAIT_CHECKERS.each { |p| Page.browser.add_checker p }
+      POST_WAIT_CHECKERS.each { |p| Page.browser.after_hooks.add p }
     end
 
   end
