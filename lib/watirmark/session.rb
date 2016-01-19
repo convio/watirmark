@@ -56,7 +56,21 @@ module Watirmark
         config.firefox_profile = default_firefox_profile
       elsif config.webdriver.to_s.eql? 'firefox_proxy'
         config.firefox_profile = proxy_firefox_profile(config.proxy_host, config.proxy_port)
+      elsif config.webdriver.to_s.eql? 'chrome'
+        config.chrome_profile = default_chrome_profile
       end
+    end
+
+    def default_chrome_profile
+      download_directory = File.join(Configuration.instance.projectpath, "reports", "downloads")
+      download_directory.gsub!("/", "\\") if Selenium::WebDriver::Platform.windows?
+
+      {
+          :download => {
+              :prompt_for_download => false,
+              :default_directory => download_directory
+          }
+      }
     end
 
     def default_firefox_profile
@@ -187,6 +201,8 @@ module Watirmark
         Watir::Browser.new :firefox, profile: config.firefox_profile, http_client: client
       when :sauce
         Watir::Browser.new use_sauce
+      when :chrome
+        Watir::Browser.new :chrome, prefs: config.chrome_profile, http_client: client
       else
         Watir::Browser.new config.webdriver.to_sym, http_client: client
       end
