@@ -62,6 +62,9 @@ module Watirmark
     end
 
     def default_chrome_profile
+      download_directory = File.join(Configuration.instance.projectpath, "reports", "downloads")
+      download_directory.gsub!("/", "\\") if Selenium::WebDriver::Platform.windows?
+
       {
           :download => {
               :prompt_for_download => false,
