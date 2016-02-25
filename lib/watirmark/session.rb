@@ -238,7 +238,7 @@ module Watirmark
     end
 
     def initialize_page_checkers
-      POST_WAIT_CHECKERS.each { |p| Page.browser.add_checker p }
+      POST_WAIT_CHECKERS.each { |p| Page.browser.after_hooks.add p }
     end
 
   end
