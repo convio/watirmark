@@ -62,15 +62,21 @@ module Watirmark
     end
 
     def default_chrome_profile
+      profile = Selenium::WebDriver::Chrome::Profile.new
+
       download_directory = File.join(Configuration.instance.projectpath, "reports", "downloads")
       download_directory.gsub!("/", "\\") if Selenium::WebDriver::Platform.windows?
 
-      {
-          :download => {
-              :prompt_for_download => false,
-              :default_directory => download_directory
-          }
-      }
+
+      profile['download.prompt_for_download'] = false
+      profile['download.default_directory'] = download_directory
+
+      # Enable Flash
+      profile['profile.default_content_setting_values.plugins'] = 1
+      profile['profile.content_settings.plugin_whitelist.adobe-flash-player'] = 1
+      profile['profile.content_settings.exceptions.plugins.*,*.per_resource.adobe-flash-player'] = 1
+
+      profile
     end
 
     def default_firefox_profile
@@ -202,7 +208,7 @@ module Watirmark
       when :sauce
         Watir::Browser.new use_sauce
       when :chrome
-        Watir::Browser.new :chrome, prefs: config.chrome_profile, http_client: client
+        Watir::Browser.new :chrome, prefs: config.chrome_profile, http_client: client, switches: %w[--disable-infobars]
       else
         Watir::Browser.new config.webdriver.to_sym, http_client: client
       end
