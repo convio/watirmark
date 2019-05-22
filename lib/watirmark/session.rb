@@ -208,7 +208,7 @@ module Watirmark
       when :sauce
         Watir::Browser.new use_sauce
       when :chrome
-        Watir::Browser.new :chrome, prefs: config.chrome_profile, http_client: client
+        Watir::Browser.new :chrome, prefs: config.chrome_profile, http_client: client, switches: %w[--disable-infobars]
       else
         Watir::Browser.new config.webdriver.to_sym, http_client: client
       end
