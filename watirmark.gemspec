@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.require_paths = %w(lib)
   s.add_dependency('watir')
   s.add_dependency('american_date', '~> 1.1.0')
-  s.add_dependency('logger', '~> 1.2.8')
+  s.add_dependency('logger')
   s.add_dependency('uuid', '~> 2.3.7')
   s.add_dependency('nokogiri', '~> 1.6.0')
   s.add_dependency('thor', '~> 0.19.1')
