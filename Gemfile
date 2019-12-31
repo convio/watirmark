@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gemspec
 
 group :development do
-  gem 'watir-webdriver'
+  gem 'watir'
   gem 'rdoc'
   gem 'rspec', '2.99'
   gem 'rake'
