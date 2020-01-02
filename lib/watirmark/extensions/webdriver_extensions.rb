@@ -86,7 +86,12 @@ module Watir
     alias :old_radio_set :set
 
     def set(value=nil)
-      @selector.update(:value => value.to_s) if value
+      if value
+        @selector.update(:value => value.to_s)
+        build
+        locate
+      end
+
       old_radio_set
     end
 
@@ -95,7 +100,12 @@ module Watir
     alias :old_radio_set? :set?
 
     def set?(value=nil)
-      @selector.update(:value => value.to_s) if value
+      if value
+        @selector.update(:value => value.to_s)
+        build
+        locate
+      end
+
       old_radio_set?
     end
   end
