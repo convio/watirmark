@@ -61,12 +61,14 @@ module Watir
 
   class TableRow < HTMLElement
     def each
-      cells.each { |x| yield x }
+      # TODO: not 100% sure this is a complete fix
+      tds.each { |x| yield x }
     end
 
     def column(what)
       column = 0
-      parent.th(:text => what).when_present.parent.cells.each do |cell|
+      # TODO: not 100% sure this is a complete fix
+      parent.th(:text => what).when_present.parent.ths.each do |cell|
         if what.kind_of? String
           return self[column] if cell.text == what
         else
