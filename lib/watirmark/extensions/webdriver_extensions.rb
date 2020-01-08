@@ -127,7 +127,7 @@ module Watir
     #   e = locate_dom_element(:getNextSibling)
     #   e.nil? ? element(xpath: './following-sibling::*') : e
     # end
-    # alias_method :nextsibling, :next_sibling
+    alias_method :nextsibling, :next_sibling
     #
     # def previous_sibling
     #   e = locate_dom_element(:getPreviousSibling)
