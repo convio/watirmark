@@ -2,7 +2,7 @@ require 'watirmark/configuration'
 Watirmark::Configuration.instance.reload
 
 require 'watirmark/at_exit'
-require 'watir-webdriver'
+require 'watir'
 require 'watirmark/extensions/webdriver_extensions'
 require 'watirmark/extensions/ruby_extensions'
 require 'watirmark/session'

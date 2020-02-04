@@ -1,4 +1,4 @@
-require 'watir-webdriver/extensions/select_text'
+require 'watir/elements/select'
 
 module Watir
 
@@ -48,10 +48,10 @@ module Watir
     end
   end
 
-  module Atoms
-    ATOMS[:getPreviousSibling] = File.read(File.expand_path("../atoms/getPreviousSibling.js", __FILE__))
-    ATOMS[:getNextSibling] = File.read(File.expand_path("../atoms/getNextSibling.js", __FILE__))
-  end
+  # module Atoms
+  #   ATOMS[:getPreviousSibling] = File.read(File.expand_path("../atoms/getPreviousSibling.js", __FILE__))
+  #   ATOMS[:getNextSibling] = File.read(File.expand_path("../atoms/getNextSibling.js", __FILE__))
+  # end
 
   class Table < HTMLElement
     def each
@@ -61,12 +61,14 @@ module Watir
 
   class TableRow < HTMLElement
     def each
-      cells.each { |x| yield x }
+      # TODO: not 100% sure this is a complete fix
+      tds.each { |x| yield x }
     end
 
     def column(what)
       column = 0
-      parent.th(:text => what).when_present.parent.cells.each do |cell|
+      # TODO: not 100% sure this is a complete fix
+      parent.th(:text => what).when_present.parent.ths.each do |cell|
         if what.kind_of? String
           return self[column] if cell.text == what
         else
@@ -86,7 +88,12 @@ module Watir
     alias :old_radio_set :set
 
     def set(value=nil)
-      @selector.update(:value => value.to_s) if value
+      if value
+        @selector.update(:value => value.to_s)
+        build
+        locate
+      end
+
       old_radio_set
     end
 
@@ -95,7 +102,12 @@ module Watir
     alias :old_radio_set? :set?
 
     def set?(value=nil)
-      @selector.update(:value => value.to_s) if value
+      if value
+        @selector.update(:value => value.to_s)
+        build
+        locate
+      end
+
       old_radio_set?
     end
   end
@@ -111,38 +123,38 @@ module Watir
 
   class Element
 
-    def next_sibling
-      e = locate_dom_element(:getNextSibling)
-      e.nil? ? element(xpath: './following-sibling::*') : e
-    end
+    # def next_sibling
+    #   e = locate_dom_element(:getNextSibling)
+    #   e.nil? ? element(xpath: './following-sibling::*') : e
+    # end
     alias_method :nextsibling, :next_sibling
-
-    def previous_sibling
-      e = locate_dom_element(:getPreviousSibling)
-      e.nil? ? element(xpath: './preceding-sibling::*') : e
-    end
-    alias_method :prev_sibling, :previous_sibling
+    #
+    # def previous_sibling
+    #   e = locate_dom_element(:getPreviousSibling)
+    #   e.nil? ? element(xpath: './preceding-sibling::*') : e
+    # end
+    # alias_method :prev_sibling, :previous_sibling
     alias_method :prevsibling, :previous_sibling
 
-    def locate_dom_element(method)
-      assert_exists
+    # def locate_dom_element(method)
+    #   assert_exists
+    #
+    #   e = element_call { execute_atom method, @element }
+    #
+    #   if e.kind_of?(Selenium::WebDriver::Element)
+    #     Watir.element_class_for(e.tag_name.downcase).new(@parent, :element => e)
+    #   end
+    # end
 
-      e = element_call { execute_atom method, @element }
-
-      if e.kind_of?(Selenium::WebDriver::Element)
-        Watir.element_class_for(e.tag_name.downcase).new(@parent, :element => e)
-      end
-    end
-
-    alias_method :old_element_call, :element_call
-    def element_call &block
-      old_element_call &block
-    rescue Selenium::WebDriver::Error::UnknownError => ex
-      raise unless ex.message.include?("Element is not clickable at point")
-      reset!
-      assert_exists
-      retry
-    end
+    # alias_method :old_element_call, :element_call
+    # def element_call &block
+    #   old_element_call &block
+    # rescue Selenium::WebDriver::Error::UnknownError => ex
+    #   raise unless ex.message.include?("Element is not clickable at point")
+    #   reset!
+    #   assert_exists
+    #   retry
+    # end
 
     alias_method :old_text, :text
     def text
@@ -164,13 +176,13 @@ module Watir
     end
   end
 
-  class IFrame < HTMLElement
-    alias_method :old_switch_to!, :switch_to!
-    def switch_to!
+  class FramedDriver
+    alias_method :old_switch!, :switch!
+    def switch!
       retry_attempts ||= 0
-      old_switch_to!
-    rescue Watir::Exception::UnknownFrameException
-      # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
+      old_switch!
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError
+      # TODO: see why this is a problem and port to watir
       retry_attempts += 1
       retry if retry_attempts == 1
     end

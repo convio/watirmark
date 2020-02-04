@@ -122,13 +122,15 @@ module Watirmark
       end
 
       def populate_keyword_value(keyed_element)
+        Watirmark.logger.info"Attempting to populate the keyword [#{keyed_element.keyword}] with value [#{value(keyed_element)}]"
         call_method_if_exists("populate_#{keyed_element.keyword}") do
-          @view.send(keyed_element.keyword).wait_until_present
+          @view.send(keyed_element.keyword).wait_until(&:present?)
           @view.send("#{keyed_element.keyword}=", value(keyed_element))
         end
       end
 
       def verify_keyword_value(keyed_element)
+        Watirmark.logger.info"Attempting to verify the keyword [#{keyed_element.keyword}] matches [#{value(keyed_element)}]"
         call_method_if_exists("verify_#{keyed_element.keyword}") do
           keyed_element.get.wait_until_present
           assert_equal(keyed_element.get, value(keyed_element))
