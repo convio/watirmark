@@ -176,13 +176,13 @@ module Watir
     end
   end
 
-  class IFrame < HTMLElement
-    alias_method :old_switch_to!, :switch_to!
-    def switch_to!
+  class FramedDriver
+    alias_method :old_switch!, :switch!
+    def switch!
       retry_attempts ||= 0
-      old_switch_to!
-    rescue Watir::Exception::UnknownFrameException
-      # UnknownFrameException is workaround for- https://code.google.com/p/chromedriver/issues/detail?id=948
+      old_switch!
+    rescue Selenium::WebDriver::Error::StaleElementReferenceError
+      # TODO: see why this is a problem and port to watir
       retry_attempts += 1
       retry if retry_attempts == 1
     end
