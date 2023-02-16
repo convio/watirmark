@@ -69,6 +69,9 @@ module Watirmark
           :download => {
               :prompt_for_download => false,
               :default_directory => download_directory
+          },
+          :autofill => {
+              :profile_enabled => false
           }
       }
     end
